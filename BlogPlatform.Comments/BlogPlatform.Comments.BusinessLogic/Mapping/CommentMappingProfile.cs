@@ -11,7 +11,7 @@ public class CommentMappingProfile : Profile
     public CommentMappingProfile()
     {
         CreateMap<CommentRequest, Comment>()
-            .ForMember(c => c.PostId, opt => opt.Condition(req => req.PostId > 0));
+            .ForMember(c => c.PostId, opt => opt.Condition(req => req.PostId != Guid.Empty));
 
         CreateMap<Comment, CommentResponse>()
             //.ForMember(res => res.Author, opt => opt.MapFrom(c => c.Author.UserName))

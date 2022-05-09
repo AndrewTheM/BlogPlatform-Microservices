@@ -1,13 +1,18 @@
-﻿namespace BlogPlatform.Comments.DataAccess.Entities
+﻿namespace BlogPlatform.Comments.DataAccess.Entities;
+
+public class Comment
 {
-    public class Comment : EntityBase<int>
-    {
-        public int PostId { get; set; }
+    public Guid Id { get; set; }
 
-        public string AuthorId { get; set; }
+    public Guid PostId { get; set; }
 
-        public string Content { get; set; }
+    public string AuthorId { get; set; }
 
-        public int UpvoteCount { get; set; }
-    }
+    public string Content { get; set; }
+
+    public int UpvoteCount { get; set; }
+
+    public DateTime CreatedOn { get; init; }
+
+    public DateTime UpdatedOn { get; set; }
 }

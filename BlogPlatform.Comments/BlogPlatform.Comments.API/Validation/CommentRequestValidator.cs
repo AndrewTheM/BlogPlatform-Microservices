@@ -1,15 +1,17 @@
 ﻿using BlogPlatform.Comments.BusinessLogic.DTO.Requests;
 using FluentValidation;
 
-namespace BlogPlatform.Comments.API.Validation
+namespace BlogPlatform.Comments.API.Validation;
+
+public class CommentRequestValidator : AbstractValidator<CommentRequest>
 {
-    public class CommentRequestValidator : AbstractValidator<CommentRequest>
+    public CommentRequestValidator()
     {
-        public CommentRequestValidator()
-        {
-            RuleFor(cr => cr.PostId).GreaterThan(0);
-            RuleFor(cr => cr.Content).NotEmpty()
-                                     .MaximumLength(1000);
-        }
+        RuleFor(cr => cr.PostId)
+            .NotEmpty();
+
+        RuleFor(cr => cr.Content)
+            .NotEmpty()
+            .MaximumLength(1000);
     }
 }

@@ -1,21 +1,18 @@
 using BlogPlatform.Comments.API.Extensions;
 using BlogPlatform.Comments.BusinessLogic.Mapping;
-using BlogPlatform.Comments.DataAccess.Context;
+using BlogPlatform.Comments.BusinessLogic.Services;
+using BlogPlatform.Comments.BusinessLogic.Services.Contracts;
+using BlogPlatform.Comments.DataAccess.Repositories;
+using BlogPlatform.Comments.DataAccess.Repositories.Contracts;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Globalization;
 
 namespace BlogPlatform.Comments.API;
 
-public class Startup
+internal class Startup
 {
-    private class ConfigurationNames
-    {
-        public const string DbConnection = "LocalSqlServer";
-    }
-
     private readonly IConfiguration _configuration;
 
     public Startup(IConfiguration configuration)
@@ -23,28 +20,24 @@ public class Startup
         _configuration = configuration;
     }
 
-    private IEnumerable<OpenApiInfo> GetApiVersionsInfo()
-    {
-        var versionsConfig = _configuration.GetSection("Versions");
-        var apiInfos = versionsConfig.Get<OpenApiInfo[]>();
-        return apiInfos;
-    }
-
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddDatabaseDeveloperPageExceptionFilter();
-        services.AddDbContext<BlogContext>(options =>
-        {
-            string configName = ConfigurationNames.DbConnection;
-            string connectionString = _configuration.GetConnectionString(configName);
-            options.UseSqlServer(connectionString);
-        });
-
         services.AddHttpContextAccessor();
+
         services.AddAutoMapper(typeof(CommentMappingProfile).Assembly);
 
-        services.AddRepositories();
-        services.AddBlogging();
+        services.AddTransient<ICommentRepository, CommentRepository>();
+        services.AddTransient<ICommentService, CommentService>();
+        services.AddTransient<ITimeService, TimeService>();
+
+        services.AddTransient<IUriService>(provider =>
+        {
+            var contextAccesor = provider.GetService<IHttpContextAccessor>();
+            var request = contextAccesor.HttpContext.Request;
+            string uri = $"{request.Scheme}://{request.Host}";
+            return new UriService(uri);
+        });
 
         services.AddLocalization(opt => opt.ResourcesPath = "Resources");
         services.Configure<RequestLocalizationOptions>(opts =>
@@ -59,11 +52,11 @@ public class Startup
         services.AddSwaggerWithSecurityAndVersioning(versionsInfo);
 
         services.AddControllers()
-                .AddFluentValidation(config =>
-                {
-                    config.RegisterValidatorsFromAssemblyContaining<Startup>();
-                    config.DisableDataAnnotationsValidation = true;
-                });
+            .AddFluentValidation(config =>
+            {
+                config.RegisterValidatorsFromAssemblyContaining<Startup>();
+                config.DisableDataAnnotationsValidation = true;
+            });
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -101,5 +94,12 @@ public class Startup
         {
             endpoints.MapControllers();
         });
+    }
+
+    private IEnumerable<OpenApiInfo> GetApiVersionsInfo()
+    {
+        var versionsConfig = _configuration.GetSection("Versions");
+        var apiInfos = versionsConfig.Get<OpenApiInfo[]>();
+        return apiInfos;
     }
 }

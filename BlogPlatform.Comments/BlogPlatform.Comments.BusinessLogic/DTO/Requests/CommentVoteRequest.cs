@@ -1,7 +1,6 @@
-﻿namespace BlogPlatform.Comments.BusinessLogic.DTO.Requests
+﻿namespace BlogPlatform.Comments.BusinessLogic.DTO.Requests;
+
+public class CommentVoteRequest
 {
-    public class CommentVoteRequest
-    {
-        public int VoteValue { get; set; }
-    }
+    public int VoteValue { get; set; }
 }
