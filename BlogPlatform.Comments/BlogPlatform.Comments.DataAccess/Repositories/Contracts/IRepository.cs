@@ -1,29 +1,14 @@
-﻿using BlogPlatform.Comments.DataAccess.Extensions;
-using System.Linq;
-using System.Threading.Tasks;
+﻿namespace BlogPlatform.Comments.DataAccess.Repositories.Contracts;
 
-namespace BlogPlatform.Comments.DataAccess.Repositories.Contracts
+public interface IRepository<T> where T : class
 {
-    public interface IRepository<TEntity, TId>
-    {
-        Task<IQueryable<TEntity>> GetAllAsync();
+    Task<IQueryable<T>> GetAllAsync();
 
-        /// <summary>
-        /// Throws <see cref="EntityNotFoundException"/>
-        /// if no entity with given <paramref name="id"/> is found.
-        /// </summary>
-        Task<TEntity> GetByIdAsync(TId id);
+    Task<T> GetAsync(Guid id);
 
-        Task CreateAsync(TEntity entity);
+    Task<Guid> CreateAsync(T entity);
 
-        /// <summary>
-        /// Throws <see cref="EntityNotFoundException"/>
-        /// if no entity with given <paramref name="id"/> is found.
-        /// </summary>
-        Task DeleteAsync(TId id);
-    }
+    Task UpdateAsync(Guid id, T newEntity);
 
-    public interface IRepository<TEntity> : IRepository<TEntity, int>
-    {
-    }
+    Task DeleteAsync(Guid id);
 }

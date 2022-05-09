@@ -1,10 +1,11 @@
-﻿namespace BlogPlatform.Comments.DataAccess.Filters
-{
-    public class CommentFilter : PaginationFilter
-    {
-        public string Content { get; set; }
+﻿namespace BlogPlatform.Comments.DataAccess.Filters;
 
-        public new CommentFilter CopyWithDifferentPage(int pageNumber)
-            => (CommentFilter)base.CopyWithDifferentPage(pageNumber);
+public class CommentFilter : PaginationFilter
+{
+    public string Content { get; set; }
+
+    public override CommentFilter CopyWithDifferentPage(int pageNumber)
+    {
+        return base.CopyWithDifferentPage(pageNumber) as CommentFilter;
     }
 }

@@ -1,9 +1,6 @@
-﻿using System;
+﻿namespace BlogPlatform.Comments.BusinessLogic.Services.Contracts;
 
-namespace BlogPlatform.Comments.BusinessLogic.Services.Contracts
+public interface ITimeService
 {
-    public interface ITimeService
-    {
-        string ConvertToLocalRelativeString(DateTime dateTime);
-    }
+    string ConvertToLocalRelativeString(DateTime dateTime);
 }

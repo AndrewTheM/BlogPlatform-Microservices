@@ -1,10 +1,8 @@
 ﻿using BlogPlatform.Comments.DataAccess.Filters;
-using System;
 
-namespace BlogPlatform.Comments.BusinessLogic.Services.Contracts
+namespace BlogPlatform.Comments.BusinessLogic.Services.Contracts;
+
+public interface IUriService
 {
-    public interface IUriService
-    {
-        Uri GetCommentsPageUri(int postId, CommentFilter filter = null);
-    }
+    Uri GetCommentsPageUri(Guid postId, CommentFilter filter = null);
 }
