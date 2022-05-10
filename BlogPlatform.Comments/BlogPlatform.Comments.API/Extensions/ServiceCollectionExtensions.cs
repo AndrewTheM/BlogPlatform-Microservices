@@ -1,9 +1,21 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using BlogPlatform.Comments.DataAccess.Factories;
+using BlogPlatform.Comments.DataAccess.Factories.Contracts;
+using Microsoft.OpenApi.Models;
 
 namespace BlogPlatform.Comments.API.Extensions;
 
 internal static class ServiceCollectionExtensions
 {
+    public static IServiceCollection AddConnectionFactory(
+        this IServiceCollection services, string connectionString)
+    {
+        services.AddTransient<IConnectionFactory, SqlConnectionFactory>(
+            _ => new SqlConnectionFactory(connectionString)
+        );
+
+        return services;
+    }
+
     public static IServiceCollection AddSwaggerWithSecurityAndVersioning(
         this IServiceCollection services, IEnumerable<OpenApiInfo> versionsInfo)
     {

@@ -7,14 +7,13 @@ namespace BlogPlatform.Comments.BusinessLogic.Mapping;
 
 public class CommentMappingProfile : Profile
 {
-    // TODO: work with other microservices
     public CommentMappingProfile()
     {
-        CreateMap<CommentRequest, Comment>()
-            .ForMember(c => c.PostId, opt => opt.Condition(req => req.PostId != Guid.Empty));
+        CreateMap<CommentRequest, Comment>();
+
+        CreateMap<CommentContentRequest, Comment>();
 
         CreateMap<Comment, CommentResponse>()
-            //.ForMember(res => res.Author, opt => opt.MapFrom(c => c.Author.UserName))
             .ForMember(res => res.PublishedOn, opt => opt.MapFrom(c => c.CreatedOn))
             .ForMember(res => res.IsEdited, opt => opt.MapFrom(c => c.UpdatedOn > c.CreatedOn));
     }

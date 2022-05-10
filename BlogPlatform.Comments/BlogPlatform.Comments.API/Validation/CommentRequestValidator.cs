@@ -7,11 +7,12 @@ public class CommentRequestValidator : AbstractValidator<CommentRequest>
 {
     public CommentRequestValidator()
     {
+        Include(new CommentContentRequestValidator());
+
         RuleFor(cr => cr.PostId)
             .NotEmpty();
-
-        RuleFor(cr => cr.Content)
-            .NotEmpty()
-            .MaximumLength(1000);
+        
+        RuleFor(cr => cr.AuthorId)
+            .NotEmpty();
     }
 }

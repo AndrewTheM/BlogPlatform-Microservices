@@ -24,8 +24,10 @@ internal class Startup
     {
         services.AddDatabaseDeveloperPageExceptionFilter();
         services.AddHttpContextAccessor();
-
         services.AddAutoMapper(typeof(CommentMappingProfile).Assembly);
+
+        string connectionString = _configuration.GetConnectionString("LocalSqlServer");
+        services.AddConnectionFactory(connectionString);
 
         services.AddTransient<ICommentRepository, CommentRepository>();
         services.AddTransient<ICommentService, CommentService>();

@@ -2,9 +2,9 @@
 
 namespace BlogPlatform.Comments.BusinessLogic.Extensions;
 
-public static class QueryableExtensions
+public static class EnumerableExtensions
 {
-    public static IQueryable<T> Paginate<T>(this IQueryable<T> records, PaginationFilter filter)
+    public static IEnumerable<T> Paginate<T>(this IEnumerable<T> records, PaginationFilter filter)
     {
         if (filter is null)
             return records;

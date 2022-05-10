@@ -2,7 +2,7 @@
 
 public interface IRepository<T> where T : class
 {
-    Task<IQueryable<T>> GetAllAsync();
+    Task<IEnumerable<T>> GetAllAsync();
 
     Task<T> GetAsync(Guid id);
 

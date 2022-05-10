@@ -1,15 +1,15 @@
 ﻿using BlogPlatform.Comments.BusinessLogic.DTO.Requests;
 using BlogPlatform.Comments.BusinessLogic.DTO.Responses;
+using BlogPlatform.Comments.BusinessLogic.Helpers;
 using BlogPlatform.Comments.BusinessLogic.Services.Contracts;
 using BlogPlatform.Comments.DataAccess.Extensions;
-using Microsoft.AspNetCore.Authorization;
+using BlogPlatform.Comments.DataAccess.Filters;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlogPlatform.Comments.API.Controllers;
 
 [Route("api/comments")]
 [ApiController]
-[Authorize]
 public class CommentController : ControllerBase
 {
     private readonly ICommentService _commentService;
@@ -19,9 +19,16 @@ public class CommentController : ControllerBase
         _commentService = commentService;
     }
 
+    [HttpGet("post/{postId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<Page<CommentResponse>>> GetPageOfCommentsForPost(
+        [FromRoute] Guid postId, [FromQuery] CommentFilter filter)
+    {
+        return await _commentService.GetPageOfCommentsForPostAsync(postId, filter);
+    }
+
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CommentResponse>> GetCommentById([FromRoute] Guid id)
     {
@@ -37,30 +44,20 @@ public class CommentController : ControllerBase
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult<CommentResponse>> CreateComment([FromBody] CommentRequest commentDto)
+    public async Task<ActionResult<CommentResponse>> PublishComment([FromBody] CommentRequest commentDto)
     {
-        string userId = HttpContext.User.FindFirst("id").Value;
+        string userId = HttpContext.User?.FindFirst("id")?.Value;
         return await _commentService.PublishCommentAsync(commentDto, userId);
     }
 
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> UpdateComment(
-        [FromRoute] Guid id, [FromBody] CommentRequest commentDto)
+    public async Task<ActionResult> EditComment(
+        [FromRoute] Guid id, [FromBody] CommentContentRequest commentDto)
     {
         try
         {
-            bool userIsPermitted = await CheckIsAuthorOfCommentOrAdmin(id);
-            if (!userIsPermitted)
-            {
-                return Forbid();
-            }
-
             await _commentService.EditCommentAsync(id, commentDto);
             return NoContent();
         }
@@ -72,19 +69,11 @@ public class CommentController : ControllerBase
 
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> DeleteComment([FromRoute] Guid id)
     {
         try
         {
-            bool userIsPermitted = await CheckIsAuthorOfCommentOrAdmin(id);
-            if (!userIsPermitted)
-            {
-                return Forbid();
-            }
-
             await _commentService.DeleteCommentAsync(id);
             return NoContent();
         }
@@ -97,7 +86,6 @@ public class CommentController : ControllerBase
     [HttpPatch("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> PatchCommentVotes(
         [FromRoute] Guid id, [FromBody] CommentVoteRequest voteRequest)

@@ -28,7 +28,7 @@ public interface ICommentService
     /// Throws <see cref="EntityNotFoundException"/>
     /// if no comment with given <paramref name="id"/> is found.
     /// </summary>
-    Task EditCommentAsync(Guid id, CommentRequest commentDto);
+    Task EditCommentAsync(Guid id, CommentContentRequest commentDto);
 
     /// <summary>
     /// Throws <see cref="EntityNotFoundException"/>

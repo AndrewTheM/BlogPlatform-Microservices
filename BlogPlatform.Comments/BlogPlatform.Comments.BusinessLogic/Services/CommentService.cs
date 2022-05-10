@@ -57,25 +57,25 @@ public class CommentService : ICommentService
         return response;
     }
 
+    // TODO: add proper auth
     public async Task<CommentResponse> PublishCommentAsync(CommentRequest commentDto, string authorId)
     {
         var comment = _mapper.Map<Comment>(commentDto);
-        comment.AuthorId = authorId;
+        //comment.AuthorId = authorId;
 
-        await _commentRepository.CreateAsync(comment);
-
-        var createdComment = await _commentRepository.GetCommentWithAuthorAsync(comment.Id);
+        Guid id = await _commentRepository.CreateAsync(comment);
+        var createdComment = await _commentRepository.GetCommentWithAuthorAsync(id);
         var response = _mapper.Map<CommentResponse>(createdComment);
         this.AddRelativeTimeToResponse(response);
 
         return response;
     }
 
-    public async Task EditCommentAsync(Guid id, CommentRequest commentDto)
+    public async Task EditCommentAsync(Guid id, CommentContentRequest commentDto)
     {
         var comment = await _commentRepository.GetAsync(id);
         _mapper.Map(commentDto, comment);
-        // TODO: use update method here
+        await _commentRepository.UpdateAsync(id, comment);
     }
 
     public async Task DeleteCommentAsync(Guid id)
@@ -90,13 +90,13 @@ public class CommentService : ICommentService
 
         var comment = await _commentRepository.GetAsync(id);
         comment.UpvoteCount += voteValue;
-        // TODO: use update method here
+        await _commentRepository.UpdateAsync(id, comment);
     }
 
     public async Task<bool> CheckIsCommentAuthorAsync(Guid id, string userId)
     {
-        Comment comment = await _commentRepository.GetAsync(id);
-        return comment.AuthorId == userId;
+        var comment = await _commentRepository.GetAsync(id);
+        return comment.AuthorId == Guid.Parse(userId);
     }
 
     private void AddRelativeTimeToResponse(CommentResponse response)

@@ -11,6 +11,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{541C86
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlogPlatform.Comments.API", "BlogPlatform.Comments.API\BlogPlatform.Comments.API.csproj", "{A8460726-3536-4778-A7E2-F19E83007318}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{E63BA748-9C90-4454-937D-31338B8ACF5A}"
+	ProjectSection(SolutionItems) = preProject
+		CommentsDB.sql = CommentsDB.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
