@@ -58,16 +58,15 @@ public class CommentService : ICommentService
     }
 
     // TODO: add proper auth
-    public async Task<CommentResponse> PublishCommentAsync(CommentRequest commentDto, string authorId)
+    public async Task<CommentResponse> PublishCommentAsync(CommentRequest commentDto)
     {
         var comment = _mapper.Map<Comment>(commentDto);
-        //comment.AuthorId = authorId;
-
         Guid id = await _commentRepository.CreateAsync(comment);
+
         var createdComment = await _commentRepository.GetCommentWithAuthorAsync(id);
         var response = _mapper.Map<CommentResponse>(createdComment);
-        this.AddRelativeTimeToResponse(response);
 
+        this.AddRelativeTimeToResponse(response);
         return response;
     }
 
@@ -93,7 +92,7 @@ public class CommentService : ICommentService
         await _commentRepository.UpdateAsync(id, comment);
     }
 
-    public async Task<bool> CheckIsCommentAuthorAsync(Guid id, string userId)
+    public async Task<bool> CheckIsCommentAuthorAsync(Guid id, Guid userId)
     {
         var comment = await _commentRepository.GetAsync(id);
         return comment.AuthorId == Guid.Parse(userId);

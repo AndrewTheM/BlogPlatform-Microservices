@@ -46,8 +46,7 @@ public class CommentController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<CommentResponse>> PublishComment([FromBody] CommentRequest commentDto)
     {
-        string userId = HttpContext.User?.FindFirst("id")?.Value;
-        return await _commentService.PublishCommentAsync(commentDto, userId);
+        return await _commentService.PublishCommentAsync(commentDto);
     }
 
     [HttpPut("{id}")]
@@ -103,12 +102,5 @@ public class CommentController : ControllerBase
         {
             return NotFound();
         }
-    }
-
-    private async Task<bool> CheckIsAuthorOfCommentOrAdmin(Guid id)
-    {
-        string userId = HttpContext.User.FindFirst("id").Value;
-        return await _commentService.CheckIsCommentAuthorAsync(id, userId)
-               || HttpContext.User.IsInRole("Admin");
     }
 }

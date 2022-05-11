@@ -22,7 +22,7 @@ public interface ICommentService
     /// </summary>
     Task<CommentResponse> GetCommentByIdAsync(Guid id);
 
-    Task<CommentResponse> PublishCommentAsync(CommentRequest commentDto, string authorId);
+    Task<CommentResponse> PublishCommentAsync(CommentRequest commentDto);
 
     /// <summary>
     /// Throws <see cref="EntityNotFoundException"/>
@@ -50,5 +50,5 @@ public interface ICommentService
     /// Throws <see cref="EntityNotFoundException"/>
     /// if no post with given <paramref name="id"/> is found.
     /// </summary>
-    Task<bool> CheckIsCommentAuthorAsync(Guid id, string userId);
+    Task<bool> CheckIsCommentAuthorAsync(Guid id, Guid userId);
 }
