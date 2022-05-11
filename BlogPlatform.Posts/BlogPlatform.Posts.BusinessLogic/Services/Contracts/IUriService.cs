@@ -1,10 +1,8 @@
 ﻿using BlogPlatform.Posts.DataAccess.Filters;
-using System;
 
-namespace BlogPlatform.Posts.BusinessLogic.Services.Contracts
+namespace BlogPlatform.Posts.BusinessLogic.Services.Contracts;
+
+public interface IUriService
 {
-    public interface IUriService
-    {
-        Uri GetPostsPageUri(PostFilter filter = null);
-    }
+    Uri GetPostsPageUri(PostFilter filter = null);
 }

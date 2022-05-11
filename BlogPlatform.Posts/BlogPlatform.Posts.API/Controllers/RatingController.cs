@@ -2,84 +2,74 @@
 using BlogPlatform.Posts.BusinessLogic.DTO.Responses;
 using BlogPlatform.Posts.BusinessLogic.Services.Contracts;
 using BlogPlatform.Posts.DataAccess.Extensions;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
-namespace BlogPlatform.Posts.API.Controllers
+namespace BlogPlatform.Posts.API.Controllers;
+
+[Route("api/ratings")]
+[ApiController]
+public class RatingController : ControllerBase
 {
-    [Route("api/ratings")]
-    [ApiController]
-    [Authorize]
-    public class RatingController : ControllerBase
+    private readonly IRatingService _ratingService;
+
+    public RatingController(IRatingService ratingService)
     {
-        private readonly IRatingService _ratingService;
+        _ratingService = ratingService;
+    }
 
-        public RatingController(IRatingService ratingService)
+    [HttpGet("{postId}/{userId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<RatingResponse>> GetRatingByUserAndPost(
+        [FromRoute] Guid postId, [FromRoute] Guid userId)
+    {
+        try
         {
-            _ratingService = ratingService;
+            return await _ratingService.GetRatingOfPostByUserAsync(postId, userId);
         }
-
-        [HttpGet("{postId}/{userId}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<RatingResponse>> GetRatingByUserAndPost([FromRoute] int postId,
-                                                                               [FromRoute] string userId)
+        catch (EntityNotFoundException)
         {
-            try
-            {
-                return await _ratingService.GetRatingOfPostByUserAsync(postId, userId);
-            }
-            catch (EntityNotFoundException)
-            {
-                return NotFound();
-            }
+            return NotFound();
         }
+    }
 
-        [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<RatingResponse>> CreateRating([FromBody] RatingRequest ratingDto)
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<RatingResponse>> CreateRating([FromBody] RatingRequest ratingDto)
+    {
+        return await _ratingService.CreateRatingAsync(ratingDto);
+    }
+
+    [HttpPut("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> UpdateRating(
+        [FromRoute] Guid id, [FromBody] RatingUpdateRequest ratingDto)
+    {
+        try
         {
-            string userId = HttpContext.User.FindFirst("id").Value;
-            return await _ratingService.CreateRatingAsync(ratingDto, userId);
+            await _ratingService.EditRatingAsync(id, ratingDto);
+            return NoContent();
         }
-
-        [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> UpdateRating([FromRoute] int id,
-                                                     [FromBody] RatingRequest ratingDto)
+        catch (EntityNotFoundException)
         {
-            try
-            {
-                await _ratingService.EditRatingAsync(id, ratingDto);
-                return NoContent();
-            }
-            catch (EntityNotFoundException)
-            {
-                return NotFound();
-            }
+            return NotFound();
         }
+    }
 
-        [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> DeleteRating([FromRoute] int id)
+    [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> DeleteRating([FromRoute] Guid id)
+    {
+        try
         {
-            try
-            {
-                await _ratingService.DeleteRatingAsync(id);
-                return NoContent();
-            }
-            catch (EntityNotFoundException)
-            {
-                return NotFound();
-            }
+            await _ratingService.DeleteRatingAsync(id);
+            return NoContent();
+        }
+        catch (EntityNotFoundException)
+        {
+            return NotFound();
         }
     }
 }

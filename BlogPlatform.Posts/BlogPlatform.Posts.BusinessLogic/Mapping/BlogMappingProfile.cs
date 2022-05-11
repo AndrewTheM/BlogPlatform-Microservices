@@ -2,61 +2,60 @@
 using BlogPlatform.Posts.BusinessLogic.DTO.Requests;
 using BlogPlatform.Posts.BusinessLogic.DTO.Responses;
 using BlogPlatform.Posts.DataAccess.Entities;
-using System.Linq;
 
-namespace BlogPlatform.Posts.BusinessLogic.Mapping
+namespace BlogPlatform.Posts.BusinessLogic.Mapping;
+
+public class BlogMappingProfile : Profile
 {
-    public class BlogMappingProfile : Profile
+    public BlogMappingProfile()
     {
-        public BlogMappingProfile()
-        {
-            ConfigurePost();
-            ConfigureRating();
-            ConfigureTag();
-        }
+        ConfigurePost();
+        ConfigureRating();
+        ConfigureTag();
+    }
 
-        private static void SkipNullValues<TSource, TDestination, TMember>(
-            IMemberConfigurationExpression<TSource, TDestination, TMember> opt)
-        {
-            opt.Condition((src, dest, prop) => prop is not null);
-        }
+    private static void SkipNullValues<TSource, TDestination, TMember>(
+        IMemberConfigurationExpression<TSource, TDestination, TMember> opt)
+    {
+        opt.Condition((src, dest, prop) => prop is not null);
+    }
 
-        private void ConfigurePost()
-        {
-            CreateMap<PostRequest, Post>()
-                .AfterMap((req, p) =>
+    private void ConfigurePost()
+    {
+        CreateMap<PostRequest, Post>()
+            .AfterMap((req, p) =>
+            {
+                if (p.ContentEntity is not null && req.Content is not null)
                 {
-                    if (p.ContentEntity is not null && req.Content is not null)
-                        p.ContentEntity.Content = req.Content;
-                })
-                .ForAllMembers(SkipNullValues);
+                    p.ContentEntity.Content = req.Content;
+                }
+            })
+            .ForAllMembers(SkipNullValues);
 
-            CreateMap<PostRequest, PostContent>()
-                .ForAllMembers(SkipNullValues);
+        CreateMap<PostRequest, PostContent>()
+            .ForAllMembers(SkipNullValues);
 
-            CreateMap<Post, PostResponse>()
-                .ForMember(res => res.PublishedOn, opt => opt.MapFrom(p => p.CreatedOn))
-                .ForMember(res => res.IsEdited, opt => opt.MapFrom(p => p.UpdatedOn > p.CreatedOn));
+        CreateMap<Post, PostResponse>()
+            .ForMember(res => res.PublishedOn, opt => opt.MapFrom(p => p.CreatedOn))
+            .ForMember(res => res.IsEdited, opt => opt.MapFrom(p => p.UpdatedOn > p.CreatedOn));
 
-            CreateMap<Post, CompletePostResponse>()
-                .IncludeBase<Post, PostResponse>()
-                .ForMember(res => res.Content, opt => opt.MapFrom(p => p.ContentEntity.Content))
-                .ForMember(res => res.Tags, opt => opt.MapFrom(p => p.Tags.Select(t => t.TagName)));
-        }
+        CreateMap<Post, CompletePostResponse>()
+            .IncludeBase<Post, PostResponse>()
+            .ForMember(res => res.Content, opt => opt.MapFrom(p => p.ContentEntity.Content))
+            .ForMember(res => res.Tags, opt => opt.MapFrom(p => p.Tags.Select(t => t.TagName)));
+    }
 
-        private void ConfigureRating()
-        {
-            CreateMap<RatingRequest, Rating>()
-                .ForMember(r => r.PostId, opt => opt.Condition(req => req.PostId > 0));
+    private void ConfigureRating()
+    {
+        CreateMap<RatingRequest, Rating>();
 
-            CreateMap<Rating, RatingResponse>();
-            //.ForMember(res => res.User, opt => opt.MapFrom(r => r.User.UserName));
-        }
+        CreateMap<Rating, RatingResponse>();
+    }
 
-        private void ConfigureTag()
-        {
-            CreateMap<TagRequest, Tag>();
-            CreateMap<Tag, TagResponse>();
-        }
+    private void ConfigureTag()
+    {
+        CreateMap<TagRequest, Tag>();
+
+        CreateMap<Tag, TagResponse>();
     }
 }

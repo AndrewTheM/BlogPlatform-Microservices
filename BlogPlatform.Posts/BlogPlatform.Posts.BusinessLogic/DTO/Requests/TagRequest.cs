@@ -1,7 +1,6 @@
-﻿namespace BlogPlatform.Posts.BusinessLogic.DTO.Requests
+﻿namespace BlogPlatform.Posts.BusinessLogic.DTO.Requests;
+
+public class TagRequest
 {
-    public class TagRequest
-    {
-        public string TagName { get; set; }
-    }
+    public string TagName { get; set; }
 }

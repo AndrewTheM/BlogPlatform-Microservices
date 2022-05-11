@@ -11,11 +11,6 @@ namespace BlogPlatform.Posts.API;
 
 public class Startup
 {
-    private class ConfigurationNames
-    {
-        public const string DbConnection = "LocalSqlServer";
-    }
-
     private readonly IConfiguration _configuration;
 
     public Startup(IConfiguration configuration)
@@ -35,8 +30,7 @@ public class Startup
         services.AddDatabaseDeveloperPageExceptionFilter();
         services.AddDbContext<BlogContext>(options =>
         {
-            string configName = ConfigurationNames.DbConnection;
-            string connectionString = _configuration.GetConnectionString(configName);
+            string connectionString = _configuration.GetConnectionString("LocalSqlServer");
             options.UseSqlServer(connectionString);
         });
 
@@ -59,11 +53,11 @@ public class Startup
         services.AddSwaggerWithSecurityAndVersioning(versionsInfo);
 
         services.AddControllers()
-                .AddFluentValidation(config =>
-                {
-                    config.RegisterValidatorsFromAssemblyContaining<Startup>();
-                    config.DisableDataAnnotationsValidation = true;
-                });
+            .AddFluentValidation(config =>
+            {
+                config.RegisterValidatorsFromAssemblyContaining<Startup>();
+                config.DisableDataAnnotationsValidation = true;
+            });
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -90,8 +84,8 @@ public class Startup
         app.UseCors(builder =>
         {
             builder.AllowAnyOrigin()
-                   .AllowAnyHeader()
-                   .AllowAnyMethod();
+                .AllowAnyHeader()
+                .AllowAnyMethod();
         });
 
         app.UseAuthentication();

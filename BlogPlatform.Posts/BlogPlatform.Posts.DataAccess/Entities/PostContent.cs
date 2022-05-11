@@ -1,9 +1,8 @@
-﻿namespace BlogPlatform.Posts.DataAccess.Entities
-{
-    public class PostContent : EntityBase<int>
-    {
-        public string Content { get; set; }
+﻿namespace BlogPlatform.Posts.DataAccess.Entities;
 
-        public Post Post { get; set; }
-    }
+public class PostContent : EntityBase
+{
+    public string Content { get; set; }
+
+    public Post Post { get; set; }
 }

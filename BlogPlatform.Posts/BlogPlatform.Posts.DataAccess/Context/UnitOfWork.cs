@@ -1,60 +1,57 @@
 ﻿using BlogPlatform.Posts.DataAccess.Context.Contracts;
 using BlogPlatform.Posts.DataAccess.Repositories.Contracts;
-using System;
-using System.Threading.Tasks;
 
-namespace BlogPlatform.Posts.DataAccess.Context
+namespace BlogPlatform.Posts.DataAccess.Context;
+
+public class UnitOfWork : IBloggingUnitOfWork
 {
-    public class UnitOfWork : IBloggingUnitOfWork
+    private bool _isDisposed;
+
+    private readonly BlogContext _context;
+
+    public IPostRepository Posts { get; }
+
+    public IPostContentRepository PostContents { get; }
+
+    public ITagRepository Tags { get; }
+
+    public IRatingRepository Ratings { get; }
+
+    public UnitOfWork(
+        BlogContext context,
+        IPostRepository posts,
+        IPostContentRepository postContents,
+        ITagRepository tags,
+        IRatingRepository ratings)
     {
-        private bool _isDisposed;
+        _context = context;
+        Posts = posts;
+        PostContents = postContents;
+        Tags = tags;
+        Ratings = ratings;
+    }
 
-        private readonly BlogContext _context;
+    public async Task CommitAsync()
+    {
+        await _context.SaveChangesAsync();
+    }
 
-        public IPostRepository Posts { get; }
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
 
-        public IPostContentRepository PostContents { get; }
-
-        public ITagRepository Tags { get; }
-
-        public IRatingRepository Ratings { get; }
-
-        public UnitOfWork(
-            BlogContext context,
-            IPostRepository posts,
-            IPostContentRepository postContents,
-            ITagRepository tags,
-            IRatingRepository ratings)
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_isDisposed)
         {
-            _context = context;
-            Posts = posts;
-            PostContents = postContents;
-            Tags = tags;
-            Ratings = ratings;
-        }
-
-        public async Task CommitAsync()
-        {
-            await _context.SaveChangesAsync();
-        }
-
-        public void Dispose()
-        {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!_isDisposed)
+            if (disposing)
             {
-                if (disposing)
-                {
-                    _context.Dispose();
-                }
-
-                _isDisposed = true;
+                _context.Dispose();
             }
+
+            _isDisposed = true;
         }
     }
 }

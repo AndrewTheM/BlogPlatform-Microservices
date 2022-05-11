@@ -1,9 +1,8 @@
-﻿namespace BlogPlatform.Posts.BusinessLogic.DTO.Responses
-{
-    public class TagResponse
-    {
-        public int Id { get; set; }
+﻿namespace BlogPlatform.Posts.BusinessLogic.DTO.Responses;
 
-        public string TagName { get; set; }
-    }
+public class TagResponse
+{
+    public Guid Id { get; set; }
+
+    public string TagName { get; set; }
 }

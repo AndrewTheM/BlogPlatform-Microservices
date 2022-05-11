@@ -7,29 +7,32 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace BlogPlatform.DataAccess.Migrations
+#nullable disable
+
+namespace BlogPlatform.Posts.DataAccess.Migrations
 {
     [DbContext(typeof(BlogContext))]
-    [Migration("20220507144100_MicroserviceExtraction")]
-    partial class MicroserviceExtraction
+    [Migration("20220511082311_MicroserviceExtractionAndChanges")]
+    partial class MicroserviceExtractionAndChanges
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.5")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "6.0.4")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            modelBuilder.Entity("BlogPlatform.DataAccess.Entities.Post", b =>
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("BlogPlatform.Posts.DataAccess.Entities.Post", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
-                    b.Property<string>("AuthorId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("AuthorId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
@@ -66,10 +69,11 @@ namespace BlogPlatform.DataAccess.Migrations
                     b.ToTable("Posts");
                 });
 
-            modelBuilder.Entity("BlogPlatform.DataAccess.Entities.PostContent", b =>
+            modelBuilder.Entity("BlogPlatform.Posts.DataAccess.Entities.PostContent", b =>
                 {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -90,20 +94,20 @@ namespace BlogPlatform.DataAccess.Migrations
                     b.ToTable("PostContents");
                 });
 
-            modelBuilder.Entity("BlogPlatform.DataAccess.Entities.Rating", b =>
+            modelBuilder.Entity("BlogPlatform.Posts.DataAccess.Entities.Rating", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<int>("PostId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("RatingValue")
                         .HasColumnType("int");
@@ -113,24 +117,23 @@ namespace BlogPlatform.DataAccess.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("PostId", "UserId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("Ratings");
                 });
 
-            modelBuilder.Entity("BlogPlatform.DataAccess.Entities.Tag", b =>
+            modelBuilder.Entity("BlogPlatform.Posts.DataAccess.Entities.Tag", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
@@ -157,33 +160,33 @@ namespace BlogPlatform.DataAccess.Migrations
 
             modelBuilder.Entity("PostTag", b =>
                 {
-                    b.Property<int>("PostsId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("PostsId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("TagsId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("TagsId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("PostsId", "TagsId");
 
                     b.HasIndex("TagsId");
 
-                    b.ToTable("TagsOfPosts");
+                    b.ToTable("TagsOfPosts", (string)null);
                 });
 
-            modelBuilder.Entity("BlogPlatform.DataAccess.Entities.PostContent", b =>
+            modelBuilder.Entity("BlogPlatform.Posts.DataAccess.Entities.PostContent", b =>
                 {
-                    b.HasOne("BlogPlatform.DataAccess.Entities.Post", "Post")
+                    b.HasOne("BlogPlatform.Posts.DataAccess.Entities.Post", "Post")
                         .WithOne("ContentEntity")
-                        .HasForeignKey("BlogPlatform.DataAccess.Entities.PostContent", "Id")
+                        .HasForeignKey("BlogPlatform.Posts.DataAccess.Entities.PostContent", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Post");
                 });
 
-            modelBuilder.Entity("BlogPlatform.DataAccess.Entities.Rating", b =>
+            modelBuilder.Entity("BlogPlatform.Posts.DataAccess.Entities.Rating", b =>
                 {
-                    b.HasOne("BlogPlatform.DataAccess.Entities.Post", "Post")
+                    b.HasOne("BlogPlatform.Posts.DataAccess.Entities.Post", "Post")
                         .WithMany("Ratings")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -194,20 +197,20 @@ namespace BlogPlatform.DataAccess.Migrations
 
             modelBuilder.Entity("PostTag", b =>
                 {
-                    b.HasOne("BlogPlatform.DataAccess.Entities.Post", null)
+                    b.HasOne("BlogPlatform.Posts.DataAccess.Entities.Post", null)
                         .WithMany()
                         .HasForeignKey("PostsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BlogPlatform.DataAccess.Entities.Tag", null)
+                    b.HasOne("BlogPlatform.Posts.DataAccess.Entities.Tag", null)
                         .WithMany()
                         .HasForeignKey("TagsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BlogPlatform.DataAccess.Entities.Post", b =>
+            modelBuilder.Entity("BlogPlatform.Posts.DataAccess.Entities.Post", b =>
                 {
                     b.Navigation("ContentEntity");
 

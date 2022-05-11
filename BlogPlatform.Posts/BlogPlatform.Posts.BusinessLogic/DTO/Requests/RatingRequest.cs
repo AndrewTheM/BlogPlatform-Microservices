@@ -1,9 +1,8 @@
-﻿namespace BlogPlatform.Posts.BusinessLogic.DTO.Requests
-{
-    public class RatingRequest
-    {
-        public int PostId { get; set; }
+﻿namespace BlogPlatform.Posts.BusinessLogic.DTO.Requests;
 
-        public int RatingValue { get; set; }
-    }
+public class RatingRequest : RatingUpdateRequest
+{
+    public Guid PostId { get; set; }
+
+    public Guid UserId { get; set; }
 }

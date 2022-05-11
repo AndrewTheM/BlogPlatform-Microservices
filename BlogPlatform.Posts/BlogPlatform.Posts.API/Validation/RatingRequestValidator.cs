@@ -1,14 +1,18 @@
 ﻿using BlogPlatform.Posts.BusinessLogic.DTO.Requests;
 using FluentValidation;
 
-namespace BlogPlatform.Posts.API.Validation
+namespace BlogPlatform.Posts.API.Validation;
+
+public class RatingRequestValidator : AbstractValidator<RatingRequest>
 {
-    public class RatingRequestValidator : AbstractValidator<RatingRequest>
+    public RatingRequestValidator()
     {
-        public RatingRequestValidator()
-        {
-            RuleFor(rr => rr.PostId).GreaterThan(0);
-            RuleFor(rr => rr.RatingValue).InclusiveBetween(1, 5);
-        }
+        Include(new RatingUpdateRequestValidator());
+        
+        RuleFor(rr => rr.PostId)
+            .NotEmpty();
+        
+        RuleFor(rr => rr.UserId)
+            .NotEmpty();
     }
 }

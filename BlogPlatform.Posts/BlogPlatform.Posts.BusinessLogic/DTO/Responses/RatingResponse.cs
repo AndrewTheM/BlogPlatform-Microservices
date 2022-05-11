@@ -1,13 +1,12 @@
-﻿namespace BlogPlatform.Posts.BusinessLogic.DTO.Responses
+﻿namespace BlogPlatform.Posts.BusinessLogic.DTO.Responses;
+
+public class RatingResponse
 {
-    public class RatingResponse
-    {
-        public int Id { get; set; }
+    public Guid Id { get; set; }
 
-        public int PostId { get; set; }
+    public Guid PostId { get; set; }
 
-        public string User { get; set; }
+    public string User { get; set; }
 
-        public int RatingValue { get; set; }
-    }
+    public int RatingValue { get; set; }
 }

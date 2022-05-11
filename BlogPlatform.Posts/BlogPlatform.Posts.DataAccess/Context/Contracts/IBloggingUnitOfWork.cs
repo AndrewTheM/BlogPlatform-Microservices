@@ -1,15 +1,14 @@
 ﻿using BlogPlatform.Posts.DataAccess.Repositories.Contracts;
 
-namespace BlogPlatform.Posts.DataAccess.Context.Contracts
+namespace BlogPlatform.Posts.DataAccess.Context.Contracts;
+
+public interface IBloggingUnitOfWork : IUnitOfWork
 {
-    public interface IBloggingUnitOfWork : IUnitOfWork
-    {
-        IPostRepository Posts { get; }
+    IPostRepository Posts { get; }
 
-        IPostContentRepository PostContents { get; }
+    IPostContentRepository PostContents { get; }
 
-        ITagRepository Tags { get; }
+    ITagRepository Tags { get; }
 
-        IRatingRepository Ratings { get; }
-    }
+    IRatingRepository Ratings { get; }
 }

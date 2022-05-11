@@ -1,22 +1,24 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace BlogPlatform.Posts.DataAccess.Entities.Configuration
+namespace BlogPlatform.Posts.DataAccess.Entities.Configuration;
+
+internal class BaseEntityConfiguration<TEntity> : IEntityTypeConfiguration<TEntity>
+    where TEntity : EntityBase
 {
-    internal class BaseEntityConfiguration<TEntity, TId> : IEntityTypeConfiguration<TEntity>
-        where TEntity : EntityBase<TId>
+    private const string SqlTimestamp = "CURRENT_TIMESTAMP";
+
+    public virtual void Configure(EntityTypeBuilder<TEntity> builder)
     {
-        private const string SqlTimestamp = "CURRENT_TIMESTAMP";
+        builder.HasKey(e => e.Id);
 
-        public virtual void Configure(EntityTypeBuilder<TEntity> builder)
-        {
-            builder.HasKey(e => e.Id);
+        builder.Property(e => e.Id)
+            .HasDefaultValueSql("NEWID()");
 
-            builder.Property(e => e.CreatedOn)
-                   .HasDefaultValueSql(SqlTimestamp);
+        builder.Property(e => e.CreatedOn)
+            .HasDefaultValueSql(SqlTimestamp);
 
-            builder.Property(e => e.UpdatedOn)
-                   .HasDefaultValueSql(SqlTimestamp);
-        }
+        builder.Property(e => e.UpdatedOn)
+            .HasDefaultValueSql(SqlTimestamp);
     }
 }

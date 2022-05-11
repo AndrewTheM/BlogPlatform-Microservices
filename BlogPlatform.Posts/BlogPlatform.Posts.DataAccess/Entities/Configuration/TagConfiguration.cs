@@ -1,20 +1,18 @@
-﻿using BlogPlatform.Posts.DataAccess.Entities;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace BlogPlatform.Posts.DataAccess.Entities.Configuration
+namespace BlogPlatform.Posts.DataAccess.Entities.Configuration;
+
+internal class TagConfiguration : BaseEntityConfiguration<Tag>
 {
-    internal class TagConfiguration : BaseEntityConfiguration<Tag, int>
+    public override void Configure(EntityTypeBuilder<Tag> builder)
     {
-        public override void Configure(EntityTypeBuilder<Tag> builder)
-        {
-            base.Configure(builder);
+        base.Configure(builder);
 
-            builder.HasIndex(t => t.TagName)
-                   .IsUnique();
+        builder.HasIndex(t => t.TagName)
+            .IsUnique();
 
-            builder.Property(t => t.TagName)
-                   .IsRequired()
-                   .HasMaxLength(50);
-        }
+        builder.Property(t => t.TagName)
+            .IsRequired()
+            .HasMaxLength(50);
     }
 }

@@ -1,14 +1,14 @@
 ﻿using BlogPlatform.Posts.BusinessLogic.DTO.Requests;
 using FluentValidation;
 
-namespace BlogPlatform.Posts.API.Validation
+namespace BlogPlatform.Posts.API.Validation;
+
+public class TagRequestValidator : AbstractValidator<TagRequest>
 {
-    public class TagRequestValidator : AbstractValidator<TagRequest>
+    public TagRequestValidator()
     {
-        public TagRequestValidator()
-        {
-            RuleFor(tr => tr.TagName).NotEmpty()
-                                     .Length(2, 50);
-        }
+        RuleFor(tr => tr.TagName)
+            .NotEmpty()
+            .Length(2, 50);
     }
 }
