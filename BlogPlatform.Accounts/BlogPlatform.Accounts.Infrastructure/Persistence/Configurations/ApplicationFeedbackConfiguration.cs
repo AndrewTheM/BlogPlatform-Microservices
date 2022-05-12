@@ -1,7 +1,7 @@
-﻿using BlogPlatform.Verifications.Domain.Entities;
+﻿using BlogPlatform.Accounts.Domain.Entities;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace BlogPlatform.Verifications.Infrastructure.Persistence.Configurations;
+namespace BlogPlatform.Accounts.Infrastructure.Persistence.Configurations;
 
 internal class ApplicationFeedbackConfiguration : BaseEntityConfiguration<ApplicationFeedback>
 {

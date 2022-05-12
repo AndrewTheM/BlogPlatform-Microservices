@@ -1,4 +1,4 @@
-﻿namespace BlogPlatform.Verifications.Application.Common.Exceptions;
+﻿namespace BlogPlatform.Accounts.Application.Common.Exceptions;
 
 public class EntityNotFoundException : Exception
 {

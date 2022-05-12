@@ -1,4 +1,4 @@
-﻿namespace BlogPlatform.Verifications.Domain.Enums;
+﻿namespace BlogPlatform.Accounts.Domain.Enums;
 
 public enum Language : byte
 {

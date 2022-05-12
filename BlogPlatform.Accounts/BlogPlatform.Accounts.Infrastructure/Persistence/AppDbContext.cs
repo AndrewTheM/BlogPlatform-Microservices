@@ -1,17 +1,17 @@
-﻿using BlogPlatform.Verifications.Application.Common.Contracts;
-using BlogPlatform.Verifications.Domain.Abstract;
-using BlogPlatform.Verifications.Domain.Entities;
+﻿using BlogPlatform.Accounts.Application.Common.Contracts;
+using BlogPlatform.Accounts.Domain.Abstract;
+using BlogPlatform.Accounts.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace BlogPlatform.Verifications.Infrastructure.Persistence;
+namespace BlogPlatform.Accounts.Infrastructure.Persistence;
 
 public class AppDbContext : DbContext, IApplicationDbContext
 {
     public DbSet<AuthorApplication> AuthorApplications { get; set; }
-    
+
     public DbSet<ApplicationFeedback> ApplicationFeedbacks { get; set; }
-    
+
     public DbSet<Account> Accounts { get; set; }
 
     public AppDbContext()

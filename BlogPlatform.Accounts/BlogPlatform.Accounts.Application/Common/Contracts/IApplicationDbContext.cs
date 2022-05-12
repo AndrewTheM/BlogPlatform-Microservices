@@ -1,14 +1,14 @@
-﻿using BlogPlatform.Verifications.Domain.Entities;
+﻿using BlogPlatform.Accounts.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace BlogPlatform.Verifications.Application.Common.Contracts;
+namespace BlogPlatform.Accounts.Application.Common.Contracts;
 
 public interface IApplicationDbContext
 {
     DbSet<AuthorApplication> AuthorApplications { get; set; }
-    
+
     DbSet<ApplicationFeedback> ApplicationFeedbacks { get; set; }
-    
+
     DbSet<Account> Accounts { get; set; }
 
     Task<int> SaveChangesAsync(CancellationToken token);

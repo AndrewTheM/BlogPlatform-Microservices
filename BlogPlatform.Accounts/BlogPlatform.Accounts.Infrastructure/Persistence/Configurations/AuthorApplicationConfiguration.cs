@@ -1,8 +1,8 @@
-﻿using BlogPlatform.Verifications.Domain.Entities;
+﻿using BlogPlatform.Accounts.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace BlogPlatform.Verifications.Infrastructure.Persistence.Configurations;
+namespace BlogPlatform.Accounts.Infrastructure.Persistence.Configurations;
 
 internal class AuthorApplicationConfiguration : BaseEntityConfiguration<AuthorApplication>
 {
@@ -25,7 +25,7 @@ internal class AuthorApplicationConfiguration : BaseEntityConfiguration<AuthorAp
         })
         .Navigation(aa => aa.FullName)
         .IsRequired();
-        
+
         builder.Property(aa => aa.ContactEmail)
             .IsRequired()
             .HasMaxLength(100);

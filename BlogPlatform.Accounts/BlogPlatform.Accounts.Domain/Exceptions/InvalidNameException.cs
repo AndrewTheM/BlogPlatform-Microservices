@@ -1,4 +1,4 @@
-﻿namespace BlogPlatform.Verifications.Domain.Exceptions;
+﻿namespace BlogPlatform.Accounts.Domain.Exceptions;
 
 public class InvalidNameException : Exception
 {

@@ -1,4 +1,4 @@
-using BlogPlatform.Verifications.API;
+using BlogPlatform.Accounts.API;
 
 var builder = WebApplication.CreateBuilder(args);
 var startup = new Startup(builder.Configuration);

@@ -1,4 +1,4 @@
-﻿namespace BlogPlatform.Verifications.Domain.Abstract;
+﻿namespace BlogPlatform.Accounts.Domain.Abstract;
 
 public abstract class ValueObject
 {
@@ -14,21 +14,21 @@ public abstract class ValueObject
 
     public override bool Equals(object obj)
     {
-        if (obj is null || obj.GetType() != this.GetType())
+        if (obj is null || obj.GetType() != GetType())
         {
             return false;
         }
 
         var other = (ValueObject)obj;
 
-        return this.GetEqualityComponents()
+        return GetEqualityComponents()
             .SequenceEqual(other.GetEqualityComponents());
     }
 
     public override int GetHashCode()
     {
         return GetEqualityComponents()
-            .Select(x => (x is not null) ? x.GetHashCode() : 0)
+            .Select(x => x is not null ? x.GetHashCode() : 0)
             .Aggregate((x, y) => x ^ y);
     }
 

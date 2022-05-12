@@ -1,4 +1,4 @@
-﻿namespace BlogPlatform.Verifications.Domain.Abstract;
+﻿namespace BlogPlatform.Accounts.Domain.Abstract;
 
 public abstract class EntityBase
 {

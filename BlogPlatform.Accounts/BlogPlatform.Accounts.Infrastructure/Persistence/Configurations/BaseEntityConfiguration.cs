@@ -1,8 +1,8 @@
-﻿using BlogPlatform.Verifications.Domain.Abstract;
+﻿using BlogPlatform.Accounts.Domain.Abstract;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace BlogPlatform.Verifications.Infrastructure.Persistence.Configurations;
+namespace BlogPlatform.Accounts.Infrastructure.Persistence.Configurations;
 
 internal class BaseEntityConfiguration<TEntity> : IEntityTypeConfiguration<TEntity>
     where TEntity : EntityBase

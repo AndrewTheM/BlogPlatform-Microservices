@@ -1,7 +1,7 @@
-﻿using BlogPlatform.Verifications.Domain.Abstract;
-using BlogPlatform.Verifications.Domain.Exceptions;
+﻿using BlogPlatform.Accounts.Domain.Abstract;
+using BlogPlatform.Accounts.Domain.Exceptions;
 
-namespace BlogPlatform.Verifications.Domain.ValueObjects;
+namespace BlogPlatform.Accounts.Domain.ValueObjects;
 
 public class Name : ValueObject
 {
@@ -29,7 +29,7 @@ public class Name : ValueObject
         try
         {
             string[] parts = name.Split();
-            
+
             (string firstName, string middleName, string lastName) = parts.Length switch
             {
                 2 => (parts[0], null, parts[1]),
@@ -51,7 +51,7 @@ public class Name : ValueObject
 
     public override string ToString()
     {
-        string middlePart = (string.IsNullOrWhiteSpace(MiddleName))
+        string middlePart = string.IsNullOrWhiteSpace(MiddleName)
             ? string.Empty
             : $"{MiddleName} ";
 

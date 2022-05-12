@@ -1,13 +1,13 @@
-﻿using BlogPlatform.Verifications.Domain.Abstract;
+﻿using BlogPlatform.Accounts.Domain.Abstract;
 
-namespace BlogPlatform.Verifications.Domain.ValueObjects;
+namespace BlogPlatform.Accounts.Domain.ValueObjects;
 
 public class Location : ValueObject
-{   
+{
     public string City { get; private set; }
 
     public string State { get; private set; }
-    
+
     public string Country { get; private set; }
 
     public Location(string country, string state, string city)

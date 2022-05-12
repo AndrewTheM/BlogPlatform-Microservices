@@ -1,29 +1,28 @@
-﻿using BlogPlatform.Verifications.Domain.Entities;
+﻿using BlogPlatform.Accounts.Domain.Entities;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace BlogPlatform.Verifications.Infrastructure.Persistence.Configurations;
+namespace BlogPlatform.Accounts.Infrastructure.Persistence.Configurations;
 
 internal class AccountConfiguration : BaseEntityConfiguration<Account>
 {
     public override void Configure(EntityTypeBuilder<Account> builder)
     {
         base.Configure(builder);
-        
+
+        builder.HasIndex(ac => ac.UserId)
+            .IsUnique();
+
         builder.OwnsOne(ac => ac.Name, entity =>
         {
             entity.Property(name => name.FirstName)
-                .IsRequired()
                 .HasMaxLength(50);
 
             entity.Property(name => name.MiddleName)
                 .HasMaxLength(50);
 
             entity.Property(name => name.LastName)
-                .IsRequired()
                 .HasMaxLength(50);
-        })
-        .Navigation(ac => ac.Name)
-        .IsRequired();
+        });
 
         builder.OwnsOne(ac => ac.Location, entity =>
         {
@@ -34,11 +33,8 @@ internal class AccountConfiguration : BaseEntityConfiguration<Account>
                 .HasMaxLength(50);
 
             entity.Property(loc => loc.Country)
-                .IsRequired()
                 .HasMaxLength(50);
-        })
-        .Navigation(ac => ac.Location)
-        .IsRequired();
+        });
 
         builder.Property(ac => ac.AvatarPath)
             .HasMaxLength(500);

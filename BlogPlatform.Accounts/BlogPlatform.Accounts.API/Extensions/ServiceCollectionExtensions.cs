@@ -1,6 +1,6 @@
 ﻿using Microsoft.OpenApi.Models;
 
-namespace BlogPlatform.Verifications.API.Extensions;
+namespace BlogPlatform.Accounts.API.Extensions;
 
 internal static class ServiceCollectionExtensions
 {

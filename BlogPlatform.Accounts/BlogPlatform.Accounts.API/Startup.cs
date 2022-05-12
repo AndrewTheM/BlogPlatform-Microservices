@@ -1,11 +1,15 @@
-using BlogPlatform.Verifications.API.Extensions;
-using BlogPlatform.Verifications.Application.Common.Contracts;
-using BlogPlatform.Verifications.Infrastructure.Persistence;
+using BlogPlatform.Accounts.API.Extensions;
+using BlogPlatform.Accounts.API.Filters;
+using BlogPlatform.Accounts.Application.Common.Contracts;
+using BlogPlatform.Accounts.Application.Common.Mapping;
+using BlogPlatform.Accounts.Application.Features;
+using BlogPlatform.Accounts.Infrastructure.Persistence;
 using FluentValidation.AspNetCore;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
-namespace BlogPlatform.Verifications.API;
+namespace BlogPlatform.Accounts.API;
 
 public class Startup
 {
@@ -31,15 +35,21 @@ public class Startup
             options.UseSqlServer(connectionString);
         });
 
+        services.AddMediatR(typeof(MediatrDI).Assembly);
+        services.AddAutoMapper(typeof(MappingProfile).Assembly);
+
         var versionsInfo = GetApiVersionsInfo();
         services.AddSwaggerWithSecurityAndVersioning(versionsInfo);
 
-        services.AddControllers()
-            .AddFluentValidation(config =>
-            {
-                config.RegisterValidatorsFromAssemblyContaining<Startup>();
-                config.DisableDataAnnotationsValidation = true;
-            });
+        services.AddControllers(options =>
+        {
+            options.Filters.Add<NotFoundExceptionFilterAttribute>();
+        })
+        .AddFluentValidation(config =>
+        {
+            config.RegisterValidatorsFromAssemblyContaining<MediatrDI>();
+            config.DisableDataAnnotationsValidation = true;
+        });
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -58,7 +68,6 @@ public class Startup
         }
 
         app.UseHttpsRedirection();
-        app.UseRequestLocalization();
         app.UseRouting();
 
         // TODO: configure CORS properly

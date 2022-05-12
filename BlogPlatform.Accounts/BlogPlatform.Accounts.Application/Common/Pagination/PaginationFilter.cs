@@ -1,4 +1,4 @@
-﻿namespace BlogPlatform.Verifications.Domain.Pagination;
+﻿namespace BlogPlatform.Accounts.Application.Common.Pagination;
 
 public class PaginationFilter
 {

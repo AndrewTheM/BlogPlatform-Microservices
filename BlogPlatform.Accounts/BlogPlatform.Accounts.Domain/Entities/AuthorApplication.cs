@@ -1,13 +1,13 @@
-﻿using BlogPlatform.Verifications.Domain.Abstract;
-using BlogPlatform.Verifications.Domain.ValueObjects;
+﻿using BlogPlatform.Accounts.Domain.Abstract;
+using BlogPlatform.Accounts.Domain.ValueObjects;
 
-namespace BlogPlatform.Verifications.Domain.Entities;
+namespace BlogPlatform.Accounts.Domain.Entities;
 
 public class AuthorApplication : EntityBase
 {
     public Guid UserId { get; set; }
 
-    public Name FullName { get; set; } 
+    public Name FullName { get; set; }
 
     public string ContactEmail { get; set; }
 

@@ -1,6 +1,6 @@
-﻿using BlogPlatform.Verifications.Domain.Pagination;
+﻿using BlogPlatform.Accounts.Application.Common.Pagination;
 
-namespace BlogPlatform.Verifications.Domain.Extensions;
+namespace BlogPlatform.Accounts.Application.Common.Extensions;
 
 public static class QueryableExtensions
 {

@@ -1,8 +1,8 @@
-﻿using BlogPlatform.Verifications.Domain.Abstract;
-using BlogPlatform.Verifications.Domain.Enums;
-using BlogPlatform.Verifications.Domain.ValueObjects;
+﻿using BlogPlatform.Accounts.Domain.Abstract;
+using BlogPlatform.Accounts.Domain.Enums;
+using BlogPlatform.Accounts.Domain.ValueObjects;
 
-namespace BlogPlatform.Verifications.Domain.Entities;
+namespace BlogPlatform.Accounts.Domain.Entities;
 
 public class Account : EntityBase
 {
