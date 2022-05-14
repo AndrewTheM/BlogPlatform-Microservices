@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BlogPlatform.Accounts.API.Controllers
 {
-    [Route("api/account")]
+    [Route("api/accounts")]
     [ApiController]
     public class AccountController : ControllerBase
     {

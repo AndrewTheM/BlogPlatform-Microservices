@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BlogPlatform.Posts.API.Controllers;
 
-[Route("api/ratings")]
+[Route("api/posts/ratings")]
 [ApiController]
 public class RatingController : ControllerBase
 {

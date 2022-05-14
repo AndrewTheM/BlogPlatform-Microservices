@@ -1,0 +1,129 @@
+{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/posts",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5000
+        }
+      ],
+      "UpstreamPathTemplate": "/posts",
+      "UpstreamHttpMethod": [ "GET" ],
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "1s",
+        "PeriodTimespan": 1,
+        "Limit": 10
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/posts/tags",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5000
+        }
+      ],
+      "UpstreamPathTemplate": "/posts/tags",
+      "UpstreamHttpMethod": [ "GET" ],
+      "FileCacheOptions": {
+        "TtlSeconds": 30,
+        "Region": "tags"
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/posts/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5000
+        }
+      ],
+      "UpstreamPathTemplate": "/posts/{everything}",
+      "SwaggerKey": "posts"
+    },
+    {
+      "DownstreamPathTemplate": "/api/comments/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5001
+        }
+      ],
+      "UpstreamPathTemplate": "/comments/{everything}",
+      "SwaggerKey": "comments"
+    },
+    {
+      "DownstreamPathTemplate": "/api/accounts/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamPathTemplate": "/accounts/{everything}",
+      "SwaggerKey": "accounts"
+    },
+    {
+      "DownstreamPathTemplate": "/files/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5003
+        }
+      ],
+      "UpstreamPathTemplate": "/files/{everything}",
+      "SwaggerKey": "files"
+    }
+  ],
+  "SwaggerEndPoints": [
+    {
+      "Key": "posts",
+      "Config": [
+        {
+          "Name": "Posts API",
+          "Version": "v1",
+          "Url": "https://localhost:5000/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "comments",
+      "Config": [
+        {
+          "Name": "Comments API",
+          "Version": "v1",
+          "Url": "https://localhost:5001/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "accounts",
+      "Config": [
+        {
+          "Name": "Accounts API",
+          "Version": "v1",
+          "Url": "https://localhost:5002/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "files",
+      "Config": [
+        {
+          "Name": "Files API",
+          "Version": "v1",
+          "Url": "https://localhost:5003/swagger/v1/swagger.json"
+        }
+      ]
+    }
+  ]
+}

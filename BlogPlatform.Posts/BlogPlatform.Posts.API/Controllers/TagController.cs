@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BlogPlatform.Posts.API.Controllers;
 
-[Route("api/tags")]
+[Route("api/posts/tags")]
 [ApiController]
 public class TagController : ControllerBase
 {

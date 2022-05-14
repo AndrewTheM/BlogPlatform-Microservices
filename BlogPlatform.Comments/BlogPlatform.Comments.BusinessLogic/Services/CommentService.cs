@@ -95,7 +95,7 @@ public class CommentService : ICommentService
     public async Task<bool> CheckIsCommentAuthorAsync(Guid id, Guid userId)
     {
         var comment = await _commentRepository.GetAsync(id);
-        return comment.AuthorId == Guid.Parse(userId);
+        return comment.AuthorId == userId;
     }
 
     private void AddRelativeTimeToResponse(CommentResponse response)
