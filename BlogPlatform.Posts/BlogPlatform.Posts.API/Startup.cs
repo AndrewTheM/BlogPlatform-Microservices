@@ -41,6 +41,11 @@ public class Startup
         services.AddRepositories();
         services.AddBlogging();
 
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = _configuration["Redis"];
+        });
+
         services.AddLocalization(opt => opt.ResourcesPath = "Resources");
         services.Configure<RequestLocalizationOptions>(opts =>
         {

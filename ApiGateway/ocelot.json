@@ -10,14 +10,7 @@
         }
       ],
       "UpstreamPathTemplate": "/posts",
-      "UpstreamHttpMethod": [ "GET" ],
-      "RateLimitOptions": {
-        "ClientWhitelist": [],
-        "EnableRateLimiting": true,
-        "Period": "1s",
-        "PeriodTimespan": 1,
-        "Limit": 10
-      }
+      "UpstreamHttpMethod": [ "GET" ]
     },
     {
       "DownstreamPathTemplate": "/api/posts/tags",
@@ -33,6 +26,13 @@
       "FileCacheOptions": {
         "TtlSeconds": 30,
         "Region": "tags"
+      },
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "1s",
+        "PeriodTimespan": 1,
+        "Limit": 10
       }
     },
     {

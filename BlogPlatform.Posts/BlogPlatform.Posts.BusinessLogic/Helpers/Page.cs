@@ -26,22 +26,15 @@ public class Page<T>
 
     public int TotalRecords { get; set; }
 
-    public int TotalPages
-    {
-        get
-        {
-            if (PageSize == 0)
-            {
-                return 0;
-            }
-
-            return (int)Math.Ceiling(TotalRecords * 1d / PageSize);
-        }
-    }
+    public int TotalPages { get; set; }
 
     public string PreviousPage { get; set; }
 
     public string NextPage { get; set; }
+
+    public Page()
+    {
+    }
 
     public Page(
         IEnumerable<T> data,
@@ -54,6 +47,11 @@ public class Page<T>
         TotalRecords = totalRecords;
         PageNumber = filter?.PageNumber ?? 0;
         PageSize = filter?.PageSize ?? 0;
+
+        if (PageSize > 0)
+        {
+            TotalPages = (int)Math.Ceiling(TotalRecords * 1d / PageSize);
+        }
 
         if (PageNumber > 1 && Data.Any())
         {
