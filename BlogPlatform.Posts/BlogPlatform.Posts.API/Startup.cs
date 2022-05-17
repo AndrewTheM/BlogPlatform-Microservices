@@ -1,4 +1,5 @@
 using BlogPlatform.Posts.API.Extensions;
+using BlogPlatform.Posts.API.Filters;
 using BlogPlatform.Posts.BusinessLogic.Mapping;
 using BlogPlatform.Posts.DataAccess.Context;
 using FluentValidation.AspNetCore;
@@ -52,12 +53,15 @@ public class Startup
         var versionsInfo = GetApiVersionsInfo();
         services.AddSwaggerWithSecurityAndVersioning(versionsInfo);
 
-        services.AddControllers()
-            .AddFluentValidation(config =>
-            {
-                config.RegisterValidatorsFromAssemblyContaining<Startup>();
-                config.DisableDataAnnotationsValidation = true;
-            });
+        services.AddControllers(options =>
+        {
+            options.Filters.Add<NotFoundExceptionFilterAttribute>();
+        })
+        .AddFluentValidation(config =>
+        {
+            config.RegisterValidatorsFromAssemblyContaining<Startup>();
+            config.DisableDataAnnotationsValidation = true;
+        });
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

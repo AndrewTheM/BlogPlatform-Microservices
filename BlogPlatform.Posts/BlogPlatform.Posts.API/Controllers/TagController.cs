@@ -3,7 +3,6 @@ using BlogPlatform.Posts.BusinessLogic.DTO.Requests;
 using BlogPlatform.Posts.BusinessLogic.DTO.Responses;
 using BlogPlatform.Posts.DataAccess.Context.Contracts;
 using BlogPlatform.Posts.DataAccess.Entities;
-using BlogPlatform.Posts.DataAccess.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlogPlatform.Posts.API.Controllers;
@@ -34,15 +33,8 @@ public class TagController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TagResponse>> GetTagById([FromRoute] Guid id)
     {
-        try
-        {
-            var tag = await _unitOfWork.Tags.GetByIdAsync(id);
-            return _mapper.Map<TagResponse>(tag);
-        }
-        catch (EntityNotFoundException)
-        {
-            return NotFound();
-        }
+        var tag = await _unitOfWork.Tags.GetByIdAsync(id);
+        return _mapper.Map<TagResponse>(tag);
     }
 
     [HttpPost]
@@ -62,17 +54,10 @@ public class TagController : ControllerBase
     public async Task<ActionResult> UpdateTag(
         [FromRoute] Guid id, [FromBody] TagRequest tagDto)
     {
-        try
-        {
-            var tag = await _unitOfWork.Tags.GetByIdAsync(id);
-            _mapper.Map(tagDto, tag);
-            await _unitOfWork.CommitAsync();
-            return NoContent();
-        }
-        catch (InvalidOperationException)
-        {
-            return NotFound();
-        }
+        var tag = await _unitOfWork.Tags.GetByIdAsync(id);
+        _mapper.Map(tagDto, tag);
+        await _unitOfWork.CommitAsync();
+        return NoContent();
     }
 
     [HttpDelete("{id}")]
@@ -80,15 +65,8 @@ public class TagController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> DeleteTag([FromRoute] Guid id)
     {
-        try
-        {
-            await _unitOfWork.Tags.DeleteAsync(id);
-            await _unitOfWork.CommitAsync();
-            return NoContent();
-        }
-        catch (EntityNotFoundException)
-        {
-            return NotFound();
-        }
+        await _unitOfWork.Tags.DeleteAsync(id);
+        await _unitOfWork.CommitAsync();
+        return NoContent();
     }
 }

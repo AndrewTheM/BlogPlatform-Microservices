@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using BlogPlatform.Posts.BusinessLogic.DTO.Requests;
 using BlogPlatform.Posts.BusinessLogic.Services.Contracts;
 using BlogPlatform.Posts.DataAccess.Filters;
 using BlogPlatform.Posts.BusinessLogic.DTO.Responses;
-using BlogPlatform.Posts.DataAccess.Extensions;
 using BlogPlatform.Posts.BusinessLogic.Helpers;
 
 namespace BlogPlatform.Posts.API.Controllers;
@@ -49,33 +47,16 @@ public class PostController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<PostResponse>> GetPostById([FromRoute] Guid id)
     {
-        try
-        {
-            return await _postService.FindPostAsync(id);
-        }
-        catch (EntityNotFoundException)
-        {
-            return NotFound();
-        }
+        return await _postService.FindPostAsync(id);
     }
 
-    // TODO: work with other microservices
     [HttpGet("complete/{titleIdentifier}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CompletePostResponse>> GetCompletePostById(
         [FromRoute] string titleIdentifier)
     {
-        try
-        {
-            var response = await _postService.GetCompletePostAsync(titleIdentifier);
-            //response.CommentPage = await _commentService.GetPageOfCommentsForPostAsync(response.Id, new());
-            return response;
-        }
-        catch (EntityNotFoundException)
-        {
-            return NotFound();
-        }
+        return await _postService.GetCompletePostAsync(titleIdentifier);
     }
 
     [HttpPost]
@@ -91,15 +72,8 @@ public class PostController : ControllerBase
     public async Task<ActionResult> UpdatePost(
         [FromRoute] Guid id, [FromBody] PostRequest postDto)
     {
-        try
-        {
-            await _postService.EditPostAsync(id, postDto);
-            return NoContent();
-        }
-        catch (EntityNotFoundException)
-        {
-            return NotFound();
-        }
+        await _postService.EditPostAsync(id, postDto);
+        return NoContent();
     }
 
     [HttpDelete("{id}")]
@@ -107,15 +81,8 @@ public class PostController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> DeletePost([FromRoute] Guid id)
     {
-        try
-        {
-            await _postService.DeletePostAsync(id);
-            return NoContent();
-        }
-        catch (EntityNotFoundException)
-        {
-            return NotFound();
-        }
+        await _postService.DeletePostAsync(id);
+        return NoContent();
     }
 
     [HttpPost("{id}/tags")]
@@ -124,14 +91,7 @@ public class PostController : ControllerBase
     public async Task<ActionResult> SetTagsOfPost(
         [FromRoute] Guid id, [FromBody] PostTagsRequest tagsRequest)
     {
-        try
-        {
-            await _postService.SetTagsOfPostAsync(id, tagsRequest.Tags);
-            return NoContent();
-        }
-        catch (EntityNotFoundException)
-        {
-            return NotFound();
-        }
+        await _postService.SetTagsOfPostAsync(id, tagsRequest.Tags);
+        return NoContent();
     }
 }

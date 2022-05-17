@@ -1,7 +1,6 @@
 ﻿using BlogPlatform.Posts.BusinessLogic.DTO.Requests;
 using BlogPlatform.Posts.BusinessLogic.DTO.Responses;
 using BlogPlatform.Posts.BusinessLogic.Services.Contracts;
-using BlogPlatform.Posts.DataAccess.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlogPlatform.Posts.API.Controllers;
@@ -23,14 +22,7 @@ public class RatingController : ControllerBase
     public async Task<ActionResult<RatingResponse>> GetRatingByUserAndPost(
         [FromRoute] Guid postId, [FromRoute] Guid userId)
     {
-        try
-        {
-            return await _ratingService.GetRatingOfPostByUserAsync(postId, userId);
-        }
-        catch (EntityNotFoundException)
-        {
-            return NotFound();
-        }
+        return await _ratingService.GetRatingOfPostByUserAsync(postId, userId);
     }
 
     [HttpPost]
@@ -46,15 +38,8 @@ public class RatingController : ControllerBase
     public async Task<ActionResult> UpdateRating(
         [FromRoute] Guid id, [FromBody] RatingUpdateRequest ratingDto)
     {
-        try
-        {
-            await _ratingService.EditRatingAsync(id, ratingDto);
-            return NoContent();
-        }
-        catch (EntityNotFoundException)
-        {
-            return NotFound();
-        }
+        await _ratingService.EditRatingAsync(id, ratingDto);
+        return NoContent();
     }
 
     [HttpDelete("{id}")]
@@ -62,14 +47,7 @@ public class RatingController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> DeleteRating([FromRoute] Guid id)
     {
-        try
-        {
-            await _ratingService.DeleteRatingAsync(id);
-            return NoContent();
-        }
-        catch (EntityNotFoundException)
-        {
-            return NotFound();
-        }
+        await _ratingService.DeleteRatingAsync(id);
+        return NoContent();
     }
 }
