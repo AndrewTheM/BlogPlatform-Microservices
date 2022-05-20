@@ -1,0 +1,156 @@
+version: '3.4'
+
+services:
+
+  eventbus:
+    container_name: eventbus
+    restart: always
+    ports:
+      - "15671:15671"
+      - "15672:15672"
+        
+  rediscache:
+    container_name: rediscache
+    restart: always
+    ports:
+      - "6379:6379"
+        
+  posts.db:
+    container_name: posts.db
+    environment:
+      - MSSQL_SA_PASSWORD=1Q2w3e4r
+      - ACCEPT_EULA=Y
+    restart: always
+    volumes:
+      - posts-data:/var/opt/mssql
+    ports:
+      - "14330:1433"
+      
+  comments.db:
+    container_name: comments.db
+    environment:
+      - MSSQL_SA_PASSWORD=1Q2w3e4r
+      - ACCEPT_EULA=Y
+    restart: always
+    volumes:
+      - comments-data:/var/opt/mssql
+    ports:
+      - "14331:1433"
+
+  accounts.db:
+    container_name: accounts.db
+    environment:
+      - MSSQL_SA_PASSWORD=1Q2w3e4r
+      - ACCEPT_EULA=Y
+    restart: always
+    volumes:
+      - accounts-data:/var/opt/mssql
+    ports:
+      - "14332:1433"
+  
+  posts.api:
+    container_name: posts.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - "ConnectionStrings:LocalSqlServer=Server=posts.db;Database=BlogPlatform_Posts;User=sa;Password=1Q2w3e4r;"  
+      - "Redis=rediscache:6379" 
+    depends_on:
+      - posts.db
+      - rediscache
+      - eventbus
+    ports:
+      - "8000:80"
+      - "18000:443"
+    volumes:
+      - ~/.aspnet/https:/https:ro
+      
+  comments.api:
+    container_name: comments.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - "ConnectionStrings:LocalSqlServer=Server=comments.db,1433;Database=BlogPlatform_Comments;User=sa;Password=1Q2w3e4r;"  
+    depends_on:
+      - comments.db
+      - eventbus
+    ports:
+      - "8001:80"
+      - "18001:443"
+    volumes:
+      - ~/.aspnet/https:/https:ro
+
+  accounts.api:
+    container_name: accounts.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - "ConnectionStrings:LocalSqlServer=Server=accounts.db;Database=BlogPlatform_Accounts;User=sa;Password=1Q2w3e4r;"
+    depends_on:
+      - accounts.db
+      - eventbus
+    ports:
+      - "8002:80"
+      - "18002:443"
+    volumes:
+      - ~/.aspnet/https:/https:ro
+
+  files.api:
+    container_name: files.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    ports:
+      - "8003:80"
+      - "18003:443"
+    volumes:
+      - ~/.aspnet/https:/https:ro
+
+  aggregator:
+    container_name: aggregator
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - "ApiSettings:PostsUrl=http://posts.api"
+      - "ApiSettings:CommentsUrl=http://comments.api"
+      - "ApiSettings:AccountsUrl=http://accounts.api"
+      - "ApiSettings:FilesUrl=http://files.api"
+    depends_on:
+      - posts.api
+      - comments.api
+      - accounts.api
+      - files.api
+    ports:
+      - "8009:80"
+      - "18009:443"
+    volumes:
+      - ~/.aspnet/https:/https:ro
+
+  apigateway:
+    container_name: apigateway
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    depends_on:
+      - posts.api
+      - comments.api
+      - accounts.api
+      - files.api
+      - aggregator
+    ports:
+      - "8010:80"
+      - "18010:443"
+    volumes:
+      - ~/.aspnet/https:/https:ro

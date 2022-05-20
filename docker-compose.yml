@@ -1,0 +1,59 @@
+version: '3.4'
+
+services:
+
+  eventbus:
+    image: rabbitmq:management
+
+  rediscache:
+    image: redis:latest
+
+  posts.db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+
+  comments.db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+
+  accounts.db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+      
+  posts.api:
+    image: ${DOCKER_REGISTRY-}postsapi
+    build:
+      context: .
+      dockerfile: Services/Posts/Posts.API/Dockerfile
+      
+  comments.api:
+    image: ${DOCKER_REGISTRY-}commentsapi
+    build:
+      context: .
+      dockerfile: Services/Comments/Comments.API/Dockerfile
+      
+  accounts.api:
+    image: ${DOCKER_REGISTRY-}accountsapi
+    build:
+      context: .
+      dockerfile: Services/Accounts/Accounts.API/Dockerfile
+      
+  files.api:
+    image: ${DOCKER_REGISTRY-}filesapi
+    build:
+      context: .
+      dockerfile: Services/Files/Dockerfile
+
+  aggregator:
+    image: ${DOCKER_REGISTRY-}aggregator
+    build:
+      context: .
+      dockerfile: Gateway/Aggregator/Dockerfile
+
+  apigateway:
+    image: ${DOCKER_REGISTRY-}apigateway
+    build:
+      context: .
+      dockerfile: Gateway/ApiGateway/Dockerfile
+      
+volumes:
+  posts-data:
+  comments-data:
+  accounts-data:
