@@ -1,0 +1,206 @@
+{
+  "Routes": [
+
+    // Posts API
+    {
+      "DownstreamPathTemplate": "/api/posts/tags",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "posts.api",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/posts/tags",
+      "UpstreamHttpMethod": [ "GET" ],
+      "FileCacheOptions": {
+        "TtlSeconds": 30,
+        "Region": "tags"
+      },
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "1s",
+        "PeriodTimespan": 1,
+        "Limit": 10
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/posts",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "posts.api",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/posts",
+      "UpstreamHttpMethod": [ "GET", "POST" ],
+      "SwaggerKey": "posts"
+    },
+    {
+      "DownstreamPathTemplate": "/api/posts/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "posts.api",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/posts/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "SwaggerKey": "posts"
+    },
+
+    // Comments API
+    {
+      "DownstreamPathTemplate": "/api/comments",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "comments.api",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/comments",
+      "UpstreamHttpMethod": [ "POST" ],
+      "SwaggerKey": "comments"
+    },
+    {
+      "DownstreamPathTemplate": "/api/comments/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "comments.api",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/comments/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "PATCH", "DELETE" ],
+      "SwaggerKey": "comments"
+    },
+
+    // Accounts API
+    {
+      "DownstreamPathTemplate": "/api/accounts",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "accounts.api",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/accounts",
+      "UpstreamHttpMethod": [ "POST", "PUT" ],
+      "SwaggerKey": "accounts"
+    },
+    {
+      "DownstreamPathTemplate": "/api/accounts/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "accounts.api",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/accounts/{everything}",
+      "UpstreamHttpMethod": [ "GET", "DELETE" ],
+      "SwaggerKey": "accounts"
+    },
+
+    // Files API
+    {
+      "DownstreamPathTemplate": "/files",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "files.api",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/files",
+      "UpstreamHttpMethod": [ "POST" ],
+      "SwaggerKey": "files"
+    },
+    {
+      "DownstreamPathTemplate": "/files/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "files.api",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/files/{everything}",
+      "UpstreamHttpMethod": [ "GET" ],
+      "SwaggerKey": "files"
+    },
+
+    // Aggregator
+    {
+      "DownstreamPathTemplate": "/api/postpage/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "aggregator",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/postpage/{everything}",
+      "SwaggerKey": "aggregator"
+    }
+  ],
+
+  "SwaggerEndPoints": [
+    {
+      "Key": "posts",
+      "Config": [
+        {
+          "Name": "Posts API",
+          "Version": "v1",
+          "Url": "http://posts.api/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "comments",
+      "Config": [
+        {
+          "Name": "Comments API",
+          "Version": "v1",
+          "Url": "http://comments.api/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "accounts",
+      "Config": [
+        {
+          "Name": "Accounts API",
+          "Version": "v1",
+          "Url": "http://accounts.api/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "files",
+      "Config": [
+        {
+          "Name": "Files API",
+          "Version": "v1",
+          "Url": "http://files.api/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "aggregator",
+      "Config": [
+        {
+          "Name": "Aggregator",
+          "Version": "v1",
+          "Url": "http://aggregator/swagger/v1/swagger.json"
+        }
+      ]
+    }
+  ]
+}
