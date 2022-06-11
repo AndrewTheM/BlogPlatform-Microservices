@@ -1,5 +1,5 @@
-﻿using Posts.DataAccess.Entities;
-using Posts.DataAccess.Extensions;
+﻿using BlogPlatform.Shared.Common.Exceptions;
+using Posts.DataAccess.Entities;
 
 namespace Posts.DataAccess.Repositories.Contracts;
 

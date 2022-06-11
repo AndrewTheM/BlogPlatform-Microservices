@@ -1,5 +1,5 @@
-﻿using FluentValidation;
-using Posts.DataAccess.Filters;
+﻿using BlogPlatform.Shared.Common.Filters;
+using FluentValidation;
 
 namespace Posts.API.Validation;
 

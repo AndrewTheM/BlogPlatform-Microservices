@@ -1,5 +1,6 @@
 ﻿using Aggregator.DTO;
 using Aggregator.Services.Contracts;
+using BlogPlatform.Shared.Common.Pagination;
 
 namespace Aggregator.Services;
 

@@ -1,4 +1,4 @@
-﻿using Posts.DataAccess.Extensions;
+﻿using BlogPlatform.Shared.Common.Exceptions;
 
 namespace Posts.DataAccess.Repositories.Contracts;
 

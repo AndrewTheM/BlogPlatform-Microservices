@@ -1,4 +1,4 @@
-﻿using Comments.DataAccess.Filters;
+﻿using BlogPlatform.Shared.Common.Filters;
 using FluentValidation;
 
 namespace Comments.API.Validation;

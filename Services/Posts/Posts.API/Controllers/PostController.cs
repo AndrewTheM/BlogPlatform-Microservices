@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BlogPlatform.Shared.Common.Filters;
+using BlogPlatform.Shared.Common.Pagination;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
-using System.Text;
-using System.Text.Json;
-using Posts.BusinessLogic.Helpers;
-using Posts.DataAccess.Filters;
-using Posts.BusinessLogic.Services.Contracts;
 using Posts.BusinessLogic.DTO.Requests;
 using Posts.BusinessLogic.DTO.Responses;
+using Posts.BusinessLogic.Services.Contracts;
+using System.Text;
+using System.Text.Json;
 
 namespace Posts.API.Controllers;
 

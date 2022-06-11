@@ -1,6 +1,6 @@
-﻿using Posts.BusinessLogic.DTO.Requests;
+﻿using BlogPlatform.Shared.Common.Exceptions;
+using Posts.BusinessLogic.DTO.Requests;
 using Posts.BusinessLogic.DTO.Responses;
-using Posts.DataAccess.Extensions;
 
 namespace Posts.BusinessLogic.Services.Contracts;
 

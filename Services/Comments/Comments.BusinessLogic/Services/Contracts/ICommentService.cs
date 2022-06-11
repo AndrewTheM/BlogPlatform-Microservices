@@ -1,8 +1,8 @@
-﻿using Comments.BusinessLogic.DTO.Requests;
+﻿using BlogPlatform.Shared.Common.Exceptions;
+using BlogPlatform.Shared.Common.Filters;
+using BlogPlatform.Shared.Common.Pagination;
+using Comments.BusinessLogic.DTO.Requests;
 using Comments.BusinessLogic.DTO.Responses;
-using Comments.BusinessLogic.Helpers;
-using Comments.DataAccess.Extensions;
-using Comments.DataAccess.Filters;
 
 namespace Comments.BusinessLogic.Services.Contracts;
 

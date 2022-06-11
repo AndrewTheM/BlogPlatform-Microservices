@@ -1,8 +1,8 @@
-﻿using Posts.BusinessLogic.DTO.Requests;
+﻿using BlogPlatform.Shared.Common.Exceptions;
+using BlogPlatform.Shared.Common.Filters;
+using BlogPlatform.Shared.Common.Pagination;
+using Posts.BusinessLogic.DTO.Requests;
 using Posts.BusinessLogic.DTO.Responses;
-using Posts.BusinessLogic.Helpers;
-using Posts.DataAccess.Extensions;
-using Posts.DataAccess.Filters;
 
 namespace Posts.BusinessLogic.Services.Contracts;
 
@@ -20,7 +20,7 @@ public interface IPostService
     /// if no post with given <paramref name="id"/> is found.
     /// </summary>
     Task<PostResponse> FindPostAsync(Guid id);
-
+    
     /// <summary>
     /// Throws <see cref="EntityNotFoundException"/>
     /// if no post with given <paramref name="titleIdentifier"/> is found.

@@ -1,5 +1,5 @@
-﻿using Comments.DataAccess.Entities;
-using Comments.DataAccess.Filters;
+﻿using BlogPlatform.Shared.Common.Filters;
+using Comments.DataAccess.Entities;
 
 namespace Comments.DataAccess.Repositories.Contracts;
 

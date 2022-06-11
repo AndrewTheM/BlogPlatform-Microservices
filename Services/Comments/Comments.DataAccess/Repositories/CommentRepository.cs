@@ -1,7 +1,7 @@
-﻿using Comments.DataAccess.Entities;
-using Comments.DataAccess.Extensions;
+﻿using BlogPlatform.Shared.Common.Exceptions;
+using BlogPlatform.Shared.Common.Filters;
+using Comments.DataAccess.Entities;
 using Comments.DataAccess.Factories.Contracts;
-using Comments.DataAccess.Filters;
 using Comments.DataAccess.Repositories.Contracts;
 using Dapper;
 using System.Data;

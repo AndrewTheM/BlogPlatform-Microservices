@@ -1,9 +1,12 @@
-using Comments.API.Extensions;
+using BlogPlatform.Shared.Web.Extensions;
+using BlogPlatform.Shared.Web.Filters;
 using Comments.BusinessLogic.Mapping;
 using Comments.BusinessLogic.Services;
 using Comments.BusinessLogic.Services.Contracts;
 using Comments.DataAccess.Database;
 using Comments.DataAccess.Database.Contracts;
+using Comments.DataAccess.Factories;
+using Comments.DataAccess.Factories.Contracts;
 using Comments.DataAccess.Repositories;
 using Comments.DataAccess.Repositories.Contracts;
 using FluentValidation.AspNetCore;
@@ -25,25 +28,18 @@ internal class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddDatabaseDeveloperPageExceptionFilter();
-        services.AddHttpContextAccessor();
         services.AddAutoMapper(typeof(CommentMappingProfile).Assembly);
 
         string connectionString = _configuration.GetConnectionString("LocalSqlServer");
-        services.AddConnectionFactory(connectionString);
+        services.AddTransient<IConnectionFactory, SqlConnectionFactory>(
+            _ => new SqlConnectionFactory(connectionString)
+        );
 
         services.AddTransient<IGenerator, DatabaseGenerator>();
 
         services.AddTransient<ICommentRepository, CommentRepository>();
         services.AddTransient<ICommentService, CommentService>();
-        services.AddTransient<ITimeService, TimeService>();
-
-        services.AddTransient<IUriService>(provider =>
-        {
-            var contextAccesor = provider.GetService<IHttpContextAccessor>();
-            var request = contextAccesor.HttpContext.Request;
-            string uri = $"{request.Scheme}://{request.Host}";
-            return new UriService(uri);
-        });
+        services.AddHelperServices();
 
         services.AddLocalization(opt => opt.ResourcesPath = "Resources");
         services.Configure<RequestLocalizationOptions>(opts =>
@@ -57,12 +53,15 @@ internal class Startup
         var versionsInfo = GetApiVersionsInfo();
         services.AddSwaggerWithSecurityAndVersioning(versionsInfo);
 
-        services.AddControllers()
-            .AddFluentValidation(config =>
-            {
-                config.RegisterValidatorsFromAssemblyContaining<Startup>();
-                config.DisableDataAnnotationsValidation = true;
-            });
+        services.AddControllers(options =>
+        {
+            options.Filters.Add<NotFoundExceptionFilterAttribute>();
+        })
+        .AddFluentValidation(config =>
+        {
+            config.RegisterValidatorsFromAssemblyContaining<Startup>();
+            config.DisableDataAnnotationsValidation = true;
+        });
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

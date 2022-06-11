@@ -1,9 +1,9 @@
-using Accounts.API.Extensions;
-using Accounts.API.Filters;
 using Accounts.Application.Common.Contracts;
 using Accounts.Application.Common.Mapping;
 using Accounts.Application.Features;
 using Accounts.Infrastructure.Persistence;
+using BlogPlatform.Shared.Web.Extensions;
+using BlogPlatform.Shared.Web.Filters;
 using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -18,13 +18,6 @@ public class Startup
     public Startup(IConfiguration configuration)
     {
         _configuration = configuration;
-    }
-
-    private IEnumerable<OpenApiInfo> GetApiVersionsInfo()
-    {
-        var versionsConfig = _configuration.GetSection("Versions");
-        var apiInfos = versionsConfig.Get<OpenApiInfo[]>();
-        return apiInfos;
     }
 
     public void ConfigureServices(IServiceCollection services)
@@ -84,5 +77,12 @@ public class Startup
         {
             endpoints.MapControllers();
         });
+    }
+
+    private IEnumerable<OpenApiInfo> GetApiVersionsInfo()
+    {
+        var versionsConfig = _configuration.GetSection("Versions");
+        var apiInfos = versionsConfig.Get<OpenApiInfo[]>();
+        return apiInfos;
     }
 }

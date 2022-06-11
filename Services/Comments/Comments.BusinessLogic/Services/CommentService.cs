@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
+using BlogPlatform.Shared.Common.Extensions;
+using BlogPlatform.Shared.Common.Filters;
+using BlogPlatform.Shared.Common.Pagination;
+using BlogPlatform.Shared.Services.Contracts;
 using Comments.BusinessLogic.DTO.Requests;
 using Comments.BusinessLogic.DTO.Responses;
-using Comments.BusinessLogic.Extensions;
-using Comments.BusinessLogic.Helpers;
 using Comments.BusinessLogic.Services.Contracts;
 using Comments.DataAccess.Entities;
-using Comments.DataAccess.Filters;
 using Comments.DataAccess.Repositories.Contracts;
 
 namespace Comments.BusinessLogic.Services;

@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BlogPlatform.Shared.Common.Filters;
+using Microsoft.EntityFrameworkCore;
 using Posts.DataAccess.Context;
 using Posts.DataAccess.Entities;
-using Posts.DataAccess.Filters;
 using Posts.DataAccess.Repositories.Contracts;
 
 namespace Posts.DataAccess.Repositories;

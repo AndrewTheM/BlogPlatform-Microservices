@@ -1,14 +1,15 @@
 ﻿using AutoMapper;
+using BlogPlatform.Shared.Common.Exceptions;
+using BlogPlatform.Shared.Common.Extensions;
+using BlogPlatform.Shared.Common.Filters;
+using BlogPlatform.Shared.Common.Pagination;
+using BlogPlatform.Shared.Services.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Posts.BusinessLogic.DTO.Requests;
 using Posts.BusinessLogic.DTO.Responses;
-using Posts.BusinessLogic.Extensions;
-using Posts.BusinessLogic.Helpers;
 using Posts.BusinessLogic.Services.Contracts;
 using Posts.DataAccess.Context.Contracts;
 using Posts.DataAccess.Entities;
-using Posts.DataAccess.Extensions;
-using Posts.DataAccess.Filters;
 using System.Text.RegularExpressions;
 
 namespace Posts.BusinessLogic.Services;

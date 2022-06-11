@@ -1,6 +1,6 @@
 ﻿using Accounts.Application.Common.Contracts;
-using Accounts.Application.Common.Exceptions;
 using AutoMapper;
+using BlogPlatform.Shared.Common.Exceptions;
 using MediatR;
 
 namespace Accounts.Application.Features.Accounts.Commands.EditAccount;

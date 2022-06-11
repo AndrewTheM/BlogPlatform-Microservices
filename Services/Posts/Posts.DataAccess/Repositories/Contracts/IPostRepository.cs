@@ -1,6 +1,6 @@
-﻿using Posts.DataAccess.Entities;
-using Posts.DataAccess.Extensions;
-using Posts.DataAccess.Filters;
+﻿using BlogPlatform.Shared.Common.Exceptions;
+using BlogPlatform.Shared.Common.Filters;
+using Posts.DataAccess.Entities;
 
 namespace Posts.DataAccess.Repositories.Contracts;
 

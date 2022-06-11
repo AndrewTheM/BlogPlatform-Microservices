@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\BlogPlatform.Shared.csproj" />
     <ProjectReference Include="..\Accounts.Domain\Accounts.Domain.csproj" />
   </ItemGroup>
 

@@ -1,9 +1,8 @@
-﻿using Comments.BusinessLogic.DTO.Requests;
+﻿using BlogPlatform.Shared.Common.Filters;
+using BlogPlatform.Shared.Common.Pagination;
+using Comments.BusinessLogic.DTO.Requests;
 using Comments.BusinessLogic.DTO.Responses;
-using Comments.BusinessLogic.Helpers;
 using Comments.BusinessLogic.Services.Contracts;
-using Comments.DataAccess.Extensions;
-using Comments.DataAccess.Filters;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Comments.API.Controllers;
@@ -24,7 +23,8 @@ public class CommentController : ControllerBase
     public async Task<ActionResult<Page<CommentResponse>>> GetPageOfCommentsForPost(
         [FromRoute] Guid postId, [FromQuery] CommentFilter filter)
     {
-        return await _commentService.GetPageOfCommentsForPostAsync(postId, filter);
+        var page = await _commentService.GetPageOfCommentsForPostAsync(postId, filter);
+        return Ok(page);
     }
 
     [HttpGet("{id}")]
@@ -32,21 +32,16 @@ public class CommentController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CommentResponse>> GetCommentById([FromRoute] Guid id)
     {
-        try
-        {
-            return await _commentService.GetCommentByIdAsync(id);
-        }
-        catch (EntityNotFoundException)
-        {
-            return NotFound();
-        }
+        var comment = await _commentService.GetCommentByIdAsync(id);
+        return Ok(comment);
     }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<CommentResponse>> PublishComment([FromBody] CommentRequest commentDto)
     {
-        return await _commentService.PublishCommentAsync(commentDto);
+        var comment = await _commentService.PublishCommentAsync(commentDto);
+        return Ok(comment);
     }
 
     [HttpPut("{id}")]
@@ -55,15 +50,8 @@ public class CommentController : ControllerBase
     public async Task<ActionResult> EditComment(
         [FromRoute] Guid id, [FromBody] CommentContentRequest commentDto)
     {
-        try
-        {
-            await _commentService.EditCommentAsync(id, commentDto);
-            return NoContent();
-        }
-        catch (EntityNotFoundException)
-        {
-            return NotFound();
-        }
+        await _commentService.EditCommentAsync(id, commentDto);
+        return NoContent();
     }
 
     [HttpDelete("{id}")]
@@ -71,15 +59,8 @@ public class CommentController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> DeleteComment([FromRoute] Guid id)
     {
-        try
-        {
-            await _commentService.DeleteCommentAsync(id);
-            return NoContent();
-        }
-        catch (EntityNotFoundException)
-        {
-            return NotFound();
-        }
+        await _commentService.DeleteCommentAsync(id);
+        return NoContent();
     }
 
     [HttpPatch("{id}")]
@@ -97,10 +78,6 @@ public class CommentController : ControllerBase
         catch (ArgumentOutOfRangeException ex)
         {
             return BadRequest(ex.Message);
-        }
-        catch (EntityNotFoundException)
-        {
-            return NotFound();
         }
     }
 }

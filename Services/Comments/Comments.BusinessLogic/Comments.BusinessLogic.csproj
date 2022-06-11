@@ -15,22 +15,4 @@
     <ProjectReference Include="..\Comments.DataAccess\Comments.DataAccess.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Update="Resources\Services\TimeService.resx">
-      <Generator></Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Services\IdentityService.ru.resx">
-      <LastGenOutput>IdentityService.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Services\IdentityService.uk.resx">
-      <LastGenOutput>IdentityService.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Services\IdentityService.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>IdentityService.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-
 </Project>
