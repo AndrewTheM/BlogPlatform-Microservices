@@ -1,0 +1,119 @@
+﻿@page "/login"
+
+@using Microsoft.AspNetCore.WebUtilities
+@using BlogPlatform.UI.Models
+@using BlogPlatform.UI.Extensions
+
+@inject IAuthService _authService
+@inject ISnackbar _snackbar
+
+@inject NavigationManager _navigationManager
+@inject AuthenticationStateProvider _authStateProvider
+@inject IStringLocalizer<Login> _locale
+
+<style>
+    html, body {
+        height: 100%;
+    }
+</style>
+
+<div id="form-wrapper" class="w-100 h-100">
+    <MudOverlay Visible="true">
+        <MudPaper Elevation="5">
+
+            <div class="d-flex justify-content-between">
+                <MudTooltip Text="@_locale["ToHomePage"]">
+                    <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Link="/" />
+                </MudTooltip>
+                <LanguageMenu IconColor="Color.Default" />
+            </div>
+
+            <div class="pa-5">
+                <MudText Class="mb-5" Align="Align.Center" Typo="Typo.h4">
+                    Prog Blog
+                </MudText>
+
+                <EditForm Model="enteredCredentials" OnValidSubmit="SubmitCredentials">
+                    <FluentValidationValidator />
+
+                    <MudTextField
+                        @bind-Value="enteredCredentials.Username"
+                        Class="mb-2"
+                        Placeholder="@_locale["UsernameLabel"]"
+                        For="@(() => enteredCredentials.Username)"
+                        Variant="Variant.Outlined"
+                        Margin="Margin.Dense"
+                    />
+
+                    <MudTextField
+                        @bind-Value="enteredCredentials.Password"
+                        Class="mt-3 mb-2"
+                        Placeholder="@_locale["PasswordLabel"]"
+                        For="@(() => enteredCredentials.Password)"
+                        Variant="Variant.Outlined"
+                        Margin="Margin.Dense"
+                        Adornment="Adornment.End"
+                        InputType="@(showPassword ? InputType.Text : InputType.Password)"
+                        AdornmentIcon="@(showPassword ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff)"
+                        OnAdornmentClick="() => showPassword = !showPassword"
+                    />
+
+                    <div class="d-flex justify-content-center">
+                        <MudButton Class="my-4" ButtonType="ButtonType.Submit"
+                                   Size="Size.Large" Variant="Variant.Filled" Color="Color.Primary">
+                            @_locale["SignIn"]
+                        </MudButton>
+                    </div>
+                </EditForm>
+
+                <MudText Class="my-3" Align="Align.Center">
+                    @_locale["DontHaveAccount"]
+                    <br>
+                    <NavLink href="register">
+                        @_locale["RegisterNow"]
+                    </NavLink>
+                </MudText>
+            </div>
+        </MudPaper>
+    </MudOverlay>
+</div>
+
+@code {
+    UserCredentials enteredCredentials = new();
+    //string returnUrl;
+    bool showPassword;
+
+    protected override async Task OnInitializedAsync()
+    {
+        //Uri currentUri = _navigationManager.ToAbsoluteUri(_navigationManager.Uri);
+        //returnUrl = QueryHelpers.ParseQuery(currentUri.Query)
+        //                        .GetValueOrDefault("returnUrl")
+        //                        .ToString() ?? "/";
+
+        var authState = await _authStateProvider.GetAuthenticationStateAsync();
+        if (!authState.User.Identity.IsAuthenticated)
+        {
+            return;
+        }
+
+        _navigationManager.NavigateTo("/");
+    }
+
+    public async Task SubmitCredentials()
+    {
+        AuthResult result = await _authService.LoginAsync(enteredCredentials);
+
+        if (result.Token is not null && result.Errors is null)
+        {
+            var provider = _authStateProvider as JwtAuthenticationStateProvider;
+            await provider.AuthenticateUserAsync(result.Token);
+            _navigationManager.NavigateTo("/");
+            return;
+        }
+
+        foreach (string errorMessage in result.Errors)
+        {
+            _snackbar.Add(errorMessage, Severity.Error);
+        }
+    }
+}

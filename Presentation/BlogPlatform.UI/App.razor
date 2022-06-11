@@ -1,0 +1,29 @@
+<Router AppAssembly="@typeof(Program).Assembly">
+    <Found Context="routeData">
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+            @* TODO: not authorized page *@
+            <Authorizing>
+                <Loading />
+            </Authorizing>
+        </AuthorizeRouteView>
+    </Found>
+    <NotFound>
+        <CascadingAuthenticationState>
+            <BlogPlatform.UI.Pages.NotFound />
+        </CascadingAuthenticationState>
+    </NotFound>
+</Router>
+
+<MudThemeProvider Theme="TertiaryWhite" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+@code {
+    MudTheme TertiaryWhite = new()
+    {
+        Palette = new()
+        {
+            Tertiary = "#FFF"
+        }
+    };
+}

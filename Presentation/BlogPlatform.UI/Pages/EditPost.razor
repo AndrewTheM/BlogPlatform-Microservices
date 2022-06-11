@@ -1,0 +1,187 @@
+﻿@page "/author/edit/{titleIdentifier}"
+@attribute [Authorize(Roles = "Author, Admin")]
+
+@inject IPostService _postService
+@inject IFileService _fileService
+@inject ISnackbar _snackbar
+
+@inject NavigationManager _navigationManager
+@inject IStringLocalizer<EditPost> _locale
+
+<AuthorBar />
+
+<div class="px-5 bg-white">
+    <MudBreadcrumbs Items="breadcrumbItems" Separator=">" />
+    <MudText Class="mb-4" Typo="Typo.h5">@_locale["EditPost"]</MudText>
+    <EditForm Model="currentPost" OnValidSubmit="UpdatePost">
+        <FluentValidationValidator />
+
+        <MudTextField
+            @bind-Value="currentPost.Title"
+            Class="bg-white mt-4 mb-2"
+            Label="@_locale["TitleLabel"]"
+            Variant="Variant.Outlined"
+            Margin="Margin.Dense"
+            For="@(() => currentPost.Title)"
+        />
+
+        <MudTextField
+            @bind-Value="currentPost.Content"
+            Class="bg-white mt-3 mb-2"
+            Label="@_locale["ContentLabel"]"
+            Variant="Variant.Outlined"
+            Margin="Margin.Dense"
+            Lines="15"
+            For="@(() => currentPost.Content)"
+        />
+
+        <MudTextField
+            @bind-Value="tagsLine"
+            Class="bg-white mt-3 mb-2"
+            Style="width: 200px;"
+            Label="@_locale["TagsLabel"]"
+            Adornment="Adornment.End"
+            AdornmentIcon="@Icons.Material.Filled.Add"
+            OnAdornmentClick="AddTags"
+            Margin="Margin.Dense"
+        />
+
+        <ValidationMessage For="@(() => currentPost.Tags)" />
+
+        <MudChipSet Class="my-4" AllClosable="true" OnClose="RemoveTagFromClosedChip"
+                    SelectedChipChanged="CopyTagNameFromChip">
+
+            @foreach (string tag in currentPost.Tags)
+            {
+                <MudChip Text="@tag"></MudChip>
+            }
+        </MudChipSet>
+
+        <div class="my-5 d-flex  justify-content-between">
+            <div class="d-flex-inline align-content-center">
+                <MudButton Class="mr-4" Color="Color.Dark" Variant="Variant.Filled"
+                           StartIcon="@Icons.Material.Filled.Image"
+                           HtmlTag="label" for="thumbnailInput">
+                    @(currentThumbnail is null && string.IsNullOrWhiteSpace(currentPost.ThumbnailPath)
+                      ? _locale["UploadThumbnail"]
+                      : _locale["ChangeThumbnail"])
+                </MudButton>
+
+                @if (currentThumbnail is not null)
+                {
+                    <span>@currentThumbnail.Name (@currentThumbnail.Size @_locale["FileBytes"])</span>
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small"
+                                   Color="Color.Error" OnClick="ClearThumbnail" />
+                }
+            </div>
+
+            <MudButton Color="Color.Dark" Variant="Variant.Filled"
+                       Disabled="isPublishing" ButtonType="ButtonType.Submit">
+                @_locale["Save"]
+
+                @if (isPublishing)
+                {
+                    <MudProgressCircular Class="ml-2" Indeterminate="true" Size="Size.Small" />
+                }
+            </MudButton>
+        </div>
+
+        <InputFile id="thumbnailInput" accept=".jpg, .jpeg, .png"
+                   OnChange="SaveThumnailForPublishing" hidden />
+    </EditForm>
+</div>
+
+@code {
+    [Parameter]
+    public string TitleIdentifier { get; set; }
+
+    List<BreadcrumbItem> breadcrumbItems;
+    IBrowserFile currentThumbnail;
+
+    Models.Post currentPost = new() { Tags = new HashSet<string>() };
+
+    string tagsLine;
+    bool isPublishing;
+
+    protected async override Task OnInitializedAsync()
+    {
+        breadcrumbItems = new List<BreadcrumbItem>()
+        {
+            new(_locale["Posts"], "/author"),
+            new(_locale["EditPost"], "/author/edit")
+        };
+
+        currentPost = await _postService.FindPostAsync(TitleIdentifier);
+    }
+
+    void SaveThumnailForPublishing(InputFileChangeEventArgs e)
+    {
+        currentThumbnail = e.File;
+    }
+
+    void ClearThumbnail()
+    {
+        currentThumbnail = null;
+    }
+
+    void AddTags()
+    {
+        if (tagsLine is null)
+        {
+            return;
+        }
+
+        string[] tagNames = tagsLine.Split(';', StringSplitOptions.RemoveEmptyEntries);
+        tagsLine = null;
+
+        foreach (string tag in tagNames)
+        {
+            currentPost.Tags.Add(tag.Trim());
+        }
+    }
+
+    void CopyTagNameFromChip(MudChip chip)
+    {
+        tagsLine = chip?.Text;
+    }
+
+    void RemoveTagFromClosedChip(MudChip chip)
+    {
+        currentPost.Tags.Remove(chip.Text);
+    }
+
+    //void DetectEnterOnAddingTags(KeyboardEventArgs e)
+    //{
+    //    if (e.Code != "Enter" && e.Code != "NumpadEnter")
+    //        return;
+
+    //    AddTags();
+    //}
+
+    async Task UpdatePost()
+    {
+        try
+        {
+            isPublishing = true;
+
+            //currentPost.Content = System.Web.HttpUtility.HtmlEncode(currentPost.Content);
+
+            if (currentThumbnail is not null)
+            {
+                currentPost.ThumbnailPath = await _fileService.PublishFile(currentThumbnail);
+            }
+
+            await _postService.EditPostAsync(currentPost);
+            await _postService.SetTagsOfPostAsync(currentPost.Id, currentPost.Tags);
+            _navigationManager.NavigateTo("/author");
+        }
+        catch (HttpRequestException)
+        {
+            _snackbar.Add(_locale["EditError"], Severity.Error);
+        }
+        finally
+        {
+            isPublishing = false;
+        }
+    }
+}

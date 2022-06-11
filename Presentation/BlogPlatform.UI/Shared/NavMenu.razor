@@ -1,0 +1,68 @@
+﻿@inject IStringLocalizer<NavMenu> _locale
+
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+    <div class="container">
+        <NavLink class="navbar-brand" href="/" Match="NavLinkMatch.All">
+            Prog Blog
+        </NavLink>
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+                data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false"
+                aria-label="Toggle navigation">
+            @_locale["Menu"]
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
+                        @_locale["AllPosts"]
+                    </NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="about">
+                        @_locale["About"]
+                    </NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="contact">
+                        @_locale["Contact"]
+                    </NavLink>
+                </li>
+
+                <AuthorizeView>
+                    <Authorized>
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="profile">
+                                @_locale["Profile"]
+                            </NavLink>
+                        </li>
+                    </Authorized>
+                    <NotAuthorized>
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="login">
+                                @_locale["SignIn"]
+                            </NavLink>
+                        </li>
+                    </NotAuthorized>
+                </AuthorizeView>
+
+                <AuthorizeView Roles="Author, Admin">
+                    <Authorized>
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="author">
+                                @_locale["Author"]
+                            </NavLink>
+                        </li>
+                    </Authorized>
+                </AuthorizeView>
+            </ul>
+
+            <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+                <LanguageMenu IconColor="Color.Tertiary" />
+            </MudHidden>
+            <MudHidden Breakpoint="Breakpoint.MdAndUp">
+                <LanguageMenu IconColor="Color.Default" />
+            </MudHidden>
+        </div>
+    </div>
+</nav>

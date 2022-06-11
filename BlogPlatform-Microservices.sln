@@ -49,6 +49,10 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlogPlatform.Shared", "Shared\BlogPlatform.Shared.csproj", "{AE6432F5-E765-4AD1-B021-A3260F13C221}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{81292517-4C50-4D3D-93F5-02EED21AA9A3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlogPlatform.UI", "Presentation\BlogPlatform.UI\BlogPlatform.UI.csproj", "{4445C8CD-B9D3-4A38-B79A-A9188619EAE0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -114,6 +118,10 @@ Global
 		{AE6432F5-E765-4AD1-B021-A3260F13C221}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE6432F5-E765-4AD1-B021-A3260F13C221}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE6432F5-E765-4AD1-B021-A3260F13C221}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4445C8CD-B9D3-4A38-B79A-A9188619EAE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4445C8CD-B9D3-4A38-B79A-A9188619EAE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4445C8CD-B9D3-4A38-B79A-A9188619EAE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4445C8CD-B9D3-4A38-B79A-A9188619EAE0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -138,6 +146,7 @@ Global
 		{0765F806-C408-4A91-9E61-D4EF859836CE} = {ECB6F716-E165-4E44-BDF1-39316441125E}
 		{346E6005-CAF8-4B74-9E66-D78B41E4E2DB} = {ECB6F716-E165-4E44-BDF1-39316441125E}
 		{AE6432F5-E765-4AD1-B021-A3260F13C221} = {F4E1E68C-294C-4A86-B208-B49C8378457C}
+		{4445C8CD-B9D3-4A38-B79A-A9188619EAE0} = {81292517-4C50-4D3D-93F5-02EED21AA9A3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {06080E3D-2D12-4DBA-B4B0-C52347BB092F}

@@ -1,0 +1,134 @@
+﻿@page "/register"
+
+@using Microsoft.AspNetCore.WebUtilities
+@using BlogPlatform.UI.Models
+@using BlogPlatform.UI.Services.Contracts
+
+@inject IAuthService _authService
+@inject ISnackbar _snackbar
+
+@inject NavigationManager _navigationManager
+@inject AuthenticationStateProvider _authStateProvider
+@inject IStringLocalizer<Register> _locale
+
+<style>
+    html, body {
+        height: 100%;
+    }
+</style>
+
+<div id="form-wrapper" class="w-100 h-100">
+    <MudOverlay Visible="true">
+        <MudPaper Elevation="5">
+
+            <div class="d-flex justify-content-between">
+                <MudTooltip Text="@_locale["LoginPage"]">
+                    <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Link="/login" />
+                </MudTooltip>
+                <LanguageMenu IconColor="Color.Default" />
+            </div>
+
+            <div class="pa-5">
+                <MudText Class="mb-5" Align="Align.Center" Typo="Typo.h4">
+                    Prog Blog
+                </MudText>
+
+                <EditForm Model="registeringUser" OnValidSubmit="SubmitUserData">
+                    <FluentValidationValidator />
+
+                    <MudTextField
+                        @bind-Value="registeringUser.Username"
+                        Class="mb-2"
+                        Placeholder="@_locale["UsernameLabel"]"
+                        For="@(() => registeringUser.Username)"
+                        Variant="Variant.Outlined"
+                        Margin="Margin.Dense"
+                    />
+
+                    <MudTextField
+                        @bind-Value="registeringUser.Email"
+                        Class="mt-3 mb-2"
+                        Placeholder="@_locale["EmailLabel"]"
+                        For="@(() => registeringUser.Email)"
+                        Variant="Variant.Outlined"
+                        Margin="Margin.Dense"
+                    />
+
+                    <MudTextField
+                        @bind-Value="registeringUser.Password"
+                        Class="mt-3 mb-2"
+                        Placeholder="@_locale["PasswordLabel"]"
+                        For="@(() => registeringUser.Password)"
+                        Variant="Variant.Outlined"
+                        Margin="Margin.Dense"
+                        Adornment="Adornment.End"
+                        InputType="@(showPassword ? InputType.Text : InputType.Password)"
+                        AdornmentIcon="@(showPassword ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff)"
+                        OnAdornmentClick="() => showPassword = !showPassword"
+                    />
+
+                    <MudTextField
+                        @bind-Value="registeringUser.ConfirmPassword"
+                        Class="mt-3 mb-2"
+                        Placeholder="@_locale["ConfirmLabel"]"
+                        For="@(() => registeringUser.ConfirmPassword)"
+                        Variant="Variant.Outlined"
+                        Margin="Margin.Dense"
+                        Adornment="Adornment.End"
+                        InputType="@(showConfirmation ? InputType.Text : InputType.Password)"
+                        AdornmentIcon="@(showConfirmation ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff)"
+                        OnAdornmentClick="() => showConfirmation = !showConfirmation"
+                    />
+
+                    <div class="d-flex justify-content-center">
+                        <MudButton Class="my-4" ButtonType="ButtonType.Submit"
+                                   Size="Size.Large" Variant="Variant.Filled" Color="Color.Primary">
+                            @_locale["Register"]
+                        </MudButton>
+                    </div>
+                </EditForm>
+            </div>
+        </MudPaper>
+    </MudOverlay>
+</div>
+
+@code {
+    User registeringUser = new();
+
+    //string returnUrl;
+    bool showPassword;
+    bool showConfirmation;
+
+    protected override async Task OnInitializedAsync()
+    {
+        //Uri currentUri = _navigationManager.ToAbsoluteUri(_navigationManager.Uri);
+        //returnUrl = QueryHelpers.ParseQuery(currentUri.Query)
+        //                        .GetValueOrDefault("returnUrl")
+        //                        .ToString() ?? "/";
+
+        var authState = await _authStateProvider.GetAuthenticationStateAsync();
+        if (!authState.User.Identity.IsAuthenticated)
+        {
+            return;
+        }
+
+        _navigationManager.NavigateTo("/");
+    }
+
+    public async Task SubmitUserData()
+    {
+        AuthResult result = await _authService.RegisterAsync(registeringUser);
+
+        if (result.Token is not null && result.Errors is null)
+        {
+            _navigationManager.NavigateTo("/login");
+            _snackbar.Add(_locale["RegisterSuccess"], Severity.Success);
+            return;
+        }
+
+        foreach (string errorMessage in result.Errors)
+        {
+            _snackbar.Add(errorMessage, Severity.Error);
+        }
+    }
+}

@@ -1,0 +1,275 @@
+﻿@page "/post/{titleIdentifier}"
+
+@using Markdig
+@using BlogPlatform.UI.Models
+
+@inject IPostService _postService
+@inject IFileService _fileService
+@inject ICommentService _commentService
+@inject IRatingService _ratingService
+@inject MudBlazor.IDialogService _dialogService
+
+@inject AuthenticationStateProvider _authProvider
+@inject IStringLocalizer<Post> _locale
+
+@if (currentPost is not null && thumbnailLink is not null)
+{
+    <NavMenu />
+
+    <header class="masthead" style="background-image: url(@thumbnailLink)">
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-10 mx-auto">
+                    <div class="post-heading">
+                        <h1>@currentPost.Title</h1>
+                        <p class="meta">
+                            @_locale["PostedBy"] @currentPost.Author @currentPost.RelativePublishTime
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <MudChip class="mb-5 pa-3 bg-white shadow" Size="Size.Large">
+                    <MudIcon Icon="@Icons.Material.Filled.Star" Size="Size.Large" Style="color: #ffc107" />
+                    <MudText Typo="Typo.h6" Class="ml-2 mr-1">
+                        @Math.Round(currentPost.Rating, 1)
+                    </MudText>
+                </MudChip>
+
+                <div class="mt-5">
+                    @((MarkupString)Markdown.ToHtml(currentPost.Content, markdownPipeline))
+                </div>
+
+                <div class="my-5 font-weight-bold">
+                    @foreach (string tag in currentPost.Tags)
+                    {
+                        <MudChip>@tag</MudChip>
+                    }
+                </div>
+
+                <AuthorizeView>
+                    <Authorized>
+                        <MudDivider />
+                        <div class="rating">
+                            <p class="text-center mb-2">
+                                @if (userRating?.RatingValue > 0)
+                                {
+                                    <span>@_locale["ThanksForRating"]</span>
+                                }
+                                else
+                                {
+                                    <span>@_locale["PleaseRate"]</span>
+                                }
+                            </p>
+                            <MudRating SelectedValue="@userRating.RatingValue"
+                                       SelectedValueChanged="ModifyRating"
+                                       Class="d-flex justify-content-center" />
+                        </div>
+                    </Authorized>
+                </AuthorizeView>
+            </div>
+        </article>
+
+        @if (comments is not null)
+        {
+            <div class="row mt-5">
+                <div class="col-lg-8 col-md-10 mx-auto">
+                    <h5 class="mb-4">@currentPost.CommentPage.TotalRecords @_locale["Comments"]</h5>
+
+                    <AuthorizeView>
+                        <Authorized>
+                            <MudTextField
+                                @bind-Value="newComment.Content"
+                                Class="bg-white"
+                                Lines="4"
+                                Variant="Variant.Outlined"
+                            />
+
+                            <div class="d-flex justify-content-end">
+                                <MudButton Class="mt-4" @onclick="PublishComment" Color="Color.Primary"
+                                           Variant="Variant.Filled" Size="Size.Medium">
+                                    @_locale["LeaveComment"]
+                                </MudButton>
+                            </div>
+                        </Authorized>
+                        <NotAuthorized>
+                            <NavLink class="btn reply-btn" href="login">
+                                @_locale["CommentSignIn"]
+                            </NavLink>
+                        </NotAuthorized>
+                    </AuthorizeView>
+
+                    <ul class="comment-list comment-top">
+                        @foreach (Comment comment in comments)
+                        {
+                            <li class="comment mt-3">
+                                <MudPaper Class="pa-5" Elevation="2">
+                                    <div class="comment-body">
+                                        <div class="d-flex align-items-center">
+                                            <MudAvatar Size="Size.Large">
+                                                @(char.ToUpper(comment.Author[0]))
+                                            </MudAvatar>
+
+                                            <div class="ml-4">
+                                                <h4 class="commenter-name my-1">@comment.Author</h4>
+                                                <div class="comment-date">@comment.RelativePublishTime</div>
+                                            </div>
+
+                                            <AuthorizeView Roles="Admin">
+                                                <Authorized>
+                                                    <div class="flex-fill d-flex justify-content-end">
+                                                        <MudButton @onclick="async () => await DeleteComment(comment.Id)"
+                                                                   Color="Color.Error">
+                                                            @_locale["DeleteComment"]
+                                                        </MudButton>
+                                                    </div>
+                                                </Authorized>
+                                            </AuthorizeView>
+                                        </div>
+                                        <p class="comment-message my-4">@comment.Content</p>
+
+                                        @*<MudText>@comment.UpvoteCount</MudText>
+                                            <NavLink class="btn reply-btn" href="login">
+                                                Reply
+                                            </NavLink>*@
+                                    </div>
+                                </MudPaper>
+                            </li>
+                        }
+                    </ul>
+
+                    @if (currentPost.CommentPage.NextPage is not null)
+                    {
+                        <div class="mt-4 d-flex justify-content-center">
+                            <MudButton @onclick="LoadMoreComments" Color="Color.Primary"
+                                       Variant="Variant.Filled" Size="Size.Medium">
+                                @_locale["LoadMore"]
+                            </MudButton>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </main>
+
+    <Footer />
+}
+else
+{
+    <Loading />
+}
+
+@code {
+    [Parameter]
+    public string TitleIdentifier { get; set; }
+
+    Models.Post currentPost;
+    List<Comment> comments;
+    Comment newComment;
+    Rating userRating;
+
+    string currentUsername;
+    string thumbnailLink;
+
+    MarkdownPipeline markdownPipeline = new MarkdownPipelineBuilder()
+        .UseEmojiAndSmiley()
+        .UseListExtras()
+        .UseAutoLinks()
+        .UseEmphasisExtras()
+        .UseMediaLinks() // TODO: add embed-responsive classes
+        .UseBootstrap()
+        .Build();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await _authProvider.GetAuthenticationStateAsync();
+        string userId = authState.User?.FindFirst("id")?.Value;
+        currentUsername = authState.User?.FindFirst("unique_name")?.Value;
+
+        await LoadPost();
+        newComment = new() { PostId = currentPost.Id };
+
+        if (userId is null)
+        {
+            return;
+        }
+
+        try
+        {
+            userRating = await _ratingService.GetRatingForPostAsync(currentPost.Id, Guid.Parse(userId));
+        }
+        catch
+        {
+            userRating = new() { PostId = currentPost.Id };
+        }
+    }
+
+    async Task LoadPost()
+    {
+        currentPost = await _postService.FindPostAsync(TitleIdentifier);
+        thumbnailLink = _fileService.GetImageUrl(currentPost.ThumbnailPath);
+        //currentPost.Content = System.Web.HttpUtility.HtmlEncode(currentPost.Content);
+        comments = currentPost.CommentPage.Data.ToList();
+    }
+
+    async Task LoadMoreComments()
+    {
+        List<Comment> allComments = new(comments);
+        currentPost.CommentPage = await _commentService.GetCommentPageForPostAsync(currentPost.CommentPage.NextPage);
+        allComments.AddRange(currentPost.CommentPage.Data);
+        comments = allComments;
+    }
+
+    async Task PublishComment()
+    {
+        Comment publishedComment = await _commentService.PublishCommentAsync(newComment);
+        comments.Insert(0, publishedComment);
+        ++currentPost.CommentPage.TotalRecords;
+        newComment = new() { PostId = currentPost.Id };
+    }
+
+    async Task DeleteComment(Guid id)
+    {
+        bool? deletionAllowed = await _dialogService.ShowMessageBox(
+            title: _locale["Warning"],
+            message: _locale["AreYouSure"],
+            yesText: _locale["Yes"],
+            noText: _locale["No"]
+        );
+
+        if (deletionAllowed != true)
+        {
+            return;
+        }
+
+        comments.RemoveAll(c => c.Id == id);
+        --currentPost.CommentPage.TotalRecords;
+        await _commentService.DeleteCommentAsync(id);
+    }
+
+    async Task ModifyRating(int newValue)
+    {
+        userRating.RatingValue = newValue;
+
+        if (userRating.Id == Guid.Empty)
+        {
+            userRating = await _ratingService.RatePostAsync(userRating);
+            return;
+        }
+
+        if (userRating.RatingValue == 0)
+        {
+            await _ratingService.ClearRatingAsync(userRating.Id);
+            userRating = new() { PostId = currentPost.Id };
+            return;
+        }
+
+        await _ratingService.ChangeRatingAsync(userRating.Id, userRating);
+    }
+}

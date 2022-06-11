@@ -1,0 +1,75 @@
+﻿@page "/author"
+@attribute [Authorize(Roles = "Author, Admin")]
+
+@using BlogPlatform.UI.Models
+@using BlogPlatform.UI.Services.Contracts
+
+@inject IPostService _postService
+@inject IDialogService _dialogService
+
+@inject AuthenticationStateProvider _authProvider
+@inject IStringLocalizer<Author> _locale 
+
+<style>
+    html, body {
+        height: 100%;
+    }
+</style>
+
+<AuthorBar />
+
+<MudTable Class="bg-white" Items="@posts" Hover="true" Dense="true">
+    <RowTemplate>
+        <MudTd>@context.Title</MudTd>
+        <MudTd>@context.RelativePublishTime</MudTd>
+        <MudTd>
+            <MudIconButton Color="Color.Info" Icon="@Icons.Material.Filled.Edit"
+                           Link="@($"/author/edit/{context.TitleIdentifier}")" />
+        </MudTd>
+        <MudTd>
+            <MudIconButton Color="Color.Error" Icon="@Icons.Material.Filled.Delete"
+                           @onclick="async () => await DeletePost(context.Id)" />
+        </MudTd>
+    </RowTemplate>
+</MudTable>
+
+<div class="position-fixed" style="bottom: 20px; right: 20px;">
+    <MudFab Class="ma-2" Color="Color.Dark" Icon="@Icons.Material.Filled.Add"
+            Size="Size.Large" IconSize="Size.Large" Link="/author/new" />
+</div>
+
+@code {
+    Page<Models.Post> currentPage;
+    List<Models.Post> posts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPosts();
+    }
+
+    async Task LoadPosts(int pageNumber = 1, int pageSize = 10)
+    {
+        var authState = await _authProvider.GetAuthenticationStateAsync();
+        string username = authState.User?.FindFirst("unique_name")?.Value;
+        currentPage = await _postService.GetPostsAsync(pageNumber, pageSize, author: username);
+        posts = currentPage.Data.ToList();
+    }
+
+    async Task DeletePost(Guid id)
+    {
+        bool? deletionAllowed = await _dialogService.ShowMessageBox(
+            title: _locale["Warning"],
+            message: _locale["AreYouSure"],
+            yesText: _locale["Yes"],
+            noText: _locale["No"]
+        );
+
+        if (deletionAllowed != true)
+        {
+            return;
+        }
+
+        posts.RemoveAll(p => p.Id == id);
+        await _postService.DeletePostAsync(id);
+    }
+}

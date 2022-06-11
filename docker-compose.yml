@@ -53,6 +53,12 @@ services:
       context: .
       dockerfile: Gateway/ApiGateway/Dockerfile
       
+  blogplatform.ui:
+    image: ${DOCKER_REGISTRY-}blogplatformui
+    build:
+      context: .
+      dockerfile: Presentation/BlogPlatform.UI/Dockerfile
+
 volumes:
   posts-data:
   comments-data:

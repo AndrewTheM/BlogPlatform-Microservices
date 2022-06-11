@@ -1,0 +1,29 @@
+﻿.rating > p {
+    font-size: 16px;
+    font-style: italic;
+}
+
+article {
+    text-align: justify;
+    font-size: 19px;
+}
+
+main.container {
+    color: #212529;
+    font-family: Lora, 'Times New Roman', serif;
+}
+
+.comment-date {
+    color: #8a8a8a !important;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.commenter-name {
+    font-size: 17px;
+}
+
+.comment-message {
+    color: #272727;
+    font-size: 17px;
+}

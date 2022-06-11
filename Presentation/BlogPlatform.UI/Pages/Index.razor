@@ -1,0 +1,201 @@
+﻿@page "/"
+
+@using BlogPlatform.UI.Models
+
+@inject IPostService _postService
+@inject IFileService _fileService
+@inject ITagService _tagService
+
+@inject IStringLocalizer<Index> _locale
+
+<NavMenu />
+
+<header class="masthead">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <div class="site-heading">
+                    <h1>@_locale["Motto"]</h1>
+                    <span class="subheading">
+                        @_locale["MottoSub"]
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="content">
+    <div class="container">
+        @if (currentPage is not null)
+        {
+            <div class="row">
+                <div class="col-sm" id="posts">
+                    @foreach (Models.Post post in currentPage.Data)
+                    {
+                        <MudPaper Class="post-preview mb-4 pa-4" Elevation="2">
+                            <NavLink href="@($"post/{post.TitleIdentifier}")">
+                                <h2 class="post-title my-2">
+                                    @post.Title
+                                </h2>
+                            </NavLink>
+                            <p class="post-meta">
+                                @_locale["PostedBy"] @post.Author @post.RelativePublishTime
+                            </p>
+                            <img class="img-fluid" src="@_fileService.GetImageUrl(post.ThumbnailPath)" alt="">
+                        </MudPaper>
+                    }
+
+                    @if (currentPage.TotalPages > 1)
+                    {
+                        <div class="mt-5">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item @(currentPage.PreviousPage is null ? "disabled" : "")">
+                                    <a class="page-link" href="#posts" @onclick="GoToPreviousPage">
+                                        @_locale["PreviousPage"]
+                                    </a>
+                                </li>
+
+                                @for (int i = 1; i <= currentPage.TotalPages; ++i)
+                                {
+                                    int j = i;
+                                    <li class="page-item @(currentPage.PageNumber == j ? "active" : "")">
+                                        <a class="page-link" href="#posts" @onclick="async () => await GoToPage(j)">@i</a>
+                                    </li>
+                                }
+
+                                <li class="page-item @(currentPage.NextPage is null ? "disabled" : "")">
+                                    <a class="page-link" href="#posts" @onclick="GoToNextPage">
+                                        @_locale["NextPage"]
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    }
+                </div>
+                <div class="col-lg-4 mt-md-0 mt-5">
+                    <MudPaper Class="pa-4" Elevation="2">
+                        <MudTextField
+                            @bind-Value="searchQuery"
+                            OnKeyUp="DetectEnterOnSearch"
+                            OnAdornmentClick="SearchPosts"
+                            Label="@_locale["SearchPosts"]"
+                            Variant="Variant.Outlined"
+                            Margin="Margin.Dense"
+                            Adornment="Adornment.End"
+                            AdornmentIcon="@Icons.Filled.Search"
+                        />
+
+                        <p class="h5 mb-3">@_locale["Trending"]</p>
+
+                        @foreach (var post in trendingPosts)
+                        {
+                            <div class="my-4">
+                                <NavLink href="@($"/post/{post.TitleIdentifier}")">
+                                    @post.Title
+                                </NavLink>
+                                <div class="mt-1 text-muted">
+                                    @_locale["TrendingBy"] @post.Author
+                                </div>
+                            </div>
+                        }
+
+                        <p class="h5 mb-3">@_locale["Tags"]</p>
+                        <div class="d-flex flex-wrap font-weight-bold">
+                            <MudChipSet SelectedChip="selectedTagChip" SelectedChipChanged="SearchByTagChip">
+                                @foreach (string tag in tags)
+                                {
+                                    <MudChip Text="@tag" />
+                                }
+                            </MudChipSet>
+                        </div>
+                    </MudPaper>
+                </div>
+            </div>
+        }
+    </div>
+</main>
+
+<Footer />
+
+@code {
+    Page<Models.Post> currentPage;
+
+    string searchQuery;
+    MudChip selectedTagChip;
+    IEnumerable<Models.Post> trendingPosts;
+    IEnumerable<string> tags;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPosts();
+        trendingPosts = await _postService.GetTrendingPostsAsync();
+        tags = await _tagService.GetTagNames();
+    }
+
+    async Task LoadPosts(int pageNumber = 1, int pageSize = 5)
+    {
+        currentPage = await _postService.GetPostsAsync(
+            pageNumber,
+            pageSize,
+            title: searchQuery,
+            tag: selectedTagChip?.Text);
+    }
+
+    async Task LoadPosts(string pageUrl)
+    {
+        currentPage = await _postService.GetPostsAsync(pageUrl);
+    }
+
+    async Task GoToPreviousPage()
+    {
+        if (currentPage?.PreviousPage is null)
+        {
+            return;
+        }
+
+        await LoadPosts(currentPage.PreviousPage);
+    }
+
+    async Task GoToPage(int pageNumber)
+    {
+        if (currentPage is null || currentPage.PageNumber == pageNumber)
+        {
+            return;
+        }
+
+        await LoadPosts(pageNumber, currentPage.PageSize);
+    }
+
+    async Task GoToNextPage()
+    {
+        if (currentPage?.NextPage is null)
+        {
+            return;
+        }
+
+        await LoadPosts(currentPage.NextPage);
+    }
+
+    async Task SearchPosts()
+    {
+        await LoadPosts();
+    }
+
+    async Task DetectEnterOnSearch(KeyboardEventArgs e)
+    {
+        if (e.Code != "Enter" && e.Code != "NumpadEnter")
+        {
+            return;
+        }
+
+        await LoadPosts();
+    }
+
+    async Task SearchByTagChip(MudChip chip)
+    {
+        selectedTagChip = chip;
+        await LoadPosts();
+    }
+}

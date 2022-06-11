@@ -1,0 +1,14 @@
+﻿@inject IStringLocalizer<NotFound> _locale
+
+<div id="notfound" class="user-select-none">
+    <div class="notfound">
+        <div class="notfound-404">
+            <h3>@_locale["NotFoundShort"]</h3>
+            <h1><span>4</span><span>0</span><span>4</span></h1>
+        </div>
+        <h2>@_locale["NotFoundLong"]</h2>
+        <p>
+            <NavLink href="/">@_locale["HomeLink"]</NavLink>
+        </p>
+    </div>
+</div>
