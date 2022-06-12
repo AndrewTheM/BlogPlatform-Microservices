@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
+import "guid.proto";
 
 option csharp_namespace = "BlogPlatform.Shared.GRPC.Protos";
 
@@ -34,8 +35,4 @@ message CommentModel {
     google.protobuf.Timestamp publishedOn = 6;
     string relativePublishTime = 7;
     bool isEdited = 8;
-}
-
-message Guid {
-	string value = 1;
 }

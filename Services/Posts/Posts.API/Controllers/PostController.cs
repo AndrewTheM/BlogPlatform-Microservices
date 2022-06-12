@@ -2,11 +2,10 @@
 using BlogPlatform.Shared.Common.Pagination;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
+using Posts.API.Extensions;
 using Posts.BusinessLogic.DTO.Requests;
 using Posts.BusinessLogic.DTO.Responses;
 using Posts.BusinessLogic.Services.Contracts;
-using System.Text;
-using System.Text.Json;
 
 namespace Posts.API.Controllers;
 
@@ -29,12 +28,12 @@ public class PostController : ControllerBase
     public async Task<ActionResult<Page<PostResponse>>> GetPosts([FromQuery] PostFilter filter)
     {
         string cacheKey = $"posts_{filter.GetHashCode()}";
-        var posts = await GetFromCache<Page<PostResponse>>(cacheKey);
+        var posts = await _cache.GetAsync<Page<PostResponse>>(cacheKey);
 
         if (posts is null)
         {
             posts = await _postService.GetPageOfPostsAsync(filter);
-            await SaveToCache(cacheKey, posts, options: new()
+            await _cache.SetAsync(cacheKey, posts, options: new()
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1),
                 SlidingExpiration = TimeSpan.FromSeconds(30),
@@ -55,12 +54,12 @@ public class PostController : ControllerBase
         }
 
         string cacheKey = $"trending_{top}";
-        var posts = await GetFromCache<IEnumerable<PostResponse>>(cacheKey);
+        var posts = await _cache.GetAsync<IEnumerable<PostResponse>>(cacheKey);
 
         if (posts is null)
         {
             posts = await _postService.GetTrendingPostsAsync(top);
-            await SaveToCache(cacheKey, posts, options: new()
+            await _cache.SetAsync(cacheKey, posts, options: new()
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
                 SlidingExpiration = TimeSpan.FromMinutes(2),
@@ -76,12 +75,12 @@ public class PostController : ControllerBase
     public async Task<ActionResult<PostResponse>> GetPostById([FromRoute] Guid id)
     {
         string cacheKey = $"post_{id}";
-        var post = await GetFromCache<PostResponse>(cacheKey);
+        var post = await _cache.GetAsync<PostResponse>(cacheKey);
 
         if (post is null)
         {
             post = await _postService.FindPostAsync(id);
-            await SaveToCache(cacheKey, post, options: new()
+            await _cache.SetAsync(cacheKey, post, options: new()
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1),
                 SlidingExpiration = TimeSpan.FromSeconds(30),
@@ -97,12 +96,12 @@ public class PostController : ControllerBase
     public async Task<ActionResult<CompletePostResponse>> GetCompletePostById(
         [FromRoute] string titleIdentifier)
     {
-        var post = await GetFromCache<CompletePostResponse>(titleIdentifier);
+        var post = await _cache.GetAsync<CompletePostResponse>(titleIdentifier);
 
         if (post is null)
         {
             post = await _postService.GetCompletePostAsync(titleIdentifier);
-            await SaveToCache(titleIdentifier, post, options: new()
+            await _cache.SetAsync(titleIdentifier, post, options: new()
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1),
                 SlidingExpiration = TimeSpan.FromSeconds(30),
@@ -116,7 +115,8 @@ public class PostController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<PostResponse>> CreatePost([FromBody] PostRequest postDto)
     {
-        return await _postService.PublishPostAsync(postDto);
+        var post = await _postService.PublishPostAsync(postDto);
+        return Ok(post);
     }
 
     [HttpPut("{id}")]
@@ -146,25 +146,5 @@ public class PostController : ControllerBase
     {
         await _postService.SetTagsOfPostAsync(id, tagsRequest.Tags);
         return NoContent();
-    }
-
-    private async Task<T> GetFromCache<T>(string key) where T : class
-    {
-        var cacheRecord = await _cache.GetAsync(key);
-        if (cacheRecord is null)
-        {
-            return null;
-        }
-
-        var cacheJson = Encoding.UTF8.GetString(cacheRecord);
-        return JsonSerializer.Deserialize<T>(cacheJson);
-    }
-
-    private async Task SaveToCache<T>(string key, T value, DistributedCacheEntryOptions options)
-        where T : class
-    {
-        var valueJson = JsonSerializer.Serialize(value);
-        var valueBytes = Encoding.UTF8.GetBytes(valueJson);
-        await _cache.SetAsync(key, valueBytes, options);
     }
 }

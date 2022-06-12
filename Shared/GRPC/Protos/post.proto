@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "guid.proto";
+
+option csharp_namespace = "BlogPlatform.Shared.GRPC.Protos";
+
+service PostGrpc {
+	rpc GetCompletePost(CompletePostRequest) returns (CompletePostResponse);
+}
+
+message CompletePostRequest {
+	string titleIdentifier = 1;
+}
+
+message CompletePostResponse {
+	Guid id = 1;
+    string title = 2;
+    string titleIdentifier = 3;
+    string author = 4;
+    google.protobuf.Timestamp publishedOn = 5;
+    string relativePublishTime = 6;
+    bool isEdited = 7;
+    string thumbnailPath = 8;
+    string content = 9;
+    double rating = 10;
+    repeated string tags = 11;
+}

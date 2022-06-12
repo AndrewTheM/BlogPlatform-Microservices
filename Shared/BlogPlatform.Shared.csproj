@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -19,27 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Resources\Services\IdentityService.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>IdentityService.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Resources\Services\IdentityService.resx">
-      <Generator></Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Services\IdentityService.ru.resx">
-      <Generator></Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Services\IdentityService.uk.resx">
-      <Generator></Generator>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Protobuf Include="GRPC\Protos\comment.proto" GrpcServices="Both" />
+    <Protobuf Include="GRPC\Protos\guid.proto" GrpcServices="None" ProtoRoot="GRPC\Protos" />
+    <Protobuf Include="GRPC\Protos\comment.proto" GrpcServices="Both" ProtoRoot="GRPC\Protos" />
+    <Protobuf Include="GRPC\Protos\post.proto" GrpcServices="Both" ProtoRoot="GRPC\Protos" />
   </ItemGroup>
 
 </Project>

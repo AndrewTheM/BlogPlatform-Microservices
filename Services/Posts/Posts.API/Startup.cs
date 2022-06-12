@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Posts.API.Extensions;
+using Posts.API.GRPC.Mapping;
+using Posts.API.GRPC.Services;
 using Posts.BusinessLogic.Mapping;
 using Posts.DataAccess.Context;
 using System.Globalization;
@@ -29,7 +31,8 @@ public class Startup
             options.UseSqlServer(connectionString);
         });
 
-        services.AddAutoMapper(typeof(BlogMappingProfile).Assembly);
+        services.AddAutoMapper(typeof(BlogMappingProfile), typeof(GrpcMappingProfile));
+        services.AddGrpc();
 
         services.AddRepositories();
         services.AddBlogging();
@@ -94,6 +97,7 @@ public class Startup
 
         app.UseEndpoints(endpoints =>
         {
+            endpoints.MapGrpcService<PostGrpcService>();
             endpoints.MapControllers();
         });
     }
