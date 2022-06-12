@@ -1,5 +1,8 @@
+using Aggregator.Mapping;
 using Aggregator.Services;
 using Aggregator.Services.Contracts;
+using CommentGrpcClient = BlogPlatform.Shared.GRPC.Protos.CommentGrpc.CommentGrpcClient;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,11 +12,15 @@ builder.Services.AddHttpClient<IPostService, PostService>(config =>
     config.BaseAddress = new Uri(apiUrl);
 });
 
-builder.Services.AddHttpClient<ICommentService, CommentService>(config =>
+builder.Services.AddGrpcClient<CommentGrpcClient>(opts =>
 {
     string apiUrl = builder.Configuration["ApiSettings:CommentsUrl"];
-    config.BaseAddress = new Uri(apiUrl);
+    opts.Address = new Uri(apiUrl);
 });
+
+builder.Services.AddTransient<ICommentService, CommentService>();
+
+builder.Services.AddAutoMapper(typeof(GrpcMappingProfile));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

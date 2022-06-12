@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.21.1" />
+    <PackageReference Include="Grpc.Core" Version="2.46.3" />
+    <PackageReference Include="Grpc.Tools" Version="2.46.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.OpenApi" Version="1.3.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
@@ -30,6 +36,10 @@
     <EmbeddedResource Update="Resources\Services\IdentityService.uk.resx">
       <Generator></Generator>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="GRPC\Protos\comment.proto" GrpcServices="Both" />
   </ItemGroup>
 
 </Project>

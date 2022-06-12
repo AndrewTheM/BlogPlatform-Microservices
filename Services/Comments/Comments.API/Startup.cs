@@ -1,5 +1,7 @@
 using BlogPlatform.Shared.Web.Extensions;
 using BlogPlatform.Shared.Web.Filters;
+using Comments.API.GRPC.Mapping;
+using Comments.API.GRPC.Services;
 using Comments.BusinessLogic.Mapping;
 using Comments.BusinessLogic.Services;
 using Comments.BusinessLogic.Services.Contracts;
@@ -28,7 +30,7 @@ internal class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddDatabaseDeveloperPageExceptionFilter();
-        services.AddAutoMapper(typeof(CommentMappingProfile).Assembly);
+        services.AddAutoMapper(typeof(GrpcMappingProfile), typeof(CommentMappingProfile));
 
         string connectionString = _configuration.GetConnectionString("LocalSqlServer");
         services.AddTransient<IConnectionFactory, SqlConnectionFactory>(
@@ -40,6 +42,8 @@ internal class Startup
         services.AddTransient<ICommentRepository, CommentRepository>();
         services.AddTransient<ICommentService, CommentService>();
         services.AddHelperServices();
+
+        services.AddGrpc();
 
         services.AddLocalization(opt => opt.ResourcesPath = "Resources");
         services.Configure<RequestLocalizationOptions>(opts =>
@@ -94,8 +98,10 @@ internal class Startup
         app.UseAuthentication();
         app.UseAuthorization();
 
+
         app.UseEndpoints(endpoints =>
         {
+            endpoints.MapGrpcService<CommentGrpcService>();
             endpoints.MapControllers();
         });
     }

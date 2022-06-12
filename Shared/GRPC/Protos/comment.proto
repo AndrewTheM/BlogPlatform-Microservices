@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "BlogPlatform.Shared.GRPC.Protos";
+
+service CommentGrpc {
+	rpc GetPageOfCommentsForPost(CommentPageRequest) returns (CommentPageResponse);
+}
+
+message CommentPageRequest {
+	Guid postId = 1;
+	int32 pageNumber = 2;
+	int32 pageSize = 3;
+	string content = 4;
+}
+
+message CommentPageResponse {
+	repeated CommentModel data = 1;
+	int32 pageNumber = 2;
+	int32 pageSize = 3;
+	int32 totalRecords = 4;
+	int32 totalPages = 5;
+    string previousPage = 6;
+	string nextPage = 7;
+}
+
+message CommentModel {
+	Guid id = 1;
+    Guid postId = 2;
+    string author = 3;
+    string content = 4;
+    int32 upvoteCount = 5;
+    google.protobuf.Timestamp publishedOn = 6;
+    string relativePublishTime = 7;
+    bool isEdited = 8;
+}
+
+message Guid {
+	string value = 1;
+}
