@@ -10,6 +10,9 @@ public class GrpcMappingProfile : Profile
 {
     public GrpcMappingProfile()
     {
+        CreateMap<Guid, Protos.Guid>()
+            .ConvertUsing(src => new Protos.Guid { Value = src.ToString() });
+
         CreateMap<Protos.Guid, Guid>()
             .ConvertUsing(src => Guid.Parse(src.Value));
 

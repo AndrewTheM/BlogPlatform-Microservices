@@ -6,6 +6,7 @@ using MudBlazor;
 using MudBlazor.Services;
 using System.Globalization;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
@@ -57,5 +58,6 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+
 
 app.Run();

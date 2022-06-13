@@ -1,6 +1,7 @@
 using Comments.API;
 using Comments.DataAccess.Database.Contracts;
 
+
 var builder = WebApplication.CreateBuilder(args);
 var startup = new Startup(builder.Configuration);
 

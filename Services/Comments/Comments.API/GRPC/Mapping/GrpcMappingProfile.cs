@@ -13,13 +13,20 @@ public class GrpcMappingProfile : Profile
     {
         CreateMap<Guid, Protos.Guid>()
             .ConvertUsing(src => new Protos.Guid { Value = src.ToString() });
+        
+        CreateMap<Protos.Guid, Guid>()
+            .ConvertUsing(src => Guid.Parse(src.Value));
 
         CreateMap<DateTime, Timestamp>()
-            .ConvertUsing(src => Timestamp.FromDateTime(src));
+            .ConvertUsing(src => Timestamp.FromDateTime(DateTime.SpecifyKind(src, DateTimeKind.Utc)));
 
         CreateMap<Protos.CommentPageRequest, CommentFilter>();
 
-        CreateMap<CommentResponse, Protos.CommentModel>();
-        CreateMap<Page<CommentResponse>, Protos.CommentPageResponse>();
+        CreateMap<CommentResponse, Protos.CommentModel>()
+            .ForMember(dest => dest.Author, opts => opts.NullSubstitute(string.Empty));
+
+        CreateMap<Page<CommentResponse>, Protos.CommentPageResponse>()
+            .ForMember(dest => dest.PreviousPage, opts => opts.NullSubstitute(string.Empty))
+            .ForMember(dest => dest.NextPage, opts => opts.NullSubstitute(string.Empty));
     }
 }

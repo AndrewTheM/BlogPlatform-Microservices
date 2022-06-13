@@ -9,13 +9,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddGrpcClient<PostGrpcClient>(opts =>
 {
-    string apiUrl = builder.Configuration["ApiSettings:PostsUrl"];
+    string apiUrl = builder.Configuration["GrpcSettings:PostsUrl"];
     opts.Address = new Uri(apiUrl);
 });
 
 builder.Services.AddGrpcClient<CommentGrpcClient>(opts =>
 {
-    string apiUrl = builder.Configuration["ApiSettings:CommentsUrl"];
+    string apiUrl = builder.Configuration["GrpcSettings:CommentsUrl"];
     opts.Address = new Uri(apiUrl);
 });
 

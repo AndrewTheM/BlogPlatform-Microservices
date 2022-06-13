@@ -76,7 +76,7 @@ public class PostRepository : EntityRepository<Post>, IPostRepository
             return _set.Include(p => p.ContentEntity)
                 //.Include(p => p.Author)
                 .Include(p => p.Tags)
-                .SingleAsync(p => p.TitleIdentifier == titleIdentifier);
+                .SingleOrDefaultAsync(p => p.TitleIdentifier == titleIdentifier);
         });
     }
 
