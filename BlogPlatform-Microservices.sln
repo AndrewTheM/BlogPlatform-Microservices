@@ -47,11 +47,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiGateway", "Gateway\ApiGa
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{D7BE5E3F-A476-4D4B-A573-5FA4207F91C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlogPlatform.Shared", "Shared\BlogPlatform.Shared.csproj", "{AE6432F5-E765-4AD1-B021-A3260F13C221}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlogPlatform.Shared", "Shared\BlogPlatform.Shared.csproj", "{AE6432F5-E765-4AD1-B021-A3260F13C221}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{81292517-4C50-4D3D-93F5-02EED21AA9A3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlogPlatform.UI", "Presentation\BlogPlatform.UI\BlogPlatform.UI.csproj", "{4445C8CD-B9D3-4A38-B79A-A9188619EAE0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServer", "Services\Identity\IdentityServer\IdentityServer.csproj", "{CD897D2A-0C11-46CD-BA19-DA76A6561F4D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -122,6 +124,10 @@ Global
 		{4445C8CD-B9D3-4A38-B79A-A9188619EAE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4445C8CD-B9D3-4A38-B79A-A9188619EAE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4445C8CD-B9D3-4A38-B79A-A9188619EAE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD897D2A-0C11-46CD-BA19-DA76A6561F4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD897D2A-0C11-46CD-BA19-DA76A6561F4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD897D2A-0C11-46CD-BA19-DA76A6561F4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD897D2A-0C11-46CD-BA19-DA76A6561F4D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -147,6 +153,7 @@ Global
 		{346E6005-CAF8-4B74-9E66-D78B41E4E2DB} = {ECB6F716-E165-4E44-BDF1-39316441125E}
 		{AE6432F5-E765-4AD1-B021-A3260F13C221} = {F4E1E68C-294C-4A86-B208-B49C8378457C}
 		{4445C8CD-B9D3-4A38-B79A-A9188619EAE0} = {81292517-4C50-4D3D-93F5-02EED21AA9A3}
+		{CD897D2A-0C11-46CD-BA19-DA76A6561F4D} = {A682C713-A30C-4073-BCBD-387921C1BB64}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {06080E3D-2D12-4DBA-B4B0-C52347BB092F}
