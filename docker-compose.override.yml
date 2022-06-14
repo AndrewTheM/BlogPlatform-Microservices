@@ -15,39 +15,17 @@ services:
     ports:
       - 6379:6379
         
-  posts.db:
-    container_name: posts.db
+  sqlserver:
+    container_name: sqlserver
     environment:
       - MSSQL_SA_PASSWORD=1Q2w3e4r
       - ACCEPT_EULA=Y
     restart: always
     volumes:
-      - posts-data:/var/opt/mssql
+      - sqlserver-data:/var/opt/mssql
     ports:
       - 14330:1433
       
-  comments.db:
-    container_name: comments.db
-    environment:
-      - MSSQL_SA_PASSWORD=1Q2w3e4r
-      - ACCEPT_EULA=Y
-    restart: always
-    volumes:
-      - comments-data:/var/opt/mssql
-    ports:
-      - 14331:1433
-
-  accounts.db:
-    container_name: accounts.db
-    environment:
-      - MSSQL_SA_PASSWORD=1Q2w3e4r
-      - ACCEPT_EULA=Y
-    restart: always
-    volumes:
-      - accounts-data:/var/opt/mssql
-    ports:
-      - 14332:1433
-  
   posts.api:
     container_name: posts.api
     environment:
@@ -55,10 +33,10 @@ services:
       - ASPNETCORE_URLS=https://+:443;http://+:80;http://+:8080
       - ASPNETCORE_Kestrel__Certificates__Default__Password=password
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
-      - ConnectionStrings:LocalSqlServer=Server=posts.db;Database=BlogPlatform_Posts;User=sa;Password=1Q2w3e4r;
+      - ConnectionStrings:LocalSqlServer=Server=sqlserver;Database=BlogPlatform_Posts;User=sa;Password=1Q2w3e4r;
       - Redis=rediscache:6379
     depends_on:
-      - posts.db
+      - sqlserver
       - rediscache
       - eventbus
     ports:
@@ -75,9 +53,9 @@ services:
       - ASPNETCORE_URLS=https://+:443;http://+:80;http://+:8080
       - ASPNETCORE_Kestrel__Certificates__Default__Password=password
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
-      - ConnectionStrings:LocalSqlServer=Server=comments.db,1433;Database=BlogPlatform_Comments;User=sa;Password=1Q2w3e4r;  
+      - ConnectionStrings:LocalSqlServer=Server=sqlserver;Database=BlogPlatform_Comments;User=sa;Password=1Q2w3e4r;  
     depends_on:
-      - comments.db
+      - sqlserver
       - eventbus
     ports:
       - 8001:80
@@ -93,9 +71,9 @@ services:
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - ASPNETCORE_Kestrel__Certificates__Default__Password=password
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
-      - ConnectionStrings:LocalSqlServer=Server=accounts.db;Database=BlogPlatform_Accounts;User=sa;Password=1Q2w3e4r;
+      - ConnectionStrings:LocalSqlServer=Server=sqlserver;Database=BlogPlatform_Accounts;User=sa;Password=1Q2w3e4r;
     depends_on:
-      - accounts.db
+      - sqlserver
       - eventbus
     ports:
       - 8002:80
@@ -113,6 +91,23 @@ services:
     ports:
       - 8003:80
       - 18003:443
+    volumes:
+      - ~/.aspnet/https:/https:ro
+
+  identityserver:
+    container_name: identityserver
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ConnectionStrings:LocalSqlServer=Server=sqlserver;Database=BlogPlatform_Identity;User=sa;Password=1Q2w3e4r;
+      - ClientUrl=http://blogplatform.ui
+    depends_on:
+      - sqlserver
+    ports:
+      - 8008:80
+      - 18008:443
     volumes:
       - ~/.aspnet/https:/https:ro
 
@@ -146,6 +141,7 @@ services:
       - comments.api
       - accounts.api
       - files.api
+      - identityserver
       - aggregator
     ports:
       - 8010:80

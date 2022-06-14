@@ -8,13 +8,7 @@ services:
   rediscache:
     image: redis:latest
 
-  posts.db:
-    image: mcr.microsoft.com/mssql/server:2019-latest
-
-  comments.db:
-    image: mcr.microsoft.com/mssql/server:2019-latest
-
-  accounts.db:
+  sqlserver:
     image: mcr.microsoft.com/mssql/server:2019-latest
       
   posts.api:
@@ -59,7 +53,11 @@ services:
       context: .
       dockerfile: Presentation/BlogPlatform.UI/Dockerfile
 
+  identityserver:
+    image: ${DOCKER_REGISTRY-}identityserver
+    build:
+      context: .
+      dockerfile: Services/Identity/IdentityServer/Dockerfile
+
 volumes:
-  posts-data:
-  comments-data:
-  accounts-data:
+  sqlserver-data:
