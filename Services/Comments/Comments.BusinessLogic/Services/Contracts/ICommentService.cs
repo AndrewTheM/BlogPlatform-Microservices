@@ -22,7 +22,7 @@ public interface ICommentService
     /// </summary>
     Task<CommentResponse> GetCommentByIdAsync(Guid id);
 
-    Task<CommentResponse> PublishCommentAsync(CommentRequest commentDto);
+    Task<CommentResponse> PublishCommentAsync(CommentRequest commentDto, Guid userId);
 
     /// <summary>
     /// Throws <see cref="EntityNotFoundException"/>

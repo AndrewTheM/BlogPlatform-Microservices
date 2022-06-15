@@ -26,6 +26,27 @@ services:
     ports:
       - 14330:1433
       
+  elasticsearch:
+    container_name: elasticsearch
+    environment:
+        - xpack.monitoring.enabled=true
+        - xpack.watcher.enabled=false
+        - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+        - discovery.type=single-node
+    ports:
+        - 9200:9200
+    volumes:
+        - elasticsearch-data:/usr/share/elasticsearch/data   
+
+  kibana:
+    container_name: kibana
+    environment:        
+        - ELASTICSEARCH_URL=http://elasticsearch:9200
+    depends_on:
+        - elasticsearch
+    ports:
+        - 5601:5601
+
   posts.api:
     container_name: posts.api
     environment:
@@ -34,11 +55,15 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Password=password
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ConnectionStrings:LocalSqlServer=Server=sqlserver;Database=BlogPlatform_Posts;User=sa;Password=1Q2w3e4r;
+      - IdentityUrl=http://identityserver
       - Redis=rediscache:6379
+      - ElasticSearch=http://elasticsearch:9200
+      - EventBusUrl=amqp://guest:guest@eventbus:5672
     depends_on:
       - sqlserver
       - rediscache
       - eventbus
+      - elasticsearch
     ports:
       - 8000:80
       - 8005:8080
@@ -53,10 +78,14 @@ services:
       - ASPNETCORE_URLS=https://+:443;http://+:80;http://+:8080
       - ASPNETCORE_Kestrel__Certificates__Default__Password=password
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
-      - ConnectionStrings:LocalSqlServer=Server=sqlserver;Database=BlogPlatform_Comments;User=sa;Password=1Q2w3e4r;  
+      - ConnectionStrings:LocalSqlServer=Server=sqlserver;Database=BlogPlatform_Comments;User=sa;Password=1Q2w3e4r;
+      - IdentityUrl=http://identityserver
+      - ElasticSearch=http://elasticsearch:9200
+      - EventBusUrl=amqp://guest:guest@eventbus:5672
     depends_on:
       - sqlserver
       - eventbus
+      - elasticsearch
     ports:
       - 8001:80
       - 8006:8080
@@ -72,9 +101,12 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Password=password
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ConnectionStrings:LocalSqlServer=Server=sqlserver;Database=BlogPlatform_Accounts;User=sa;Password=1Q2w3e4r;
+      - IdentityUrl=http://identityserver
+      - ElasticSearch=http://elasticsearch:9200
     depends_on:
       - sqlserver
       - eventbus
+      - elasticsearch
     ports:
       - 8002:80
       - 18002:443
@@ -88,6 +120,10 @@ services:
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - ASPNETCORE_Kestrel__Certificates__Default__Password=password
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - IdentityUrl=http://identityserver
+      - ElasticSearch=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
     ports:
       - 8003:80
       - 18003:443
@@ -102,9 +138,12 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Password=password
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ConnectionStrings:LocalSqlServer=Server=sqlserver;Database=BlogPlatform_Identity;User=sa;Password=1Q2w3e4r;
-      - ClientUrl=http://blogplatform.ui
+      - ClientUrl=https://localhost:18020
+      - IssuerUrl=http://localhost:8008
+      - ElasticSearch=http://elasticsearch:9200
     depends_on:
       - sqlserver
+      - elasticsearch
     ports:
       - 8008:80
       - 18008:443
@@ -118,11 +157,14 @@ services:
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - ASPNETCORE_Kestrel__Certificates__Default__Password=password
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - IdentityUrl=http://identityserver
       - GrpcSettings:PostsUrl=http://posts.api:8080
       - GrpcSettings:CommentsUrl=http://comments.api:8080
+      - ElasticSearch=http://elasticsearch:9200
     depends_on:
       - posts.api
       - comments.api
+      - elasticsearch
     ports:
       - 8009:80
       - 18009:443
@@ -136,6 +178,8 @@ services:
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - ASPNETCORE_Kestrel__Certificates__Default__Password=password
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - IdentityUrl=http://identityserver
+      - ElasticSearch=http://elasticsearch:9200
     depends_on:
       - posts.api
       - comments.api
@@ -143,6 +187,7 @@ services:
       - files.api
       - identityserver
       - aggregator
+      - elasticsearch
     ports:
       - 8010:80
       - 18010:443
@@ -157,8 +202,12 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Password=password
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ApiGateway=http://apigateway
+      - IdentityUrl=http://identityserver
+      - IssuerUrl=http://localhost:8008
+      - ElasticSearch=http://elasticsearch:9200
     depends_on:
       - apigateway
+      - elasticsearch
     ports:
       - 8020:80
       - 18020:443

@@ -1,5 +1,6 @@
 ﻿using BlogPlatform.Shared.Common.Filters;
 using BlogPlatform.Shared.Common.Pagination;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Posts.API.Extensions;
@@ -11,6 +12,7 @@ namespace Posts.API.Controllers;
 
 [Route("api/posts")]
 [ApiController]
+[Authorize(Roles = "Admin, Author")]
 public class PostController : ControllerBase
 {
     private readonly IPostService _postService;
@@ -23,6 +25,7 @@ public class PostController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<Page<PostResponse>>> GetPosts([FromQuery] PostFilter filter)
@@ -44,6 +47,7 @@ public class PostController : ControllerBase
     }
 
     [HttpGet("trending")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<IEnumerable<PostResponse>>> GetTrendingPosts([FromQuery] int top = 5)
@@ -70,6 +74,7 @@ public class PostController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<PostResponse>> GetPostById([FromRoute] Guid id)
@@ -91,6 +96,7 @@ public class PostController : ControllerBase
     }
 
     [HttpGet("complete/{titleIdentifier}")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CompletePostResponse>> GetCompletePostById(
@@ -113,38 +119,72 @@ public class PostController : ControllerBase
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<PostResponse>> CreatePost([FromBody] PostRequest postDto)
     {
-        var post = await _postService.PublishPostAsync(postDto);
+        string userId = HttpContext.User.FindFirst("sub").Value;
+        var post = await _postService.PublishPostAsync(postDto, Guid.Parse(userId));
         return Ok(post);
     }
 
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> UpdatePost(
         [FromRoute] Guid id, [FromBody] PostRequest postDto)
     {
+        bool userIsPermitted = await CheckIsAuthorOfPostOrAdminAsync(id);
+        if (!userIsPermitted)
+        {
+            return Forbid();
+        }
+
         await _postService.EditPostAsync(id, postDto);
         return NoContent();
     }
 
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> DeletePost([FromRoute] Guid id)
     {
+        bool userIsPermitted = await CheckIsAuthorOfPostOrAdminAsync(id);
+        if (!userIsPermitted)
+        {
+            return Forbid();
+        }
+
         await _postService.DeletePostAsync(id);
         return NoContent();
     }
 
     [HttpPost("{id}/tags")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> SetTagsOfPost(
         [FromRoute] Guid id, [FromBody] PostTagsRequest tagsRequest)
     {
+        bool userIsPermitted = await CheckIsAuthorOfPostOrAdminAsync(id);
+        if (!userIsPermitted)
+        {
+            return Forbid();
+        }
+
         await _postService.SetTagsOfPostAsync(id, tagsRequest.Tags);
         return NoContent();
+    }
+
+    private async Task<bool> CheckIsAuthorOfPostOrAdminAsync(Guid id)
+    {
+        string userId = HttpContext.User.FindFirst("sub").Value;
+        return await _postService.CheckIsPostAuthorAsync(id, Guid.Parse(userId))
+            || HttpContext.User.IsInRole("Admin");
     }
 }

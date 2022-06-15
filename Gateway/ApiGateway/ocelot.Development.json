@@ -10,7 +10,11 @@
         }
       ],
       "UpstreamPathTemplate": "/posts",
-      "UpstreamHttpMethod": [ "GET" ]
+      "UpstreamHttpMethod": [ "GET" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "IdentityApiKey",
+        "AllowedScopes": [ "postsApi" ]
+      }
     },
     {
       "DownstreamPathTemplate": "/api/posts/tags",
@@ -33,6 +37,10 @@
         "Period": "1s",
         "PeriodTimespan": 1,
         "Limit": 10
+      },
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "IdentityApiKey",
+        "AllowedScopes": [ "postsApi" ]
       }
     },
     {
@@ -45,7 +53,11 @@
         }
       ],
       "UpstreamPathTemplate": "/posts/{everything}",
-      "SwaggerKey": "posts"
+      "SwaggerKey": "posts",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "IdentityApiKey",
+        "AllowedScopes": [ "postsApi" ]
+      }
     },
     {
       "DownstreamPathTemplate": "/api/comments/{everything}",
@@ -57,7 +69,11 @@
         }
       ],
       "UpstreamPathTemplate": "/comments/{everything}",
-      "SwaggerKey": "comments"
+      "SwaggerKey": "comments",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "IdentityApiKey",
+        "AllowedScopes": [ "commentsApi" ]
+      }
     },
     {
       "DownstreamPathTemplate": "/api/accounts/{everything}",
@@ -69,7 +85,11 @@
         }
       ],
       "UpstreamPathTemplate": "/accounts/{everything}",
-      "SwaggerKey": "accounts"
+      "SwaggerKey": "accounts",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "IdentityApiKey",
+        "AllowedScopes": [ "accountsApi" ]
+      }
     },
     {
       "DownstreamPathTemplate": "/files/{everything}",
@@ -81,7 +101,11 @@
         }
       ],
       "UpstreamPathTemplate": "/files/{everything}",
-      "SwaggerKey": "files"
+      "SwaggerKey": "files",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "IdentityApiKey",
+        "AllowedScopes": [ "filesApi" ]
+      }
     },
     {
       "DownstreamPathTemplate": "/api/{everything}",
@@ -93,7 +117,11 @@
         }
       ],
       "UpstreamPathTemplate": "/{everything}",
-      "SwaggerKey": "aggregator"
+      "SwaggerKey": "aggregator",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "IdentityApiKey",
+        "AllowedScopes": []
+      }
     }
   ],
   "SwaggerEndPoints": [

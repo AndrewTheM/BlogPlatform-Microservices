@@ -53,7 +53,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentatio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlogPlatform.UI", "Presentation\BlogPlatform.UI\BlogPlatform.UI.csproj", "{4445C8CD-B9D3-4A38-B79A-A9188619EAE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServer", "Services\Identity\IdentityServer\IdentityServer.csproj", "{CD897D2A-0C11-46CD-BA19-DA76A6561F4D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer", "Services\Identity\IdentityServer\IdentityServer.csproj", "{CD897D2A-0C11-46CD-BA19-DA76A6561F4D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

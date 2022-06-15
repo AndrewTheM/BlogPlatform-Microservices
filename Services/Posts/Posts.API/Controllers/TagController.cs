@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Posts.BusinessLogic.DTO.Requests;
 using Posts.BusinessLogic.DTO.Responses;
@@ -9,6 +10,7 @@ namespace Posts.API.Controllers;
 
 [Route("api/posts/tags")]
 [ApiController]
+[Authorize]
 public class TagController : ControllerBase
 {
     private readonly IBloggingUnitOfWork _unitOfWork;
@@ -21,6 +23,7 @@ public class TagController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IEnumerable<string>> GetTags()
     {
@@ -30,6 +33,7 @@ public class TagController : ControllerBase
 
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TagResponse>> GetTagById([FromRoute] Guid id)
     {
@@ -38,7 +42,9 @@ public class TagController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin, Author")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult> CreateTag([FromBody] TagRequest tagDto)
     {
@@ -49,7 +55,10 @@ public class TagController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin, Author")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> UpdateTag(
         [FromRoute] Guid id, [FromBody] TagRequest tagDto)
@@ -61,7 +70,10 @@ public class TagController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin, Author")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> DeleteTag([FromRoute] Guid id)
     {

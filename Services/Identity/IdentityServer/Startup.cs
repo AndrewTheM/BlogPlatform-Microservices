@@ -26,11 +26,11 @@ public class Startup
             opts => opts.UseSqlServer(connectionString));
 
         services.AddIdentity<ApplicationUser, ApplicationRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddDefaultTokenProviders();
+            .AddEntityFrameworkStores<ApplicationDbContext>();
 
         services.AddIdentityServer(options =>
         {
+            options.IssuerUri = Configuration["IssuerUrl"];
             options.Events.RaiseErrorEvents = true;
             options.Events.RaiseInformationEvents = true;
             options.Events.RaiseFailureEvents = true;
@@ -65,10 +65,10 @@ public class Startup
         }
 
         app.UseStaticFiles();
-        app.UseRouting();
 
         app.UseIdentityServer();
-        app.UseAuthorization();
+        app.UseCookiePolicy(new() { MinimumSameSitePolicy = SameSiteMode.Lax });
+        app.UseRouting();
 
         app.UseEndpoints(endpoints =>
         {

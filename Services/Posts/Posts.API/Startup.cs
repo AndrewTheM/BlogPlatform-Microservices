@@ -1,6 +1,7 @@
 using BlogPlatform.Shared.Web.Extensions;
 using BlogPlatform.Shared.Web.Filters;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -63,6 +64,16 @@ public class Startup
             config.RegisterValidatorsFromAssemblyContaining<Startup>();
             config.DisableDataAnnotationsValidation = true;
         });
+
+        const string scheme = JwtBearerDefaults.AuthenticationScheme;
+        services.AddAuthentication(scheme)
+            .AddJwtBearer(scheme, options =>
+            {
+                options.Authority = _configuration["IdentityUrl"];
+                options.RequireHttpsMetadata = false;
+                options.Audience = "postsApi";
+            });
+        services.AddAuthorization();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

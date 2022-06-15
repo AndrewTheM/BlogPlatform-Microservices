@@ -24,9 +24,10 @@ public class RatingService : IRatingService
         return _mapper.Map<RatingResponse>(rating);
     }
 
-    public async Task<RatingResponse> CreateRatingAsync(RatingRequest ratingDto)
+    public async Task<RatingResponse> CreateRatingAsync(RatingRequest ratingDto, Guid userId)
     {
         var rating = _mapper.Map<Rating>(ratingDto);
+        rating.UserId = userId;
 
         await _unitOfWork.Ratings.CreateAsync(rating);
         await _unitOfWork.CommitAsync();

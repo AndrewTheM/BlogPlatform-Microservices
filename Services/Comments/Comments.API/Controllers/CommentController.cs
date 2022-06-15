@@ -3,12 +3,14 @@ using BlogPlatform.Shared.Common.Pagination;
 using Comments.BusinessLogic.DTO.Requests;
 using Comments.BusinessLogic.DTO.Responses;
 using Comments.BusinessLogic.Services.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Comments.API.Controllers;
 
 [Route("api/comments")]
 [ApiController]
+[Authorize]
 public class CommentController : ControllerBase
 {
     private readonly ICommentService _commentService;
@@ -19,6 +21,7 @@ public class CommentController : ControllerBase
     }
 
     [HttpGet("post/{postId}")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<Page<CommentResponse>>> GetPageOfCommentsForPost(
         [FromRoute] Guid postId, [FromQuery] CommentFilter filter)
@@ -29,6 +32,7 @@ public class CommentController : ControllerBase
 
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CommentResponse>> GetCommentById([FromRoute] Guid id)
     {
@@ -38,27 +42,46 @@ public class CommentController : ControllerBase
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<CommentResponse>> PublishComment([FromBody] CommentRequest commentDto)
     {
-        var comment = await _commentService.PublishCommentAsync(commentDto);
+        string userId = HttpContext.User.FindFirst("sub").Value;
+        var comment = await _commentService.PublishCommentAsync(commentDto, Guid.Parse(userId));
         return Ok(comment);
     }
 
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> EditComment(
         [FromRoute] Guid id, [FromBody] CommentContentRequest commentDto)
     {
+        bool userIsPermitted = await CheckIsAuthorOfCommentOrAdmin(id);
+        if (!userIsPermitted)
+        {
+            return Forbid();
+        }
+
         await _commentService.EditCommentAsync(id, commentDto);
         return NoContent();
     }
 
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> DeleteComment([FromRoute] Guid id)
     {
+        bool userIsPermitted = await CheckIsAuthorOfCommentOrAdmin(id);
+        if (!userIsPermitted)
+        {
+            return Forbid();
+        }
+
         await _commentService.DeleteCommentAsync(id);
         return NoContent();
     }
@@ -66,6 +89,7 @@ public class CommentController : ControllerBase
     [HttpPatch("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> PatchCommentVotes(
         [FromRoute] Guid id, [FromBody] CommentVoteRequest voteRequest)
@@ -79,5 +103,12 @@ public class CommentController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
+    }
+
+    private async Task<bool> CheckIsAuthorOfCommentOrAdmin(Guid id)
+    {
+        string userId = HttpContext.User.FindFirst("sub").Value;
+        return await _commentService.CheckIsCommentAuthorAsync(id, Guid.Parse(userId))
+                || HttpContext.User.IsInRole("Admin");
     }
 }

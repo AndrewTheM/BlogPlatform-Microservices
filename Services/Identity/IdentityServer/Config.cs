@@ -51,7 +51,9 @@ public static class Config
                 RedirectUris = { $"{clientUrl}/signin-oidc" },
                 PostLogoutRedirectUris = { $"{clientUrl}/signout-callback-oidc" },
 
+                //AllowAccessTokensViaBrowser = false,
                 AllowOfflineAccess = true,
+                //AlwaysIncludeUserClaimsInIdToken = true,
                 AllowedScopes =
                 {
                     IdentityServerConstants.StandardScopes.OpenId,

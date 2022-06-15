@@ -81,9 +81,10 @@ public class PostService : IPostService
         return response;
     }
 
-    public async Task<PostResponse> PublishPostAsync(PostRequest postDto)
+    public async Task<PostResponse> PublishPostAsync(PostRequest postDto, Guid userId)
     {
         Post post = _mapper.Map<Post>(postDto);
+        post.AuthorId = userId;
         post.ContentEntity = _mapper.Map<PostContent>(postDto);
 
         string cutTitle = post.Title.Length switch

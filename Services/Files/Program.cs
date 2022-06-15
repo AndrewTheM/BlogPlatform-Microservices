@@ -1,9 +1,24 @@
+using BlogPlatform.Shared.Logging;
 using Files.API;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 using System.Net.Http.Headers;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog(SerilogHelpers.Configure);
+
+const string scheme = JwtBearerDefaults.AuthenticationScheme;
+builder.Services.AddAuthentication(scheme)
+    .AddJwtBearer(scheme, options =>
+    {
+        options.Authority = builder.Configuration["IdentityUrl"];
+        options.Audience = "filesApi";
+    });
+builder.Services.AddAuthorization();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -17,8 +32,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 
 app.MapGet("/files/{fileName}",
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     async ([FromRoute] string fileName) =>
@@ -31,7 +50,9 @@ app.MapGet("/files/{fileName}",
         );
 
         if (!System.IO.File.Exists(filePath))
+        {
             return Results.BadRequest();
+        }
 
         byte[] imageBytes = await System.IO.File.ReadAllBytesAsync(filePath);
         string mimeType = MimeTypes.GetMimeType(fileName);
@@ -40,6 +61,7 @@ app.MapGet("/files/{fileName}",
 );
 
 app.MapPost("/files",
+    [Authorize(Roles = "Admin, Author")]
     [DisableRequestSizeLimit]
     [ProducesResponseType(StatusCodes.Status200OK)]
     async (HttpRequest request) =>

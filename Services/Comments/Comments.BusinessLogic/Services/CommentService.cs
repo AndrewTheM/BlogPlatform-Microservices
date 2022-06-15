@@ -58,12 +58,12 @@ public class CommentService : ICommentService
         return response;
     }
 
-    // TODO: add proper auth
-    public async Task<CommentResponse> PublishCommentAsync(CommentRequest commentDto)
+    public async Task<CommentResponse> PublishCommentAsync(CommentRequest commentDto, Guid userId)
     {
         var comment = _mapper.Map<Comment>(commentDto);
-        Guid id = await _commentRepository.CreateAsync(comment);
+        comment.AuthorId = userId;
 
+        Guid id = await _commentRepository.CreateAsync(comment);
         var createdComment = await _commentRepository.GetCommentWithAuthorAsync(id);
         var response = _mapper.Map<CommentResponse>(createdComment);
 

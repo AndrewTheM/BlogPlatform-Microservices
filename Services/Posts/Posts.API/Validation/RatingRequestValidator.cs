@@ -11,8 +11,5 @@ public class RatingRequestValidator : AbstractValidator<RatingRequest>
 
         RuleFor(rr => rr.PostId)
             .NotEmpty();
-
-        RuleFor(rr => rr.UserId)
-            .NotEmpty();
     }
 }

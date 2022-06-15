@@ -12,6 +12,7 @@ using Comments.DataAccess.Factories.Contracts;
 using Comments.DataAccess.Repositories;
 using Comments.DataAccess.Repositories.Contracts;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.OpenApi.Models;
 using System.Globalization;
@@ -66,6 +67,15 @@ internal class Startup
             config.RegisterValidatorsFromAssemblyContaining<Startup>();
             config.DisableDataAnnotationsValidation = true;
         });
+
+        const string scheme = JwtBearerDefaults.AuthenticationScheme;
+        services.AddAuthentication(scheme)
+            .AddJwtBearer(scheme, options =>
+            {
+                options.Authority = _configuration["IdentityUrl"];
+                options.Audience = "commentsApi";
+            });
+        services.AddAuthorization();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -97,7 +107,6 @@ internal class Startup
 
         app.UseAuthentication();
         app.UseAuthorization();
-
 
         app.UseEndpoints(endpoints =>
         {

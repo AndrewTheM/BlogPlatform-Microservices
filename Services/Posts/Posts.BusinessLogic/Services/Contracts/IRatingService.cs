@@ -13,7 +13,7 @@ public interface IRatingService
     /// </summary>
     Task<RatingResponse> GetRatingOfPostByUserAsync(Guid postId, Guid userId);
 
-    Task<RatingResponse> CreateRatingAsync(RatingRequest ratingDto);
+    Task<RatingResponse> CreateRatingAsync(RatingRequest ratingDto, Guid userId);
 
     /// <summary>
     /// Throws <see cref="EntityNotFoundException"/>

@@ -6,6 +6,7 @@ using BlogPlatform.Shared.Web.Extensions;
 using BlogPlatform.Shared.Web.Filters;
 using FluentValidation.AspNetCore;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -43,6 +44,15 @@ public class Startup
             config.RegisterValidatorsFromAssemblyContaining<MediatrDI>();
             config.DisableDataAnnotationsValidation = true;
         });
+
+        const string scheme = JwtBearerDefaults.AuthenticationScheme;
+        services.AddAuthentication(scheme)
+            .AddJwtBearer(scheme, options =>
+            {
+                options.Authority = _configuration["IdentityUrl"];
+                options.Audience = "accountsApi";
+            });
+        services.AddAuthorization();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

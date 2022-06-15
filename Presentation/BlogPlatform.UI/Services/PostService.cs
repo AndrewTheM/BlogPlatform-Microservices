@@ -49,7 +49,7 @@ public class PostService : IPostService
 
     public async Task<Post> FindPostAsync(string titleIdentifier)
     {
-        return await _apiClient.SendGetApiRequestAsync<Post>($"posts/complete/{titleIdentifier}");
+        return await _apiClient.SendGetApiRequestAsync<Post>($"posts/page/{titleIdentifier}");
     }
 
     public async Task<Post> PublishPostAsync(Post post)

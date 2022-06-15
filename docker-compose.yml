@@ -10,6 +10,12 @@ services:
 
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2019-latest
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.2
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.9.2
       
   posts.api:
     image: ${DOCKER_REGISTRY-}postsapi
@@ -61,3 +67,4 @@ services:
 
 volumes:
   sqlserver-data:
+  elasticsearch-data:

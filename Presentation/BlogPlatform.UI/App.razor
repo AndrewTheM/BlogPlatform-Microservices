@@ -1,18 +1,27 @@
-<Router AppAssembly="@typeof(Program).Assembly">
-    <Found Context="routeData">
-        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
-            @* TODO: not authorized page *@
-            <Authorizing>
-                <Loading />
-            </Authorizing>
-        </AuthorizeRouteView>
-    </Found>
-    <NotFound>
-        <CascadingAuthenticationState>
-            <BlogPlatform.UI.Pages.NotFound />
-        </CascadingAuthenticationState>
-    </NotFound>
-</Router>
+@inject NavigationManager _navigationManager
+
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(Program).Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                <NotAuthorized>
+                    @{
+                        var returnUrl = _navigationManager.ToBaseRelativePath(_navigationManager.Uri);
+                        _navigationManager.NavigateTo($"login?redirectUri={returnUrl}", forceLoad: true);
+                    }
+                </NotAuthorized>
+                <Authorizing>
+                    <Loading />
+                </Authorizing>
+            </AuthorizeRouteView>
+        </Found>
+        <NotFound>
+            <CascadingAuthenticationState>
+                <BlogPlatform.UI.Pages.NotFound />
+            </CascadingAuthenticationState>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>
 
 <MudThemeProvider Theme="TertiaryWhite" />
 <MudDialogProvider />

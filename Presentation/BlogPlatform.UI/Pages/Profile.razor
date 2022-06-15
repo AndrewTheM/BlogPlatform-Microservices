@@ -44,14 +44,15 @@
 
     protected override async Task OnInitializedAsync()
     {
-        userInfo = await this.MapUserFromCurrentClaims();
+        //userInfo = await this.MapUserFromCurrentClaims();
     }
 
     public async Task SignOut()
     {
-        var provider = _authStateProvider as JwtAuthenticationStateProvider;
-        await provider.UnauthenticateAsync();
-        _navigationManager.NavigateTo("/");
+        //var provider = _authStateProvider as JwtAuthenticationStateProvider;
+        //await provider.UnauthenticateAsync();
+        //_navigationManager.NavigateTo("/");
+        _navigationManager.NavigateTo("/logout");
     }
 
     private async Task<User> MapUserFromCurrentClaims()

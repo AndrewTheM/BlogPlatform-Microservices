@@ -1,11 +1,13 @@
 ﻿using Aggregator.DTO;
 using Aggregator.Services.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Aggregator.Controllers
 {
     [Route("api/postpage")]
     [ApiController]
+    [AllowAnonymous]
     public class PostPageController : ControllerBase
     {
         private readonly IPostService _postService;
