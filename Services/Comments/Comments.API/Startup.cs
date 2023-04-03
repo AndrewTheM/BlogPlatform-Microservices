@@ -1,5 +1,7 @@
+using BlogPlatform.Shared.Events;
 using BlogPlatform.Shared.Web.Extensions;
 using BlogPlatform.Shared.Web.Filters;
+using Comments.API.EventBus;
 using Comments.API.GRPC.Mapping;
 using Comments.API.GRPC.Services;
 using Comments.BusinessLogic.Mapping;
@@ -12,6 +14,7 @@ using Comments.DataAccess.Factories.Contracts;
 using Comments.DataAccess.Repositories;
 using Comments.DataAccess.Repositories.Contracts;
 using FluentValidation.AspNetCore;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.OpenApi.Models;
@@ -45,6 +48,20 @@ internal class Startup
         services.AddHelperServices();
 
         services.AddGrpc();
+
+        services.AddMassTransit(config =>
+        {
+            config.AddConsumer<PostDeletionConsumer>();
+
+            config.UsingRabbitMq((ctx, cfg) => {
+                cfg.Host(_configuration["EventBusUrl"]);
+
+                cfg.ReceiveEndpoint(EventBusConstants.PostQueue, c =>
+                {
+                    c.ConfigureConsumer<PostDeletionConsumer>(ctx);
+                });
+            });
+        });
 
         services.AddLocalization(opt => opt.ResourcesPath = "Resources");
         services.Configure<RequestLocalizationOptions>(opts =>

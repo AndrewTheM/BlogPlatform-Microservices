@@ -27,8 +27,4 @@
     <Protobuf Include="GRPC\Protos\post.proto" GrpcServices="Both" ProtoRoot="GRPC\Protos" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Events\" />
-  </ItemGroup>
-
 </Project>

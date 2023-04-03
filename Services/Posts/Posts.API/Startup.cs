@@ -1,6 +1,7 @@
 using BlogPlatform.Shared.Web.Extensions;
 using BlogPlatform.Shared.Web.Filters;
 using FluentValidation.AspNetCore;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +35,12 @@ public class Startup
 
         services.AddAutoMapper(typeof(BlogMappingProfile), typeof(GrpcMappingProfile));
         services.AddGrpc();
+
+        services.AddMassTransit(config => {
+            config.UsingRabbitMq((ctx, cfg) => {
+                cfg.Host(_configuration["EventBusUrl"]);
+            });
+        });
 
         services.AddRepositories();
         services.AddBlogging();

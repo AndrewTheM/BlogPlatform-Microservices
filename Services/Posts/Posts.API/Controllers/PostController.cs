@@ -1,5 +1,7 @@
 ﻿using BlogPlatform.Shared.Common.Filters;
 using BlogPlatform.Shared.Common.Pagination;
+using BlogPlatform.Shared.Events;
+using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
@@ -17,11 +19,14 @@ public class PostController : ControllerBase
 {
     private readonly IPostService _postService;
     private readonly IDistributedCache _cache;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public PostController(IPostService postService, IDistributedCache cache)
+    public PostController(
+        IPostService postService, IDistributedCache cache, IPublishEndpoint publishEndpoint)
     {
         _postService = postService;
         _cache = cache;
+        _publishEndpoint = publishEndpoint;
     }
 
     [HttpGet]
@@ -158,6 +163,8 @@ public class PostController : ControllerBase
         {
             return Forbid();
         }
+
+        await _publishEndpoint.Publish<PostDeletionEvent>(new() { PostId = id });
 
         await _postService.DeletePostAsync(id);
         return NoContent();
