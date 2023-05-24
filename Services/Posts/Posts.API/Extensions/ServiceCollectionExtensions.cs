@@ -26,6 +26,7 @@ internal static class ServiceCollectionExtensions
     {
         services.AddTransient<IPostService, PostService>();
         services.AddTransient<IRatingService, RatingService>();
+        services.AddTransient<IContentService, ContentService>();
         services.AddHelperServices();
 
         return services;

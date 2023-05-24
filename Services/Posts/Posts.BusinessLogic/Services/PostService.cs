@@ -19,17 +19,20 @@ public class PostService : IPostService
     private readonly IBloggingUnitOfWork _unitOfWork;
     private readonly IUriService _uriService;
     private readonly ITimeService _timeService;
+    private readonly IContentService _contentService;
     private readonly IMapper _mapper;
 
     public PostService(
         IBloggingUnitOfWork unitOfWork,
         IUriService uriService,
         ITimeService timeService,
+        IContentService contentService,
         IMapper mapper)
     {
         _unitOfWork = unitOfWork;
         _uriService = uriService;
         _timeService = timeService;
+        _contentService = contentService;
         _mapper = mapper;
     }
 
@@ -83,6 +86,14 @@ public class PostService : IPostService
 
     public async Task<PostResponse> PublishPostAsync(PostRequest postDto, Guid userId)
     {
+        var titleCategories = await _contentService.CheckTextContentAsync(postDto.Title);
+        if (titleCategories.Any())
+            throw new Exception(string.Join(", ", titleCategories));
+
+        var contentCategories = await _contentService.CheckTextContentAsync(postDto.Content);
+        if (contentCategories.Any())
+            throw new Exception(string.Join(", ", contentCategories));
+
         Post post = _mapper.Map<Post>(postDto);
         post.AuthorId = userId;
         post.ContentEntity = _mapper.Map<PostContent>(postDto);

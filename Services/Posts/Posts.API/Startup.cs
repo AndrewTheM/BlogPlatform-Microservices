@@ -32,6 +32,8 @@ public class Startup
             string connectionString = _configuration.GetConnectionString("LocalSqlServer");
             options.UseSqlServer(connectionString);
         });
+        
+        services.AddHttpClient();
 
         services.AddAutoMapper(typeof(BlogMappingProfile), typeof(GrpcMappingProfile));
         services.AddGrpc();
