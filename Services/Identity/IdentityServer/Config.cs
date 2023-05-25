@@ -23,10 +23,39 @@ public static class Config
     public static IEnumerable<ApiScope> ApiScopes =>
         new ApiScope[]
         {
-            new ApiScope("postsApi", "Posts API"),
-            new ApiScope("commentsApi", "Comments API"),
-            new ApiScope("accountsApi", "Accounts API"),
-            new ApiScope("filesApi", "Files API")
+            new ApiScope("posts", "Posts"),
+            new ApiScope("comments", "Comments"),
+            new ApiScope("accounts", "Accounts"),
+            new ApiScope("files", "Files")
+        };
+
+    public static IEnumerable<ApiResource> ApiResources =>
+        new ApiResource[]
+        {
+            new ApiResource
+            {
+                Name = "postsApi",
+                DisplayName = "Posts API",
+                Scopes = new[] { "posts" }
+            },
+            new ApiResource
+            {
+                Name = "commentsApi",
+                DisplayName = "Comments API",
+                Scopes = new[] { "comments" }
+            },
+            new ApiResource
+            {
+                Name = "accountsApi",
+                DisplayName = "Accounts API",
+                Scopes = new[] { "accounts" }
+            },
+            new ApiResource
+            {
+                Name = "filesApi",
+                DisplayName = "Files API",
+                Scopes = new[] { "files" }
+            }
         };
 
     public static IEnumerable<Client> GetClients(string clientUrl) =>
@@ -40,7 +69,7 @@ public static class Config
                 ClientSecrets = { new Secret("511536EF-F270-4058-80CA-1C89C192F69A".Sha256()) },
 
                 AllowOfflineAccess = true,
-                AllowedScopes = { "postsApi", "commentsApi", "accountsApi", "filesApi" }
+                AllowedScopes = { "posts", "comments", "accounts", "files" }
             },
             new Client
             {
@@ -60,10 +89,10 @@ public static class Config
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Email,
                     "roles",
-                    "postsApi",
-                    "commentsApi",
-                    "accountsApi",
-                    "filesApi"
+                    "posts",
+                    "comments",
+                    "accounts",
+                    "files"
                 }
             }
         };

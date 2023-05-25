@@ -52,7 +52,7 @@
       "SwaggerKey": "posts",
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "IdentityApiKey",
-        "AllowedScopes": [ "postsApi" ]
+        "AllowedScopes": [ "posts" ]
       }
     },
     {
@@ -82,7 +82,7 @@
       "SwaggerKey": "posts",
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "IdentityApiKey",
-        "AllowedScopes": [ "postsApi" ]
+        "AllowedScopes": [ "posts" ]
       }
     },
 
@@ -101,7 +101,7 @@
       "SwaggerKey": "comments",
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "IdentityApiKey",
-        "AllowedScopes": [ "commentsApi" ]
+        "AllowedScopes": [ "comments" ]
       }
     },
     {
@@ -131,7 +131,7 @@
       "SwaggerKey": "comments",
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "IdentityApiKey",
-        "AllowedScopes": [ "commentsApi" ]
+        "AllowedScopes": [ "comments" ]
       }
     },
 
@@ -150,7 +150,7 @@
       "SwaggerKey": "accounts",
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "IdentityApiKey",
-        "AllowedScopes": [ "accountsApi" ]
+        "AllowedScopes": [ "accounts" ]
       }
     },
     {
@@ -167,7 +167,7 @@
       "SwaggerKey": "accounts",
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "IdentityApiKey",
-        "AllowedScopes": [ "accountsApi" ]
+        "AllowedScopes": [ "accounts" ]
       }
     },
 
@@ -186,7 +186,7 @@
       "SwaggerKey": "files",
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "IdentityApiKey",
-        "AllowedScopes": [ "filesApi" ]
+        "AllowedScopes": [ "files" ]
       }
     },
     {

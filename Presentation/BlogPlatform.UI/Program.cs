@@ -42,12 +42,12 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
 })
-.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
-.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
+.AddCookie()
+.AddOpenIdConnect(options =>
 {
-    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.Authority = builder.Configuration["IssuerUrl"];
     options.MetadataAddress = $"{builder.Configuration["IdentityUrl"]}/.well-known/openid-configuration";
     options.RequireHttpsMetadata = false;
@@ -58,20 +58,28 @@ builder.Services.AddAuthentication(options =>
         return Task.CompletedTask;
     };
 
+    options.Events.OnAccessDenied = context =>
+    {
+        context.HandleResponse();
+        context.Response.Redirect("/");
+        return Task.CompletedTask;
+    };
+
     options.ClientId = "ui-client";
     options.ClientSecret = "49C1A7E1-0C79-4A89-A3D6-A37998FB86B0";
     options.ResponseType = "code";
+    options.UsePkce = true;
 
     options.Scope.Remove("profile");
     options.Scope.Add("openid");
     options.Scope.Add("email");
     options.Scope.Add("roles");
-    options.ClaimActions.MapUniqueJsonKey("role", "role");
+    options.ClaimActions.MapUniqueJsonKey("role", "role", "role");
 
-    options.Scope.Add("postsApi");
-    options.Scope.Add("commentsApi");
-    options.Scope.Add("filesApi");
-    options.Scope.Add("accountsApi");
+    options.Scope.Add("posts");
+    options.Scope.Add("comments");
+    options.Scope.Add("files");
+    options.Scope.Add("accounts");
 
     options.SaveTokens = true;
     options.GetClaimsFromUserInfoEndpoint = true;
@@ -97,7 +105,7 @@ else
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseRequestLocalization();
 app.UseStaticFiles();
 

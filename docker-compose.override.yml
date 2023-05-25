@@ -138,7 +138,7 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Password=password
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ConnectionStrings:LocalSqlServer=Server=sqlserver;Database=BlogPlatform_Identity;User=sa;Password=1Q2w3e4r;
-      - ClientUrl=https://localhost:18020
+      - ClientUrl=http://localhost:8020
       - IssuerUrl=http://localhost:8008
       - ElasticSearch=http://elasticsearch:9200
     depends_on:

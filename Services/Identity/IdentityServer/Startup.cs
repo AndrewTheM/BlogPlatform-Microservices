@@ -1,8 +1,10 @@
 ﻿using IdentityServer.Data;
 using IdentityServer.Data.Entities;
 using IdentityServer.Models;
+using IdentityServer.Services;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
+using IdentityServer4.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -53,6 +55,8 @@ public class Startup
 
         var adminSection = Configuration.GetSection("DefaultAdmin");
         services.Configure<AdminUserOptions>(adminSection);
+        
+        services.AddTransient<IProfileService, ProfileService>();
 
         services.AddControllersWithViews();
     }
@@ -64,6 +68,7 @@ public class Startup
             app.UseDeveloperExceptionPage();
         }
 
+        //app.UseHttpsRedirection();
         app.UseStaticFiles();
 
         app.UseIdentityServer();
@@ -100,6 +105,14 @@ public class Startup
             foreach (var apiScope in Config.ApiScopes)
             {
                 configContext.ApiScopes.Add(apiScope.ToEntity());
+            }
+        }
+        
+        if (!configContext.ApiResources.Any())
+        {
+            foreach (var apiResource in Config.ApiResources)
+            {
+                configContext.ApiResources.Add(apiResource.ToEntity());
             }
         }
 

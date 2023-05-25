@@ -1,15 +1,15 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace BlogPlatform.UI.Pages;
 
 public class LoginModel : PageModel
 {
-    public async Task OnGetAsync(string redirectUri)
+    public IActionResult OnGetAsync(string redirectUri)
     {
-        await HttpContext.ChallengeAsync(
-            OpenIdConnectDefaults.AuthenticationScheme,
-            properties: new() { RedirectUri = redirectUri });
+        if (HttpContext.User.Identity.IsAuthenticated)
+            return LocalRedirect(redirectUri ?? "/");
+
+        return Challenge(properties: new() { RedirectUri = redirectUri });
     }
 }
