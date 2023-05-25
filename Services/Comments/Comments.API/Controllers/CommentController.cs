@@ -5,6 +5,7 @@ using Comments.BusinessLogic.DTO.Responses;
 using Comments.BusinessLogic.Services.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Comments.API.Controllers;
 
@@ -46,7 +47,7 @@ public class CommentController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<CommentResponse>> PublishComment([FromBody] CommentRequest commentDto)
     {
-        string userId = HttpContext.User.FindFirst("sub").Value;
+        var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
         var comment = await _commentService.PublishCommentAsync(commentDto, Guid.Parse(userId));
         return Ok(comment);
     }
@@ -60,10 +61,9 @@ public class CommentController : ControllerBase
         [FromRoute] Guid id, [FromBody] CommentContentRequest commentDto)
     {
         bool userIsPermitted = await CheckIsAuthorOfCommentOrAdmin(id);
+
         if (!userIsPermitted)
-        {
             return Forbid();
-        }
 
         await _commentService.EditCommentAsync(id, commentDto);
         return NoContent();
@@ -77,10 +77,9 @@ public class CommentController : ControllerBase
     public async Task<ActionResult> DeleteComment([FromRoute] Guid id)
     {
         bool userIsPermitted = await CheckIsAuthorOfCommentOrAdmin(id);
+        
         if (!userIsPermitted)
-        {
             return Forbid();
-        }
 
         await _commentService.DeleteCommentAsync(id);
         return NoContent();
@@ -107,7 +106,7 @@ public class CommentController : ControllerBase
 
     private async Task<bool> CheckIsAuthorOfCommentOrAdmin(Guid id)
     {
-        string userId = HttpContext.User.FindFirst("sub").Value;
+        var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
         return await _commentService.CheckIsCommentAuthorAsync(id, Guid.Parse(userId))
                 || HttpContext.User.IsInRole("Admin");
     }

@@ -14,6 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog(SerilogHelpers.Configure);
 
+builder.Services.AddScoped<LoggingDelegatingHandler>();
+
 builder.Services.AddGrpcClient<PostGrpcClient>(opts =>
 {
     string apiUrl = builder.Configuration["GrpcSettings:PostsUrl"];
@@ -42,6 +44,7 @@ builder.Services.AddAuthentication(scheme)
     .AddJwtBearer(scheme, options =>
     {
         options.Authority = builder.Configuration["IdentityUrl"];
+        options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = new()
         {
             ValidateAudience = false

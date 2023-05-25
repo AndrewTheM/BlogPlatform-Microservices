@@ -49,6 +49,8 @@ public class BlogMappingProfile : Profile
     {
         CreateMap<RatingRequest, Rating>();
 
+        CreateMap<RatingUpdateRequest, Rating>();
+
         CreateMap<Rating, RatingResponse>();
     }
 

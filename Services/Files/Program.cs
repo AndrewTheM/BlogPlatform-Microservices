@@ -17,6 +17,7 @@ builder.Services.AddAuthentication(scheme)
     {
         options.Authority = builder.Configuration["IdentityUrl"];
         options.Audience = "filesApi";
+        options.RequireHttpsMetadata = false;
     });
 builder.Services.AddAuthorization();
 
@@ -49,12 +50,10 @@ app.MapGet("/files/{fileName}",
             fileName
         );
 
-        if (!System.IO.File.Exists(filePath))
-        {
+        if (!File.Exists(filePath))
             return Results.BadRequest();
-        }
 
-        byte[] imageBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+        byte[] imageBytes = await File.ReadAllBytesAsync(filePath);
         string mimeType = MimeTypes.GetMimeType(fileName);
         return Results.File(imageBytes, mimeType);
     }
@@ -68,12 +67,13 @@ app.MapPost("/files",
     {
         var file = request.Form.Files[0];
         var dispositionHeader = ContentDispositionHeaderValue.Parse(file.ContentDisposition);
-        string fileName = dispositionHeader.FileName.Trim('\"');
-        string constructedFileName = DateTime.UtcNow.ToString("yyyyMMddhhmmssfff") + Path.GetExtension(fileName);
+        var fileName = dispositionHeader.FileName.Trim('\"');
+        var constructedFileName = DateTime.UtcNow.ToString("yyyyMMddhhmmssfff") + Path.GetExtension(fileName);
 
-        string fileFolderPath = Path.Combine("StaticFiles", "Images");
-        string filePath = Path.Combine(Directory.GetCurrentDirectory(), fileFolderPath, constructedFileName);
+        var fileFolderPath = Path.Combine("StaticFiles", "Images");
+        Directory.CreateDirectory(fileFolderPath);
 
+        var filePath = Path.Combine(Directory.GetCurrentDirectory(), fileFolderPath, constructedFileName);
         using FileStream stream = new(filePath, FileMode.Create);
         await file.CopyToAsync(stream);
 

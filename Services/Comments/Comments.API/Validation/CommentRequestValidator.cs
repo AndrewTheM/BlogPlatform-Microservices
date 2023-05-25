@@ -11,8 +11,5 @@ public class CommentRequestValidator : AbstractValidator<CommentRequest>
 
         RuleFor(cr => cr.PostId)
             .NotEmpty();
-
-        RuleFor(cr => cr.AuthorId)
-            .NotEmpty();
     }
 }

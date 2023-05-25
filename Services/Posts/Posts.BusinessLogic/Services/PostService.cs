@@ -7,6 +7,7 @@ using BlogPlatform.Shared.Services.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Posts.BusinessLogic.DTO.Requests;
 using Posts.BusinessLogic.DTO.Responses;
+using Posts.BusinessLogic.Exceptions;
 using Posts.BusinessLogic.Services.Contracts;
 using Posts.DataAccess.Context.Contracts;
 using Posts.DataAccess.Entities;
@@ -88,11 +89,11 @@ public class PostService : IPostService
     {
         var titleCategories = await _contentService.CheckTextContentAsync(postDto.Title);
         if (titleCategories.Any())
-            throw new Exception(string.Join(", ", titleCategories));
+            throw new ContentNotAllowedException("Post Title", string.Join(", ", titleCategories));
 
         var contentCategories = await _contentService.CheckTextContentAsync(postDto.Content);
         if (contentCategories.Any())
-            throw new Exception(string.Join(", ", contentCategories));
+            throw new ContentNotAllowedException("Post Content", string.Join(", ", contentCategories));
 
         Post post = _mapper.Map<Post>(postDto);
         post.AuthorId = userId;

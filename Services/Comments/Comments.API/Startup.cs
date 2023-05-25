@@ -89,6 +89,7 @@ internal class Startup
         services.AddAuthentication(scheme)
             .AddJwtBearer(scheme, options =>
             {
+                options.RequireHttpsMetadata = false;
                 options.Authority = _configuration["IdentityUrl"];
                 options.Audience = "commentsApi";
             });

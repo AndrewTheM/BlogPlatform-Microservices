@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Posts.BusinessLogic.DTO.Requests;
 using Posts.BusinessLogic.DTO.Responses;
 using Posts.BusinessLogic.Services.Contracts;
+using System.Security.Claims;
 
 namespace Posts.API.Controllers;
 
@@ -33,7 +34,7 @@ public class RatingController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<RatingResponse>> CreateRating([FromBody] RatingRequest ratingDto)
     {
-        string userId = HttpContext.User.FindFirst("sub").Value;
+        var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
         return await _ratingService.CreateRatingAsync(ratingDto, Guid.Parse(userId));
     }
 

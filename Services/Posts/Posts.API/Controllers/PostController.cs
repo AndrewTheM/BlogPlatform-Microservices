@@ -9,6 +9,7 @@ using Posts.API.Extensions;
 using Posts.BusinessLogic.DTO.Requests;
 using Posts.BusinessLogic.DTO.Responses;
 using Posts.BusinessLogic.Services.Contracts;
+using System.Security.Claims;
 
 namespace Posts.API.Controllers;
 
@@ -58,9 +59,7 @@ public class PostController : ControllerBase
     public async Task<ActionResult<IEnumerable<PostResponse>>> GetTrendingPosts([FromQuery] int top = 5)
     {
         if (top is < 1 or > 20)
-        {
             return BadRequest();
-        }
 
         string cacheKey = $"trending_{top}";
         var posts = await _cache.GetAsync<IEnumerable<PostResponse>>(cacheKey);
@@ -128,9 +127,16 @@ public class PostController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<PostResponse>> CreatePost([FromBody] PostRequest postDto)
     {
-        string userId = HttpContext.User.FindFirst("sub").Value;
-        var post = await _postService.PublishPostAsync(postDto, Guid.Parse(userId));
-        return Ok(post);
+        try
+        {
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var post = await _postService.PublishPostAsync(postDto, Guid.Parse(userId));
+            return Ok(post);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpPut("{id}")]
@@ -142,10 +148,9 @@ public class PostController : ControllerBase
         [FromRoute] Guid id, [FromBody] PostRequest postDto)
     {
         bool userIsPermitted = await CheckIsAuthorOfPostOrAdminAsync(id);
+
         if (!userIsPermitted)
-        {
             return Forbid();
-        }
 
         await _postService.EditPostAsync(id, postDto);
         return NoContent();
@@ -159,10 +164,9 @@ public class PostController : ControllerBase
     public async Task<ActionResult> DeletePost([FromRoute] Guid id)
     {
         bool userIsPermitted = await CheckIsAuthorOfPostOrAdminAsync(id);
+
         if (!userIsPermitted)
-        {
             return Forbid();
-        }
 
         await _publishEndpoint.Publish<PostDeletionEvent>(new() { PostId = id });
 
@@ -179,10 +183,9 @@ public class PostController : ControllerBase
         [FromRoute] Guid id, [FromBody] PostTagsRequest tagsRequest)
     {
         bool userIsPermitted = await CheckIsAuthorOfPostOrAdminAsync(id);
+
         if (!userIsPermitted)
-        {
             return Forbid();
-        }
 
         await _postService.SetTagsOfPostAsync(id, tagsRequest.Tags);
         return NoContent();
@@ -190,7 +193,7 @@ public class PostController : ControllerBase
 
     private async Task<bool> CheckIsAuthorOfPostOrAdminAsync(Guid id)
     {
-        string userId = HttpContext.User.FindFirst("sub").Value;
+        var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
         return await _postService.CheckIsPostAuthorAsync(id, Guid.Parse(userId))
             || HttpContext.User.IsInRole("Admin");
     }

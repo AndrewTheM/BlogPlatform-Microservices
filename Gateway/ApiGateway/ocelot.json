@@ -213,7 +213,7 @@
           "Port": 80
         }
       ],
-      "UpstreamPathTemplate": "/posts/page/{everything}",
+      "UpstreamPathTemplate": "/postpage/{everything}",
       "SwaggerKey": "aggregator"
     }
   ],
