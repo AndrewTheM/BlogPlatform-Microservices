@@ -2,8 +2,9 @@
 
 @using Markdig
 @using BlogPlatform.UI.Models
+@using System.Security.Claims;
 
-@inject IPostService _postService
+@inject IPostPageService _postPageService
 @inject IFileService _fileService
 @inject ICommentService _commentService
 @inject IRatingService _ratingService
@@ -99,7 +100,7 @@
                             </div>
                         </Authorized>
                         <NotAuthorized>
-                            <NavLink class="btn reply-btn" href="login">
+                            <NavLink class="btn reply-btn" href="@($"login?redirectUri=/post/{TitleIdentifier}")">
                                 @_locale["CommentSignIn"]
                             </NavLink>
                         </NotAuthorized>
@@ -112,12 +113,12 @@
                                 <MudPaper Class="pa-5" Elevation="2">
                                     <div class="comment-body">
                                         <div class="d-flex align-items-center">
-                                            <MudAvatar Size="Size.Large">
-                                                @(char.ToUpper(comment.Author[0]))
+                                            <MudAvatar Size="Size.Large">A
+                                                @*@(char.ToUpper(comment.Author[0]))*@
                                             </MudAvatar>
 
                                             <div class="ml-4">
-                                                <h4 class="commenter-name my-1">@comment.Author</h4>
+                                                <h4 class="commenter-name my-1">Admin@*@comment.Author*@</h4>
                                                 <div class="comment-date">@comment.RelativePublishTime</div>
                                             </div>
 
@@ -144,7 +145,7 @@
                         }
                     </ul>
 
-                    @if (currentPost.CommentPage.NextPage is not null)
+                    @if (!string.IsNullOrEmpty(currentPost.CommentPage.NextPage))
                     {
                         <div class="mt-4 d-flex justify-content-center">
                             <MudButton @onclick="LoadMoreComments" Color="Color.Primary"
@@ -189,7 +190,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         var authState = await _authProvider.GetAuthenticationStateAsync();
-        string userId = authState.User?.FindFirst("id")?.Value;
+        var userId = authState.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         currentUsername = authState.User?.FindFirst("unique_name")?.Value;
 
         await LoadPost();
@@ -212,7 +213,7 @@ else
 
     async Task LoadPost()
     {
-        currentPost = await _postService.FindPostAsync(TitleIdentifier);
+        currentPost = await _postPageService.GetPostPageAsync(TitleIdentifier);
         thumbnailLink = _fileService.GetImageUrl(currentPost.ThumbnailPath);
         //currentPost.Content = System.Web.HttpUtility.HtmlEncode(currentPost.Content);
         comments = currentPost.CommentPage.Data.ToList();
@@ -220,7 +221,10 @@ else
 
     async Task LoadMoreComments()
     {
-        List<Comment> allComments = new(comments);
+        if (string.IsNullOrEmpty(currentPost.CommentPage.NextPage))
+            return;
+
+        var allComments = new List<Comment>(comments);
         currentPost.CommentPage = await _commentService.GetCommentPageForPostAsync(currentPost.CommentPage.NextPage);
         allComments.AddRange(currentPost.CommentPage.Data);
         comments = allComments;
@@ -228,7 +232,7 @@ else
 
     async Task PublishComment()
     {
-        Comment publishedComment = await _commentService.PublishCommentAsync(newComment);
+        var publishedComment = await _commentService.PublishCommentAsync(newComment);
         comments.Insert(0, publishedComment);
         ++currentPost.CommentPage.TotalRecords;
         newComment = new() { PostId = currentPost.Id };
@@ -236,7 +240,7 @@ else
 
     async Task DeleteComment(Guid id)
     {
-        bool? deletionAllowed = await _dialogService.ShowMessageBox(
+        var deletionAllowed = await _dialogService.ShowMessageBox(
             title: _locale["Warning"],
             message: _locale["AreYouSure"],
             yesText: _locale["Yes"],
@@ -244,9 +248,7 @@ else
         );
 
         if (deletionAllowed != true)
-        {
             return;
-        }
 
         comments.RemoveAll(c => c.Id == id);
         --currentPost.CommentPage.TotalRecords;

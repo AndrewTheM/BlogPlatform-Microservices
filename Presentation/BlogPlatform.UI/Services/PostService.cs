@@ -2,9 +2,6 @@
 using BlogPlatform.UI.Helpers.Contracts;
 using BlogPlatform.UI.Models;
 using BlogPlatform.UI.Services.Contracts;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace BlogPlatform.UI.Services;
 
@@ -18,12 +15,12 @@ public class PostService : IPostService
         _apiClient.HttpClient = httpClient;
     }
 
-    public async Task<Page<Post>> GetPostsAsync(
+    public Task<Page<Post>> GetPostsAsync(
         int pageNumber = 1, int pageSize = 10,
         string title = null, string author = null, string tag = null)
     {
-        UriQueryBuilder queryBuilder = new();
-        Dictionary<string, string> parameters = new()
+        var queryBuilder = new UriQueryBuilder();
+        var parameters = new Dictionary<string, string>
         {
             [nameof(pageNumber)] = pageNumber.ToString(),
             [nameof(pageSize)] = pageSize.ToString(),
@@ -33,53 +30,53 @@ public class PostService : IPostService
         };
 
         queryBuilder.AppendParameters(parameters);
-        string query = queryBuilder.ToString();
-        return await GetPostsAsync(query);
+        var query = queryBuilder.ToString();
+        return GetPostsAsync(query);
     }
 
-    public async Task<Page<Post>> GetPostsAsync(string pageUrl)
+    public Task<Page<Post>> GetPostsAsync(string pageUrl)
     {
-        return await _apiClient.SendGetApiRequestAsync<Page<Post>>(pageUrl);
+        return _apiClient.SendGetApiRequestAsync<Page<Post>>(pageUrl);
     }
 
-    public async Task<IEnumerable<Post>> GetTrendingPostsAsync()
+    public Task<IEnumerable<Post>> GetTrendingPostsAsync()
     {
-        return await _apiClient.SendGetApiRequestAsync<IEnumerable<Post>>("posts/trending?top=5");
+        return _apiClient.SendGetApiRequestAsync<IEnumerable<Post>>("posts/trending?top=5");
     }
 
-    public async Task<Post> FindPostAsync(string titleIdentifier)
+    public Task<Post> FindPostAsync(string titleIdentifier)
     {
-        return await _apiClient.SendGetApiRequestAsync<Post>($"posts/page/{titleIdentifier}");
+        return _apiClient.SendGetApiRequestAsync<Post>($"posts/complete/{titleIdentifier}");
     }
 
-    public async Task<Post> PublishPostAsync(Post post)
+    public Task<Post> PublishPostAsync(Post post)
     {
-        return await _apiClient.SendPostApiRequestWithResultAsync<Post, Post>(
+        return _apiClient.SendPostApiRequestWithResultAsync<Post, Post>(
             endpoint: "",
             body: post
         );
     }
 
-    public async Task EditPostAsync(Post post)
+    public Task EditPostAsync(Post post)
     {
-        await _apiClient.SendModifyingApiRequestAsync(
+        return _apiClient.SendModifyingApiRequestAsync(
             method: HttpMethod.Put,
             endpoint: $"posts/{post.Id}",
             body: post
         );
     }
 
-    public async Task SetTagsOfPostAsync(Guid id, ISet<string> tags)
+    public Task SetTagsOfPostAsync(Guid id, ISet<string> tags)
     {
-        await _apiClient.SendModifyingApiRequestAsync(
+        return _apiClient.SendModifyingApiRequestAsync(
             method: HttpMethod.Post,
             endpoint: $"posts/{id}/tags",
             body: new { tags }
         );
     }
 
-    public async Task DeletePostAsync(Guid id)
+    public Task DeletePostAsync(Guid id)
     {
-        await _apiClient.SendDeleteRequestAsync($"posts/{id}");
+        return _apiClient.SendDeleteRequestAsync($"posts/{id}");
     }
 }

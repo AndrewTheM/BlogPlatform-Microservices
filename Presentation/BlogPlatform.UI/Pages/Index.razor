@@ -151,9 +151,7 @@
     async Task GoToPreviousPage()
     {
         if (currentPage?.PreviousPage is null)
-        {
             return;
-        }
 
         await LoadPosts(currentPage.PreviousPage);
     }
@@ -161,9 +159,7 @@
     async Task GoToPage(int pageNumber)
     {
         if (currentPage is null || currentPage.PageNumber == pageNumber)
-        {
             return;
-        }
 
         await LoadPosts(pageNumber, currentPage.PageSize);
     }
@@ -171,9 +167,7 @@
     async Task GoToNextPage()
     {
         if (currentPage?.NextPage is null)
-        {
             return;
-        }
 
         await LoadPosts(currentPage.NextPage);
     }
@@ -186,9 +180,7 @@
     async Task DetectEnterOnSearch(KeyboardEventArgs e)
     {
         if (e.Code != "Enter" && e.Code != "NumpadEnter")
-        {
             return;
-        }
 
         await LoadPosts();
     }

@@ -8,7 +8,8 @@ namespace BlogPlatform.UI.Services;
 
 public class FileService : IFileService
 {
-    protected const long MaxFileSize = 10000000;
+    private const long MaxFileSize = 10000000;
+    private const string FileUrl = "http://localhost:8010/files";
 
     private readonly IApiClient _apiClient;
 
@@ -21,27 +22,23 @@ public class FileService : IFileService
     public string GetImageUrl(string fileName)
     {
         if (Uri.IsWellFormedUriString(fileName, UriKind.Absolute))
-        {
             return fileName;
-        }
 
-        string fileUrl = _apiClient.HttpClient.BaseAddress.AbsoluteUri;
-        return $"{fileUrl}/{fileName}";
+        return $"{FileUrl}/{fileName}";
     }
 
     public async Task<string> PublishFile(IBrowserFile file)
     {
-        using MultipartFormDataContent formContent = new();
-        using StreamContent streamContent = new(file.OpenReadStream(MaxFileSize));
+        using var formContent = new MultipartFormDataContent();
+        using var streamContent = new StreamContent(file.OpenReadStream(MaxFileSize));
         formContent.Add(streamContent, "\"files\"", file.Name);
 
         await _apiClient.EnsureAuthorizationHeader();
         var response = await _apiClient.HttpClient.PostAsync("", formContent);
         using var contentStream = await response.Content.ReadAsStreamAsync();
-        var result = await JsonSerializer.DeserializeAsync<FileUploadResult>(contentStream, options: new()
-        {
-            PropertyNameCaseInsensitive = true
-        });
+
+        var result = await JsonSerializer.DeserializeAsync<FileUploadResult>(contentStream,
+            options: new() { PropertyNameCaseInsensitive = true });
 
         return result.LocalPath;
     }

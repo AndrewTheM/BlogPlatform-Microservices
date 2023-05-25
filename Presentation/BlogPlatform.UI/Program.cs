@@ -4,7 +4,6 @@ using BlogPlatform.UI.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Localization;
 using MudBlazor;
 using MudBlazor.Services;
@@ -19,6 +18,7 @@ builder.Host.UseSerilog(SerilogHelpers.Configure);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddMudServices(config =>
 {
@@ -29,7 +29,6 @@ builder.Services.AddMudServices(config =>
     snackbarConfig.HideTransitionDuration = 200;
 });
 
-//builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStateProvider>();
 builder.Services.AddApiServices(builder.Configuration["ApiGateway"]);
 
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");

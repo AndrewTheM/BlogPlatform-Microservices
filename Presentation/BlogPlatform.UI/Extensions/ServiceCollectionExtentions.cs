@@ -24,16 +24,16 @@ internal static class ServiceCollectionExtentions
             client => SetBaseApiRequestAddress(client, "comments")
         );
 
+        services.AddHttpClient<IPostPageService, PostPageService>(
+            client => SetBaseApiRequestAddress(client, "postpage")
+        );
+
         services.AddHttpClient<IRatingService, RatingService>(
             client => SetBaseApiRequestAddress(client, "posts/ratings")
         );
 
         services.AddHttpClient<ITagService, TagService>(
             client => SetBaseApiRequestAddress(client, "posts/tags")
-        );
-
-        services.AddHttpClient<IAuthService, AuthService>(
-            client => SetBaseApiRequestAddress(client, "users")
         );
 
         services.AddHttpClient<IFileService, FileService>(

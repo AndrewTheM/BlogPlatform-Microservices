@@ -1,10 +1,9 @@
-﻿@page "/register"
+﻿@*@page "/register"
 
 @using Microsoft.AspNetCore.WebUtilities
 @using BlogPlatform.UI.Models
 @using BlogPlatform.UI.Services.Contracts
 
-@inject IAuthService _authService
 @inject ISnackbar _snackbar
 
 @inject NavigationManager _navigationManager
@@ -131,4 +130,4 @@
             _snackbar.Add(errorMessage, Severity.Error);
         }
     }
-}
+}*@

@@ -1,6 +1,7 @@
-﻿using Blazored.LocalStorage;
-using BlogPlatform.UI.Helpers.Contracts;
+﻿using BlogPlatform.UI.Helpers.Contracts;
+using Microsoft.AspNetCore.Authentication;
 using System.Globalization;
+using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
 
@@ -8,20 +9,20 @@ namespace BlogPlatform.UI.Helpers;
 
 public class ApiClient : IApiClient
 {
-    private readonly ILocalStorageService _localStorage;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public HttpClient HttpClient { get; set; }
 
-    public ApiClient(ILocalStorageService localStorage)
+    public ApiClient(IHttpContextAccessor httpContextAccessor)
     {
-        _localStorage = localStorage;
+        _httpContextAccessor = httpContextAccessor;
         HttpClient = new();
     }
 
     public async Task<T> SendGetApiRequestAsync<T>(string endpoint)
     {
         await EnsureAuthorizationHeader();
-        string urlWithCulture = AppendCulture(endpoint);
+        var urlWithCulture = AppendCulture(endpoint);
         var response = await HttpClient.GetAsync(urlWithCulture);
         response.EnsureSuccessStatusCode();
 
@@ -36,8 +37,8 @@ public class ApiClient : IApiClient
         string endpoint, TRequest body, bool ensureSuccess = true)
     {
         await EnsureAuthorizationHeader();
-        string urlWithCulture = AppendCulture(endpoint);
-        string bodyJson = JsonSerializer.Serialize(body);
+        var urlWithCulture = AppendCulture(endpoint);
+        var bodyJson = JsonSerializer.Serialize(body);
         using StringContent jsonContent = new(bodyJson, Encoding.UTF8, "application/json");
 
         var response = await HttpClient.PostAsync(urlWithCulture, jsonContent);
@@ -55,18 +56,16 @@ public class ApiClient : IApiClient
 
     public async Task SendModifyingApiRequestAsync<T>(HttpMethod method, string endpoint, T body)
     {
-        HashSet<HttpMethod> allowedMethods = new() { HttpMethod.Post, HttpMethod.Put, HttpMethod.Patch };
+        var allowedMethods = new HashSet<HttpMethod>() { HttpMethod.Post, HttpMethod.Put, HttpMethod.Patch };
 
         if (!allowedMethods.Contains(method))
-        {
             throw new ArgumentException("HTTP method not allowed.", nameof(method));
-        }
 
         await EnsureAuthorizationHeader();
-        string bodyJson = JsonSerializer.Serialize(body);
-        using StringContent jsonContent = new(bodyJson, Encoding.UTF8, "application/json");
+        var bodyJson = JsonSerializer.Serialize(body);
+        using var jsonContent = new StringContent(bodyJson, Encoding.UTF8, MediaTypeNames.Application.Json);
 
-        HttpRequestMessage request = new(method, endpoint) { Content = jsonContent };
+        var request = new HttpRequestMessage(method, endpoint) { Content = jsonContent };
         var response = await HttpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
     }
@@ -80,7 +79,7 @@ public class ApiClient : IApiClient
 
     public async Task EnsureAuthorizationHeader()
     {
-        string accessToken = await _localStorage.GetItemAsync<string>("accessToken");
+        var accessToken = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
         HttpClient.DefaultRequestHeaders.Authorization = new("Bearer", accessToken);
     }
 
