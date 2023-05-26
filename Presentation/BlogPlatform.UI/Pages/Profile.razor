@@ -44,25 +44,22 @@
 
     protected override async Task OnInitializedAsync()
     {
-        //userInfo = await this.MapUserFromCurrentClaims();
+        userInfo = await this.MapUserFromCurrentClaims();
     }
 
-    public async Task SignOut()
+    public void SignOut()
     {
-        //var provider = _authStateProvider as JwtAuthenticationStateProvider;
-        //await provider.UnauthenticateAsync();
-        //_navigationManager.NavigateTo("/");
-        _navigationManager.NavigateTo("/logout");
+        _navigationManager.NavigateTo("/logout", forceLoad: true);
     }
 
     private async Task<User> MapUserFromCurrentClaims()
     {
         var authState = await _authStateProvider.GetAuthenticationStateAsync();
 
-        User user = new()
+        var user = new User
         {
-            Username = authState.User.FindFirst("unique_name").Value,
-            Email = authState.User.FindFirst("email").Value
+            Username = authState.User.FindFirst("name")?.Value,
+            Email = authState.User.FindFirst("email")?.Value
         };
 
         return user;

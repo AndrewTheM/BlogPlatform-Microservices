@@ -113,12 +113,12 @@
                                 <MudPaper Class="pa-5" Elevation="2">
                                     <div class="comment-body">
                                         <div class="d-flex align-items-center">
-                                            <MudAvatar Size="Size.Large">A
-                                                @*@(char.ToUpper(comment.Author[0]))*@
+                                            <MudAvatar Size="Size.Large">
+                                                @(char.ToUpper(comment.Author[0]))
                                             </MudAvatar>
 
                                             <div class="ml-4">
-                                                <h4 class="commenter-name my-1">Admin@*@comment.Author*@</h4>
+                                                <h4 class="commenter-name my-1">@comment.Author</h4>
                                                 <div class="comment-date">@comment.RelativePublishTime</div>
                                             </div>
 
@@ -191,7 +191,7 @@ else
     {
         var authState = await _authProvider.GetAuthenticationStateAsync();
         var userId = authState.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        currentUsername = authState.User?.FindFirst("unique_name")?.Value;
+        currentUsername = authState.User?.FindFirst("name")?.Value;
 
         await LoadPost();
         newComment = new() { PostId = currentPost.Id };

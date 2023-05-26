@@ -69,16 +69,16 @@ builder.Services.AddAuthentication(options =>
     options.ResponseType = "code";
     options.UsePkce = true;
 
-    options.Scope.Remove("profile");
-    options.Scope.Add("openid");
     options.Scope.Add("email");
+    options.Scope.Add("offline_access");
     options.Scope.Add("roles");
-    options.ClaimActions.MapUniqueJsonKey("role", "role", "role");
 
     options.Scope.Add("posts");
     options.Scope.Add("comments");
     options.Scope.Add("files");
     options.Scope.Add("accounts");
+
+    options.ClaimActions.MapUniqueJsonKey("role", "role", "role");
 
     options.SaveTokens = true;
     options.GetClaimsFromUserInfoEndpoint = true;
