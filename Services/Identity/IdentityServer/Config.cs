@@ -13,6 +13,7 @@ public static class Config
         new IdentityResource[]
         {
             new IdentityResources.OpenId(),
+            new IdentityResources.Profile(),
             new IdentityResources.Email(),
             new IdentityResource(
                 "roles",
@@ -81,13 +82,12 @@ public static class Config
                 RedirectUris = { $"{clientUrl}/signin-oidc" },
                 PostLogoutRedirectUris = { $"{clientUrl}/signout-callback-oidc" },
 
-                //AllowAccessTokensViaBrowser = false,
                 AllowOfflineAccess = true,
-                //AlwaysIncludeUserClaimsInIdToken = true,
                 AllowedScopes =
                 {
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Email,
+                    IdentityServerConstants.StandardScopes.Profile,
                     "roles",
                     "posts",
                     "comments",

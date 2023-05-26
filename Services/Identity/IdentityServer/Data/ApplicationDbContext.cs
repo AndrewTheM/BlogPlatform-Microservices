@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-using IdentityServer.Data.Entities;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
+﻿using IdentityServer.Data.Entities;
 using IdentityServer.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace IdentityServer.Data;
 
@@ -21,8 +21,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     {
         base.OnModelCreating(builder);
         
-        Guid adminRoleId = Guid.NewGuid();
-        Guid adminUserId = Guid.Parse(_adminOptions.Id);
+        var adminRoleId = Guid.NewGuid();
+        var adminUserId = Guid.Parse(_adminOptions.Id);
 
         builder.Entity<ApplicationRole>(role =>
         {

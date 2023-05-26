@@ -167,7 +167,7 @@ namespace IdentityServer.Data.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { new Guid("b305da0e-a0a3-41b4-b377-7f666d6ceeee"), 0, "3b8d229e-97a6-4f00-a86e-1cfa8dd69c2e", "andrewmakoviichuk@gmail.com", false, false, null, "ANDREWMAKOVIICHUK@GMAIL.COM", "ADMIN", "AQAAAAEAACcQAAAAED3fb0y08f5MuIYymkR7CEsVwo3NPNTrgdI6DugWsLcMqiWzLH3t97Dy5J/t+arcwQ==", null, false, null, false, "admin" });
+                values: new object[] { new Guid("b305da0e-a0a3-41b4-b377-7f666d6ceeee"), 0, "3b8d229e-97a6-4f00-a86e-1cfa8dd69c2e", "andrewmakoviichuk@gmail.com", false, false, null, "ANDREWMAKOVIICHUK@GMAIL.COM", "ADMIN", "AQAAAAEAACcQAAAAED3fb0y08f5MuIYymkR7CEsVwo3NPNTrgdI6DugWsLcMqiWzLH3t97Dy5J/t+arcwQ==", null, false, "3b8d229e-97a6-4f00-a86e-1cfa8dd69c2e", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",

@@ -39,6 +39,7 @@ public class Startup
             options.Events.RaiseSuccessEvents = true;
         })
         .AddAspNetIdentity<ApplicationUser>()
+        .AddProfileService<ProfileService>()
         .AddDeveloperSigningCredential()
         .AddConfigurationStore(config =>
         {
@@ -55,7 +56,7 @@ public class Startup
 
         var adminSection = Configuration.GetSection("DefaultAdmin");
         services.Configure<AdminUserOptions>(adminSection);
-        
+
         services.AddTransient<IProfileService, ProfileService>();
 
         services.AddControllersWithViews();
@@ -74,6 +75,8 @@ public class Startup
         app.UseIdentityServer();
         app.UseCookiePolicy(new() { MinimumSameSitePolicy = SameSiteMode.Lax });
         app.UseRouting();
+
+        app.UseAuthorization();
 
         app.UseEndpoints(endpoints =>
         {
