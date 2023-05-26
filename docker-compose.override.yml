@@ -129,6 +129,7 @@ services:
       - 18003:443
     volumes:
       - ~/.aspnet/https:/https:ro
+      - fileserver-data:/app/StaticFiles
 
   identityserver:
     container_name: identityserver

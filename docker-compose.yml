@@ -68,3 +68,4 @@ services:
 volumes:
   sqlserver-data:
   elasticsearch-data:
+  fileserver-data:
