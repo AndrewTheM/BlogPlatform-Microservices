@@ -13,17 +13,15 @@ public class PostRepository : EntityRepository<Post>, IPostRepository
     {
     }
 
-    // TODO: work with other microservices
-    public async Task<IQueryable<Post>> GetNewestPostsWithAuthorsAndTagsAsync()
+    public Task<IQueryable<Post>> GetNewestPostsWithAuthorsAndTagsAsync()
     {
-        var posts = _set//.Include(p => p.Author)
-            .Include(p => p.Tags)
-            .OrderByDescending(p => p.CreatedOn);
+        var posts = _set.Include(p => p.Tags)
+            .OrderByDescending(p => p.CreatedOn)
+            .AsQueryable();
 
-        return await Task.FromResult(posts);
+        return Task.FromResult(posts);
     }
 
-    // TODO: work with other microservices
     public async Task<IQueryable<Post>> GetFilteredPostsAsync(PostFilter filter)
     {
         var posts = await GetNewestPostsWithAuthorsAndTagsAsync();
@@ -32,49 +30,45 @@ public class PostRepository : EntityRepository<Post>, IPostRepository
             return posts;
 
         return posts.Where(p => filter.Title == null || p.Title.Contains(filter.Title))
-            //.Where(p => filter.Author == null || p.Author.UserName == filter.Author)
+            .Where(p => filter.Author == null || p.Author == filter.Author)
             .Where(p => filter.Year == null || p.CreatedOn.Year == filter.Year.Value)
             .Where(p => filter.Month == null || p.CreatedOn.Month == filter.Month.Value)
             .Where(p => filter.Day == null || p.CreatedOn.Day == filter.Day.Value)
             .Where(p => filter.Tag == null || p.Tags.Any(t => t.TagName == filter.Tag));
     }
 
-    // TODO: work with other microservices
-    public async Task<IQueryable<Post>> GetTopRatedPostsWithAuthorsAsync(int count)
+    public Task<IQueryable<Post>> GetTopRatedPostsWithAuthorsAsync(int count)
     {
-        var posts = _set//.Include(p => p.Author)
-            .Include(p => p.Ratings)
+        var posts = _set.Include(p => p.Ratings)
             .OrderByDescending(p => p.Ratings.Average(r => r.RatingValue))
             .Take(count);
 
-        return await Task.FromResult(posts);
+        return Task.FromResult(posts);
     }
 
-    public async Task<Post> GetPostWithContentAsync(Guid id)
+    public Task<Post> GetPostWithContentAsync(Guid id)
     {
-        return await EnsureEntityResultAsync(() =>
+        return EnsureEntityResultAsync(() =>
         {
             return _set.Include(p => p.ContentEntity)
                 .SingleAsync(p => p.Id == id);
         });
     }
 
-    public async Task<Post> GetPostWithTagsAsync(Guid id)
+    public Task<Post> GetPostWithTagsAsync(Guid id)
     {
-        return await EnsureEntityResultAsync(() =>
+        return EnsureEntityResultAsync(() =>
         {
             return _set.Include(p => p.Tags)
                 .SingleAsync(p => p.Id == id);
         });
     }
 
-    // TODO: work with other microservices
-    public async Task<Post> GetCompletePostAsync(string titleIdentifier)
+    public Task<Post> GetCompletePostAsync(string titleIdentifier)
     {
-        return await EnsureEntityResultAsync(() =>
+        return EnsureEntityResultAsync(() =>
         {
             return _set.Include(p => p.ContentEntity)
-                //.Include(p => p.Author)
                 .Include(p => p.Tags)
                 .SingleOrDefaultAsync(p => p.TitleIdentifier == titleIdentifier);
         });

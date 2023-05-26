@@ -51,7 +51,7 @@ public class CommentRepository : ICommentRepository
         using var connection = _connectionFactory.OpenConnection;
         return await connection.ExecuteScalarAsync<Guid>(
             procedureName,
-            param: new { entity.PostId, entity.AuthorId, entity.Content },
+            param: new { entity.PostId, entity.AuthorId, entity.Author, entity.Content },
             commandType: CommandType.StoredProcedure
         );
     }

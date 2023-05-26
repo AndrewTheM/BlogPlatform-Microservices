@@ -27,7 +27,7 @@ public interface IPostService
     /// </summary>
     Task<CompletePostResponse> GetCompletePostAsync(string titleIdentifier);
 
-    Task<PostResponse> PublishPostAsync(PostRequest post, Guid userId);
+    Task<PostResponse> PublishPostAsync(PostRequest post, Guid userId, string username);
 
     /// <summary>
     /// Throws <see cref="EntityNotFoundException"/>

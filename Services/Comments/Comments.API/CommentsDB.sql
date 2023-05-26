@@ -3,6 +3,7 @@ CREATE TABLE Comments
 	Id uniqueidentifier PRIMARY KEY DEFAULT NEWID(),
 	PostId uniqueidentifier NOT NULL,
 	AuthorId uniqueidentifier NOT NULL,
+	Author nvarchar(100) NOT NULL,
 	Content nvarchar(max) NOT NULL,
 	UpvoteCount int DEFAULT 0,
 	CreatedOn datetime2(7) DEFAULT GETDATE(),
@@ -25,14 +26,15 @@ GO
 CREATE PROC Comments_Create
     @PostId uniqueidentifier,
 	@AuthorId uniqueidentifier,
+	@Author nvarchar(100),
 	@Content nvarchar(max)
 AS
 BEGIN
     DECLARE @tmp TABLE(id uniqueidentifier);
 
-    INSERT INTO Comments (PostId, AuthorId, Content)
+    INSERT INTO Comments (PostId, AuthorId, Author, Content)
     OUTPUT inserted.Id INTO @tmp
-    VALUES (@PostId, @AuthorId, @Content);
+    VALUES (@PostId, @AuthorId, @Author, @Content);
 
     SELECT id from @tmp;
 END

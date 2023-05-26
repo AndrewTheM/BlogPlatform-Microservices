@@ -85,7 +85,7 @@ public class PostService : IPostService
         return response;
     }
 
-    public async Task<PostResponse> PublishPostAsync(PostRequest postDto, Guid userId)
+    public async Task<PostResponse> PublishPostAsync(PostRequest postDto, Guid userId, string username)
     {
         var titleCategories = await _contentService.CheckTextContentAsync(postDto.Title);
         if (titleCategories.Any())
@@ -95,18 +95,19 @@ public class PostService : IPostService
         if (contentCategories.Any())
             throw new ContentNotAllowedException("Post Content", string.Join(", ", contentCategories));
 
-        Post post = _mapper.Map<Post>(postDto);
+        var post = _mapper.Map<Post>(postDto);
         post.AuthorId = userId;
+        post.Author = username;
         post.ContentEntity = _mapper.Map<PostContent>(postDto);
 
-        string cutTitle = post.Title.Length switch
+        var cutTitle = post.Title.Length switch
         {
             > 100 => post.Title[..100],
             _ => post.Title
         };
 
-        string cutLowerTitle = cutTitle.ToLowerInvariant();
-        string wordOnlyString = Regex.Replace(cutLowerTitle, @"[^\w\s]", string.Empty);
+        var cutLowerTitle = cutTitle.ToLowerInvariant();
+        var wordOnlyString = Regex.Replace(cutLowerTitle, @"[^\w\s]", string.Empty);
         post.TitleIdentifier = Regex.Replace(wordOnlyString, @"\s+", "-");
 
         await _unitOfWork.Posts.CreateAsync(post);

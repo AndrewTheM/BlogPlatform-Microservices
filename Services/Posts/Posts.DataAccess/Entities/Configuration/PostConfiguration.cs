@@ -9,6 +9,10 @@ namespace Posts.DataAccess.Entities.Configuration
         {
             base.Configure(builder);
 
+            builder.Property(p => p.Author)
+                .IsRequired()
+                .HasMaxLength(100);
+
             builder.HasIndex(p => p.Title)
                 .IsUnique();
 

@@ -48,7 +48,8 @@ public class CommentController : ControllerBase
     public async Task<ActionResult<CommentResponse>> PublishComment([FromBody] CommentRequest commentDto)
     {
         var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var comment = await _commentService.PublishCommentAsync(commentDto, Guid.Parse(userId));
+        var username = HttpContext.User.FindFirstValue(ClaimTypes.Name);
+        var comment = await _commentService.PublishCommentAsync(commentDto, Guid.Parse(userId), username);
         return Ok(comment);
     }
 

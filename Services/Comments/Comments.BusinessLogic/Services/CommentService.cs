@@ -58,12 +58,13 @@ public class CommentService : ICommentService
         return response;
     }
 
-    public async Task<CommentResponse> PublishCommentAsync(CommentRequest commentDto, Guid userId)
+    public async Task<CommentResponse> PublishCommentAsync(CommentRequest commentDto, Guid userId, string username)
     {
         var comment = _mapper.Map<Comment>(commentDto);
         comment.AuthorId = userId;
+        comment.Author = username;
 
-        Guid id = await _commentRepository.CreateAsync(comment);
+        var id = await _commentRepository.CreateAsync(comment);
         var createdComment = await _commentRepository.GetCommentWithAuthorAsync(id);
         var response = _mapper.Map<CommentResponse>(createdComment);
 

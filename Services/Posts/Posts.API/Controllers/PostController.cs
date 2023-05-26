@@ -130,7 +130,8 @@ public class PostController : ControllerBase
         try
         {
             var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var post = await _postService.PublishPostAsync(postDto, Guid.Parse(userId));
+            var username = HttpContext.User.FindFirstValue(ClaimTypes.Name);
+            var post = await _postService.PublishPostAsync(postDto, Guid.Parse(userId), username);
             return Ok(post);
         }
         catch (Exception ex)
