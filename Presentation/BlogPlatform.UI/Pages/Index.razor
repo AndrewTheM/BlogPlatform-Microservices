@@ -12,7 +12,7 @@
 
 <header class="masthead">
     <div class="overlay"></div>
-    <div class="container">
+    <div class="container-fluid">
         <div class="row">
             <div class="col-lg-8 col-md-10 mx-auto">
                 <div class="site-heading">
@@ -27,10 +27,11 @@
 </header>
 
 <main class="content">
-    <div class="container">
+    <div class="container-fluid">
         @if (currentPage is not null)
         {
             <div class="row">
+                <div class="col-lg-1" />
                 <div class="col-sm" id="posts">
                     @foreach (Models.Post post in currentPage.Data)
                     {
@@ -53,7 +54,7 @@
                             <ul class="pagination justify-content-center">
                                 <li class="page-item @(currentPage.PreviousPage is null ? "disabled" : "")">
                                     <a class="page-link" href="#posts" @onclick="GoToPreviousPage">
-                                        @_locale["PreviousPage"]
+                                        ⯇
                                     </a>
                                 </li>
 
@@ -67,7 +68,7 @@
 
                                 <li class="page-item @(currentPage.NextPage is null ? "disabled" : "")">
                                     <a class="page-link" href="#posts" @onclick="GoToNextPage">
-                                        @_locale["NextPage"]
+                                        ⯈
                                     </a>
                                 </li>
                             </ul>
@@ -84,11 +85,9 @@
                             Variant="Variant.Outlined"
                             Margin="Margin.Dense"
                             Adornment="Adornment.End"
-                            AdornmentIcon="@Icons.Filled.Search"
-                        />
+                            AdornmentIcon="@Icons.Filled.Search" />
 
                         <p class="h5 mb-3">@_locale["Trending"]</p>
-
                         @foreach (var post in trendingPosts)
                         {
                             <div class="my-4">
@@ -112,6 +111,7 @@
                         </div>
                     </MudPaper>
                 </div>
+                <div class="col-lg-1" />
             </div>
         }
     </div>
@@ -124,8 +124,8 @@
 
     string searchQuery;
     MudChip selectedTagChip;
-    IEnumerable<Models.Post> trendingPosts;
-    IEnumerable<string> tags;
+    List<Models.Post> trendingPosts;
+    List<string> tags;
 
     protected override async Task OnInitializedAsync()
     {
@@ -148,46 +148,46 @@
         currentPage = await _postService.GetPostsAsync(pageUrl);
     }
 
-    async Task GoToPreviousPage()
+    Task GoToPreviousPage()
     {
         if (currentPage?.PreviousPage is null)
-            return;
+            return Task.CompletedTask;
 
-        await LoadPosts(currentPage.PreviousPage);
+        return LoadPosts(currentPage.PreviousPage);
     }
 
-    async Task GoToPage(int pageNumber)
+    Task GoToPage(int pageNumber)
     {
         if (currentPage is null || currentPage.PageNumber == pageNumber)
-            return;
+            return Task.CompletedTask;
 
-        await LoadPosts(pageNumber, currentPage.PageSize);
+        return LoadPosts(pageNumber, currentPage.PageSize);
     }
 
-    async Task GoToNextPage()
+    Task GoToNextPage()
     {
         if (currentPage?.NextPage is null)
-            return;
+            return Task.CompletedTask;
 
-        await LoadPosts(currentPage.NextPage);
+        return LoadPosts(currentPage.NextPage);
     }
 
-    async Task SearchPosts()
+    Task SearchPosts()
     {
-        await LoadPosts();
+        return LoadPosts();
     }
 
-    async Task DetectEnterOnSearch(KeyboardEventArgs e)
+    Task DetectEnterOnSearch(KeyboardEventArgs e)
     {
         if (e.Code != "Enter" && e.Code != "NumpadEnter")
-            return;
+            return Task.CompletedTask;
 
-        await LoadPosts();
+        return LoadPosts();
     }
 
-    async Task SearchByTagChip(MudChip chip)
+    Task SearchByTagChip(MudChip chip)
     {
         selectedTagChip = chip;
-        await LoadPosts();
+        return LoadPosts();
     }
 }

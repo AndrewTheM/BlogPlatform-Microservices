@@ -13,8 +13,8 @@ public class TagService : ITagService
         _apiClient.HttpClient = httpClient;
     }
 
-    public async Task<IEnumerable<string>> GetTagNames()
+    public async Task<List<string>> GetTagNames()
     {
-        return await _apiClient.SendGetApiRequestAsync<IEnumerable<string>>("");
+        return await _apiClient.SendGetApiRequestAsync<List<string>>("");
     }
 }

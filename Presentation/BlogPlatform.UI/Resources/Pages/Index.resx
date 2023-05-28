@@ -118,19 +118,13 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Motto" xml:space="preserve">
-    <value>Share your knowledge</value>
+    <value>Community-driven source of knowledge</value>
   </data>
   <data name="MottoSub" xml:space="preserve">
-    <value>Make the world know more</value>
-  </data>
-  <data name="NextPage" xml:space="preserve">
-    <value>Next</value>
+    <value>Collective platform for individual growth</value>
   </data>
   <data name="PostedBy" xml:space="preserve">
     <value>Posted by</value>
-  </data>
-  <data name="PreviousPage" xml:space="preserve">
-    <value>Prev</value>
   </data>
   <data name="SearchPosts" xml:space="preserve">
     <value>Search posts</value>

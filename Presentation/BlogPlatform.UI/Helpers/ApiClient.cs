@@ -1,6 +1,7 @@
 ﻿using BlogPlatform.UI.Helpers.Contracts;
 using Microsoft.AspNetCore.Authentication;
 using System.Globalization;
+using System.Net;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
@@ -44,6 +45,12 @@ public class ApiClient : IApiClient
         var response = await HttpClient.PostAsync(urlWithCulture, jsonContent);
         if (ensureSuccess)
         {
+            if (response.StatusCode == HttpStatusCode.BadRequest)
+            {
+                var message = await response.Content.ReadAsStringAsync();
+                throw new HttpRequestException(message, null, HttpStatusCode.BadRequest);
+            }
+
             response.EnsureSuccessStatusCode();
         }
 
@@ -67,6 +74,13 @@ public class ApiClient : IApiClient
 
         var request = new HttpRequestMessage(method, endpoint) { Content = jsonContent };
         var response = await HttpClient.SendAsync(request);
+
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            var message = await response.Content.ReadAsStringAsync();
+            throw new HttpRequestException(message, null, HttpStatusCode.BadRequest);
+        }
+
         response.EnsureSuccessStatusCode();
     }
 

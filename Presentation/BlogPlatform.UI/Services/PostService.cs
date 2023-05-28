@@ -39,9 +39,9 @@ public class PostService : IPostService
         return _apiClient.SendGetApiRequestAsync<Page<Post>>(pageUrl);
     }
 
-    public Task<IEnumerable<Post>> GetTrendingPostsAsync()
+    public Task<List<Post>> GetTrendingPostsAsync()
     {
-        return _apiClient.SendGetApiRequestAsync<IEnumerable<Post>>("posts/trending?top=5");
+        return _apiClient.SendGetApiRequestAsync<List<Post>>("posts/trending?top=5");
     }
 
     public Task<Post> FindPostAsync(string titleIdentifier)

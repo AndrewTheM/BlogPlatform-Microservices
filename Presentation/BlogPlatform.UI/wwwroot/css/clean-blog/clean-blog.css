@@ -79,7 +79,7 @@ img::selection {
 }
 
 #mainNav .navbar-brand {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 800;
     color: #343a40;
 }
@@ -169,7 +169,7 @@ header.masthead .post-heading .meta a {
 }
 
 footer {
-    padding: 50px 0 65px;
+    padding: 20px 0 30px;
 }
 footer .copyright {
     font-size: 14px;
@@ -358,7 +358,7 @@ form .form-group:first-child .floating-label-form-group {
         backface-visibility: hidden;
     }
     #mainNav .navbar-brand {
-        font-size: 22px;
+        font-size: 26px;
         padding: 10px 20px;
         color: #fff;
     }
@@ -422,9 +422,12 @@ form .form-group:first-child .floating-label-form-group {
     header.masthead .site-heading .subheading {
         font-size: 24px;
     }
-    
+
     header.masthead .page-heading,
-    header.masthead .post-heading,
+    header.masthead .post-heading {
+        padding: 150px 0 120px;
+    }
+
     header.masthead .site-heading {
         padding: 125px 0 100px;
     }

@@ -2,5 +2,5 @@
 
 public interface ITagService
 {
-    Task<IEnumerable<string>> GetTagNames();
+    Task<List<string>> GetTagNames();
 }

@@ -118,30 +118,24 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Motto" xml:space="preserve">
-    <value>Поділися своїми знаннями</value>
+    <value>Колективне джерело знань</value>
   </data>
   <data name="MottoSub" xml:space="preserve">
-    <value>Нехай світ знає більше</value>
-  </data>
-  <data name="NextPage" xml:space="preserve">
-    <value>Наступна</value>
+    <value>Ріст особистості силами спільноти</value>
   </data>
   <data name="PostedBy" xml:space="preserve">
     <value>Опубліковано користувачем</value>
-  </data>
-  <data name="PreviousPage" xml:space="preserve">
-    <value>Попередня</value>
   </data>
   <data name="SearchPosts" xml:space="preserve">
     <value>Пошук публікацій</value>
   </data>
   <data name="Tags" xml:space="preserve">
-    <value>Теги</value>
+    <value>Мітки</value>
   </data>
   <data name="Trending" xml:space="preserve">
-    <value>Популярні</value>
+    <value>Популярне зараз</value>
   </data>
   <data name="TrendingBy" xml:space="preserve">
-    <value>від</value>
+    <value>автор:</value>
   </data>
 </root>

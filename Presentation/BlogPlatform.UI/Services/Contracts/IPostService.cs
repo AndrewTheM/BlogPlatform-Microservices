@@ -10,7 +10,7 @@ public interface IPostService
 
     Task<Page<Post>> GetPostsAsync(string pageUrl);
 
-    Task<IEnumerable<Post>> GetTrendingPostsAsync();
+    Task<List<Post>> GetTrendingPostsAsync();
 
     Task<Post> FindPostAsync(string titleIdentifier);
 
