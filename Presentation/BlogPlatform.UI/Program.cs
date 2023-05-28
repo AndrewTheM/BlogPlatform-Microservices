@@ -64,6 +64,12 @@ builder.Services.AddAuthentication(options =>
         return Task.CompletedTask;
     };
 
+    options.Events.OnRedirectToIdentityProviderForSignOut = context =>
+    {
+        context.ProtocolMessage.IssuerAddress = $"{options.Authority}/connect/endsession";
+        return Task.CompletedTask;
+    };
+
     options.ClientId = "ui-client";
     options.ClientSecret = "49C1A7E1-0C79-4A89-A3D6-A37998FB86B0";
     options.ResponseType = "code";

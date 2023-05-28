@@ -6,16 +6,16 @@
 }
 
 <div class="logged-out-page">
-    <h1>
-        Logout
-        <small>You are now logged out</small>
-    </h1>
+    <div class="lead">
+        <h1>Logout</h1>
+        <p>You are now logged out</p>
+    </div>
 
     @if (Model.PostLogoutRedirectUri != null)
     {
         <div>
-            Click <a class="PostLogoutRedirectUri" href="@Model.PostLogoutRedirectUri">here</a> to return to the
-            <span>@Model.ClientName</span> application.
+            Click <a class="PostLogoutRedirectUri" href="@Model.PostLogoutRedirectUri">here</a>
+            to return to the application.
         </div>
     }
 
