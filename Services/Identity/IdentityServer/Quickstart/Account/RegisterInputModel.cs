@@ -6,6 +6,7 @@ public class RegisterInputModel
 {
     [Required]
     [MinLength(3)]
+    [MaxLength(50)]
     public string Username { get; set; }
     
     [Required]
@@ -14,6 +15,7 @@ public class RegisterInputModel
 
     [Required]
     [MinLength(8)]
+    [MaxLength(50)]
     public string Password { get; set; }
     
     [Compare("Password", ErrorMessage = "Password confirmation doesn't match.")]
