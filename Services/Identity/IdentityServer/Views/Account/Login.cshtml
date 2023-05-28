@@ -1,6 +1,11 @@
 @using IdentityServer.Quickstart.Account
 @model LoginViewModel
 
+@{
+    var request = ViewContext.HttpContext.Request;
+    var fullPath = request.Path + request.QueryString;
+}
+
 <div class="login-page">
     <div class="lead">
         <h1>Login</h1>
@@ -20,6 +25,12 @@
                     </div>
 
                     <div class="card-body">
+                        <a class="btn btn-link px-0 mb-2"
+                            asp-controller="Account"
+                            asp-action="Register"
+                            asp-route-returnUrl="@fullPath">
+                            Don't have an account? Register now
+                        </a>
                         <form asp-route="Login">
                             <input type="hidden" asp-for="ReturnUrl" />
 

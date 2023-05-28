@@ -1,0 +1,45 @@
+﻿@using IdentityServer.Quickstart.Account
+@model RegisterInputModel
+
+<div class="login-page">
+    <div class="lead mb-4">
+        <h1>Register</h1>
+    </div>
+
+    <partial name="_ValidationSummary" />
+
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Create Account</h2>
+                </div>
+
+                <div class="card-body">
+                    <form asp-route="Login">
+                        <input type="hidden" asp-for="ReturnUrl" />
+                        <div class="form-group">
+                            <label asp-for="Username"></label>
+                            <input class="form-control" placeholder="Username" asp-for="Username" autofocus>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Email"></label>
+                            <input class="form-control" placeholder="Email" asp-for="Email">
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Password"></label>
+                            <input type="password" class="form-control" placeholder="Password" asp-for="Password" autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="PasswordConfirmation">Confirm password</label>
+                            <input type="password" class="form-control" placeholder="Confirm password" asp-for="PasswordConfirmation" autocomplete="off">
+                        </div>
+
+                        <button class="btn btn-primary" name="button" value="register">Register</button>
+                        <button class="btn btn-secondary" name="button" value="cancel">Cancel</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

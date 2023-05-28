@@ -144,6 +144,36 @@ public class AccountController : Controller
         return View(vm);
     }
 
+    [HttpGet]
+    public IActionResult Register(string returnUrl)
+    {
+        return View(new RegisterInputModel { ReturnUrl = returnUrl });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Register(RegisterInputModel model, string button)
+    {
+        if (button != "register")
+            return LocalRedirect(model.ReturnUrl);
+        
+        var userToRegister = new ApplicationUser
+        {
+            UserName = model.Username,
+            Email = model.Email
+        };
+
+        var createResult = await _userManager.CreateAsync(userToRegister, model.Password);
+        if (!createResult.Succeeded)
+        {
+            return View(model);
+        }
+
+        await _userManager.AddToRoleAsync(userToRegister, "Reader");
+
+        return LocalRedirect(model.ReturnUrl);
+    }
+
 
     /// <summary>
     /// Show logout page
