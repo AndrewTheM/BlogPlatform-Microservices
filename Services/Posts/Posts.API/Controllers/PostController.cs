@@ -123,6 +123,7 @@ public class PostController : ControllerBase
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<PostResponse>> CreatePost([FromBody] PostRequest postDto)
@@ -142,6 +143,7 @@ public class PostController : ControllerBase
 
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -153,8 +155,15 @@ public class PostController : ControllerBase
         if (!userIsPermitted)
             return Forbid();
 
-        await _postService.EditPostAsync(id, postDto);
-        return NoContent();
+        try
+        {
+            await _postService.EditPostAsync(id, postDto);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpDelete("{id}")]
@@ -177,6 +186,7 @@ public class PostController : ControllerBase
 
     [HttpPost("{id}/tags")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -188,8 +198,15 @@ public class PostController : ControllerBase
         if (!userIsPermitted)
             return Forbid();
 
-        await _postService.SetTagsOfPostAsync(id, tagsRequest.Tags);
-        return NoContent();
+        try
+        {
+            await _postService.SetTagsOfPostAsync(id, tagsRequest.Tags);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     private async Task<bool> CheckIsAuthorOfPostOrAdminAsync(Guid id)

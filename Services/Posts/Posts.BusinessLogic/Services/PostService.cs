@@ -87,13 +87,7 @@ public class PostService : IPostService
 
     public async Task<PostResponse> PublishPostAsync(PostRequest postDto, Guid userId, string username)
     {
-        var titleCategories = await _contentService.CheckTextContentAsync(postDto.Title);
-        if (titleCategories.Any())
-            throw new ContentNotAllowedException("Post Title", string.Join(", ", titleCategories));
-
-        var contentCategories = await _contentService.CheckTextContentAsync(postDto.Content);
-        if (contentCategories.Any())
-            throw new ContentNotAllowedException("Post Content", string.Join(", ", contentCategories));
+        await CheckPostContentAsync(postDto);
 
         var post = _mapper.Map<Post>(postDto);
         post.AuthorId = userId;
@@ -102,7 +96,7 @@ public class PostService : IPostService
 
         var cutTitle = post.Title.Length switch
         {
-            > 100 => post.Title[..100],
+            > 200 => post.Title[..200],
             _ => post.Title
         };
 
@@ -121,8 +115,11 @@ public class PostService : IPostService
 
     public async Task EditPostAsync(Guid id, PostRequest postDto)
     {
+        await CheckPostContentAsync(postDto);
+
         var post = await _unitOfWork.Posts.GetPostWithContentAsync(id);
         _mapper.Map(postDto, post);
+
         await _unitOfWork.CommitAsync();
     }
 
@@ -134,6 +131,10 @@ public class PostService : IPostService
 
     public async Task SetTagsOfPostAsync(Guid id, params string[] tagNames)
     {
+        var tagsCategories = await _contentService.CheckTextContentAsync(string.Join(" ", tagNames));
+        if (tagsCategories.Any())
+            throw new ContentNotAllowedException("Post Tags", string.Join(", ", tagsCategories));
+
         var post = await _unitOfWork.Posts.GetPostWithTagsAsync(id);
         post.Tags = new List<Tag>();
 
@@ -168,5 +169,29 @@ public class PostService : IPostService
     private void AddRelativeTimeToResponse(PostResponse response)
     {
         response.RelativePublishTime = _timeService.ConvertToLocalRelativeString(response.PublishedOn);
+    }
+
+    private async Task CheckPostContentAsync(PostRequest postDto)
+    {
+        var titleCategories = await _contentService.CheckTextContentAsync(postDto.Title);
+        if (titleCategories.Any())
+            throw new ContentNotAllowedException("Post Title", string.Join(", ", titleCategories));
+
+        const int contentRequestLimit = 1000;
+        var contentChunks = new List<string>();
+
+        for (var i = 0; i < postDto.Content.Length; i += contentRequestLimit)
+        {
+            var chunkLength = Math.Min(postDto.Content.Length - i, contentRequestLimit);
+            var chunk = postDto.Content.Substring(i, chunkLength);
+            contentChunks.Add(chunk);
+        }
+
+        foreach (var contentChunk in contentChunks)
+        {
+            var contentCategories = await _contentService.CheckTextContentAsync(contentChunk);
+            if (contentCategories.Any())
+                throw new ContentNotAllowedException("Post Content", string.Join(", ", contentCategories));
+        }
     }
 }
