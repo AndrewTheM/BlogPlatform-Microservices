@@ -3,6 +3,8 @@
 
 @inject IPostService _postService
 @inject IFileService _fileService
+@inject IContentAnalysisService _contentAnalysisService
+
 @inject ISnackbar _snackbar
 
 @inject NavigationManager _navigationManager
@@ -127,9 +129,7 @@
     void AddTags()
     {
         if (tagsLine is null)
-        {
             return;
-        }
 
         string[] tagNames = tagsLine.Split(';', StringSplitOptions.RemoveEmptyEntries);
         tagsLine = null;
@@ -150,21 +150,28 @@
         currentPost.Tags.Remove(chip.Text);
     }
 
-    //void DetectEnterOnAddingTags(KeyboardEventArgs e)
-    //{
-    //    if (e.Code != "Enter" && e.Code != "NumpadEnter")
-    //        return;
-
-    //    AddTags();
-    //}
-
     async Task UpdatePost()
     {
         try
         {
             isPublishing = true;
 
-            //currentPost.Content = System.Web.HttpUtility.HtmlEncode(currentPost.Content);
+            var base64Image = await _fileService.GetImageBase64StringAsync(currentThumbnail);
+            var analysisRequest = new PostAnalysisRequest
+            {
+                Title = currentPost.Title,
+                Content = currentPost.Content,
+                TagsString = string.Join(' ', currentPost.Tags),
+                ImageString = base64Image
+            };
+
+            var analysisResponse = await _contentAnalysisService.AnalyzePostAsync(analysisRequest);
+
+            if (!analysisResponse.Passed)
+            {
+                _snackbar.Add(analysisResponse.ModerationResult, Severity.Error);
+                return;
+            }
 
             if (currentThumbnail is not null)
             {

@@ -39,6 +39,10 @@ internal static class ServiceCollectionExtentions
         services.AddHttpClient<IFileService, FileService>(
             client => SetBaseApiRequestAddress(client, "files")
         );
+        
+        services.AddHttpClient<IContentAnalysisService, ContentAnalysisService>(
+            client => SetBaseApiRequestAddress(client, "analyze")
+        );
 
         return services;
     }

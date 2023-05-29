@@ -8,7 +8,10 @@
 @inject IFileService _fileService
 @inject ICommentService _commentService
 @inject IRatingService _ratingService
-@inject MudBlazor.IDialogService _dialogService
+@inject IContentAnalysisService _contentAnalysisService
+
+@inject IDialogService _dialogService
+@inject ISnackbar _snackbar
 
 @inject AuthenticationStateProvider _authProvider
 @inject IStringLocalizer<Post> _locale
@@ -89,13 +92,18 @@
                                 @bind-Value="newComment.Content"
                                 Class="bg-white"
                                 Lines="4"
-                                Variant="Variant.Outlined"
-                            />
+                                Variant="Variant.Outlined" />
 
                             <div class="d-flex justify-content-end">
                                 <MudButton Class="mt-4" @onclick="PublishComment" Color="Color.Primary"
-                                           Variant="Variant.Filled" Size="Size.Medium">
+                                    Variant="Variant.Filled" Size="Size.Medium"
+                                    Disabled="isCommenting">
                                     @_locale["LeaveComment"]
+
+                                    @if (isCommenting)
+                                    {
+                                        <MudProgressCircular Class="ml-2" Indeterminate="true" Size="Size.Small" />
+                                    }
                                 </MudButton>
                             </div>
                         </Authorized>
@@ -177,13 +185,14 @@ else
 
     string currentUsername;
     string thumbnailLink;
+    bool isCommenting;
 
     MarkdownPipeline markdownPipeline = new MarkdownPipelineBuilder()
         .UseEmojiAndSmiley()
         .UseListExtras()
         .UseAutoLinks()
         .UseEmphasisExtras()
-        .UseMediaLinks() // TODO: add embed-responsive classes
+        .UseMediaLinks()
         .UseBootstrap()
         .Build();
 
@@ -213,7 +222,6 @@ else
     {
         currentPost = await _postPageService.GetPostPageAsync(TitleIdentifier);
         thumbnailLink = _fileService.GetImageUrl(currentPost.ThumbnailPath);
-        //currentPost.Content = System.Web.HttpUtility.HtmlEncode(currentPost.Content);
         comments = currentPost.CommentPage.Data.ToList();
     }
 
@@ -230,10 +238,32 @@ else
 
     async Task PublishComment()
     {
-        var publishedComment = await _commentService.PublishCommentAsync(newComment);
-        comments.Insert(0, publishedComment);
-        ++currentPost.CommentPage.TotalRecords;
-        newComment = new() { PostId = currentPost.Id };
+        try
+        {
+            isCommenting = true;
+
+            var analysisRequest = new CommentAnalysisRequest { CommentText = newComment.Content };
+            var analysisResult = await _contentAnalysisService.AnalyzeCommentAsync(analysisRequest);
+
+            if (!analysisResult.Passed)
+            {
+                _snackbar.Add(analysisResult.ModerationResult, Severity.Error);
+                return;
+            }
+
+            var publishedComment = await _commentService.PublishCommentAsync(newComment);
+            comments.Insert(0, publishedComment);
+            ++currentPost.CommentPage.TotalRecords;
+            newComment = new() { PostId = currentPost.Id };
+        }
+        catch (HttpRequestException)
+        {
+            _snackbar.Add(_locale["PublishError"], Severity.Error);
+        }
+        finally
+        {
+            isCommenting = false;
+        }
     }
 
     async Task DeleteComment(Guid id)

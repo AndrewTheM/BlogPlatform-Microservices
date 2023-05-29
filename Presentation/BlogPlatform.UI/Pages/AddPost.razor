@@ -1,9 +1,10 @@
 ﻿@page "/author/new"
-@using System.Net;
 @attribute [Authorize(Roles = "Author, Admin")]
 
 @inject IPostService _postService
 @inject IFileService _fileService
+@inject IContentAnalysisService _contentAnalysisService
+
 @inject ISnackbar _snackbar
 
 @inject NavigationManager _navigationManager 
@@ -145,21 +146,28 @@
         newPost.Tags.Remove(chip.Text);
     }
 
-    //void DetectEnterOnAddingTags(KeyboardEventArgs e)
-    //{
-    //    if (e.Code != "Enter" && e.Code != "NumpadEnter")
-    //        return;
-
-    //    AddTags();
-    //}
-
     async Task PublishPost()
     {
         try
         {
             isPublishing = true;
 
-            //newPost.Content = System.Web.HttpUtility.HtmlEncode(newPost.Content);
+            var base64Image = await _fileService.GetImageBase64StringAsync(currentThumbnail);
+            var analysisRequest = new PostAnalysisRequest
+            {
+                Title = newPost.Title,
+                Content = newPost.Content,
+                TagsString = string.Join(' ', newPost.Tags),
+                ImageString = base64Image
+            };
+
+            var analysisResponse = await _contentAnalysisService.AnalyzePostAsync(analysisRequest);
+
+            if (!analysisResponse.Passed)
+            {
+                _snackbar.Add(analysisResponse.ModerationResult, Severity.Error);
+                return;
+            }
 
             if (currentThumbnail is not null)
             {
@@ -170,16 +178,9 @@
             await _postService.SetTagsOfPostAsync(publishedPost.Id, newPost.Tags);
             _navigationManager.NavigateTo("/author");
         }
-        catch (HttpRequestException ex)
+        catch (HttpRequestException)
         {
-            var errorMessage = _locale["PublishError"].Value;
-
-            if (ex.StatusCode == HttpStatusCode.BadRequest)
-            {
-                errorMessage = ex.Message;
-            }
-
-            _snackbar.Add(errorMessage, Severity.Error);
+            _snackbar.Add(_locale["PublishError"], Severity.Error);
         }
         finally
         {

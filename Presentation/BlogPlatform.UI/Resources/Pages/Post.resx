@@ -144,6 +144,9 @@
   <data name="PostedBy" xml:space="preserve">
     <value>Posted by</value>
   </data>
+  <data name="PublishError" xml:space="preserve">
+    <value>An error occured while publishing the comment.</value>
+  </data>
   <data name="ThanksForRating" xml:space="preserve">
     <value>Thanks for the feedback! Your rating:</value>
   </data>

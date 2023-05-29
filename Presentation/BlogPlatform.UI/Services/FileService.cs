@@ -8,7 +8,7 @@ namespace BlogPlatform.UI.Services;
 
 public class FileService : IFileService
 {
-    private const long MaxFileSize = 10000000;
+    private const long MaxFileSize = 10_000_000;
     private const string FileUrl = "http://localhost:8010/files";
 
     private readonly IApiClient _apiClient;
@@ -25,6 +25,19 @@ public class FileService : IFileService
             return fileName;
 
         return $"{FileUrl}/{fileName}";
+    }
+
+    public async Task<string> GetImageBase64StringAsync(IBrowserFile image)
+    {
+        if (image is null)
+            return string.Empty;
+
+        var imageStream = image.OpenReadStream(MaxFileSize);
+        using var ms = new MemoryStream();
+        await imageStream.CopyToAsync(ms);
+
+        var base64Image = Convert.ToBase64String(ms.ToArray());
+        return base64Image;
     }
 
     public async Task<string> PublishFile(IBrowserFile file)

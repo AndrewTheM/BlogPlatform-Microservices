@@ -83,6 +83,7 @@ builder.Services.AddAuthentication(options =>
     options.Scope.Add("comments");
     options.Scope.Add("files");
     options.Scope.Add("accounts");
+    options.Scope.Add("intelligence");
 
     options.ClaimActions.MapUniqueJsonKey("role", "role", "role");
 
