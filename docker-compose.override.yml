@@ -130,6 +130,23 @@ services:
     volumes:
       - ~/.aspnet/https:/https:ro
       - fileserver-data:/app/StaticFiles
+      
+  intelligence.api:
+    container_name: intelligence.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - IdentityUrl=http://identityserver
+      - ElasticSearch=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    ports:
+      - 8004:80
+      - 18004:443
+    volumes:
+      - ~/.aspnet/https:/https:ro
 
   identityserver:
     container_name: identityserver

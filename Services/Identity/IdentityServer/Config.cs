@@ -27,7 +27,8 @@ public static class Config
             new ApiScope("posts", "Posts"),
             new ApiScope("comments", "Comments"),
             new ApiScope("accounts", "Accounts"),
-            new ApiScope("files", "Files")
+            new ApiScope("files", "Files"),
+            new ApiScope("intelligence", "Intelligence"),
         };
 
     public static IEnumerable<ApiResource> ApiResources =>
@@ -56,7 +57,13 @@ public static class Config
                 Name = "filesApi",
                 DisplayName = "Files API",
                 Scopes = new[] { "files" }
-            }
+            },
+            new ApiResource
+            {
+                Name = "intelligenceApi",
+                DisplayName = "Intelligence API",
+                Scopes = new[] { "intelligence" }
+            },
         };
 
     public static IEnumerable<Client> GetClients(string clientUrl) =>
@@ -70,7 +77,7 @@ public static class Config
                 ClientSecrets = { new Secret("511536EF-F270-4058-80CA-1C89C192F69A".Sha256()) },
 
                 AllowOfflineAccess = true,
-                AllowedScopes = { "posts", "comments", "accounts", "files" }
+                AllowedScopes = { "posts", "comments", "accounts", "files", "intelligence" }
             },
             new Client
             {
@@ -92,7 +99,8 @@ public static class Config
                     "posts",
                     "comments",
                     "accounts",
-                    "files"
+                    "files",
+                    "intelligence"
                 }
             }
         };

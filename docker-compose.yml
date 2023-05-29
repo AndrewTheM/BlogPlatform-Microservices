@@ -41,6 +41,12 @@ services:
       context: .
       dockerfile: Services/Files/Dockerfile
 
+  intelligence.api:
+    image: ${DOCKER_REGISTRY-}intelligenceapi
+    build:
+      context: .
+      dockerfile: Services/Intelligence/Intelligence.API/Dockerfile
+
   aggregator:
     image: ${DOCKER_REGISTRY-}aggregator
     build:

@@ -203,6 +203,25 @@
       "SwaggerKey": "files"
     },
 
+    // Intelligence API
+    {
+      "DownstreamPathTemplate": "/api/content-moderation/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "intelligence.api",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/analyze/{everything}",
+      "UpstreamHttpMethod": [ "POST" ],
+      "SwaggerKey": "intelligence",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "IdentityApiKey",
+        "AllowedScopes": [ "intelligence" ]
+      }
+    },
+
     // Aggregator
     {
       "DownstreamPathTemplate": "/api/postpage/{everything}",
@@ -256,6 +275,16 @@
           "Name": "Files API",
           "Version": "v1",
           "Url": "http://files.api/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "intelligence",
+      "Config": [
+        {
+          "Name": "Intelligence API",
+          "Version": "v1",
+          "Url": "http://intelligence.api/swagger/v1/swagger.json"
         }
       ]
     },
