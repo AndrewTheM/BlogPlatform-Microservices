@@ -7,7 +7,6 @@ using BlogPlatform.Shared.Services.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Posts.BusinessLogic.DTO.Requests;
 using Posts.BusinessLogic.DTO.Responses;
-using Posts.BusinessLogic.Exceptions;
 using Posts.BusinessLogic.Services.Contracts;
 using Posts.DataAccess.Context.Contracts;
 using Posts.DataAccess.Entities;
@@ -20,20 +19,17 @@ public class PostService : IPostService
     private readonly IBloggingUnitOfWork _unitOfWork;
     private readonly IUriService _uriService;
     private readonly ITimeService _timeService;
-    private readonly IContentService _contentService;
     private readonly IMapper _mapper;
 
     public PostService(
         IBloggingUnitOfWork unitOfWork,
         IUriService uriService,
         ITimeService timeService,
-        IContentService contentService,
         IMapper mapper)
     {
         _unitOfWork = unitOfWork;
         _uriService = uriService;
         _timeService = timeService;
-        _contentService = contentService;
         _mapper = mapper;
     }
 
@@ -87,8 +83,6 @@ public class PostService : IPostService
 
     public async Task<PostResponse> PublishPostAsync(PostRequest postDto, Guid userId, string username)
     {
-        await CheckPostContentAsync(postDto);
-
         var post = _mapper.Map<Post>(postDto);
         post.AuthorId = userId;
         post.Author = username;
@@ -115,8 +109,6 @@ public class PostService : IPostService
 
     public async Task EditPostAsync(Guid id, PostRequest postDto)
     {
-        await CheckPostContentAsync(postDto);
-
         var post = await _unitOfWork.Posts.GetPostWithContentAsync(id);
         _mapper.Map(postDto, post);
 
@@ -131,10 +123,6 @@ public class PostService : IPostService
 
     public async Task SetTagsOfPostAsync(Guid id, params string[] tagNames)
     {
-        var tagsCategories = await _contentService.CheckTextContentAsync(string.Join(" ", tagNames));
-        if (tagsCategories.Any())
-            throw new ContentNotAllowedException("Post Tags", string.Join(", ", tagsCategories));
-
         var post = await _unitOfWork.Posts.GetPostWithTagsAsync(id);
         post.Tags = new List<Tag>();
 
@@ -169,29 +157,5 @@ public class PostService : IPostService
     private void AddRelativeTimeToResponse(PostResponse response)
     {
         response.RelativePublishTime = _timeService.ConvertToLocalRelativeString(response.PublishedOn);
-    }
-
-    private async Task CheckPostContentAsync(PostRequest postDto)
-    {
-        var titleCategories = await _contentService.CheckTextContentAsync(postDto.Title);
-        if (titleCategories.Any())
-            throw new ContentNotAllowedException("Post Title", string.Join(", ", titleCategories));
-
-        const int contentRequestLimit = 1000;
-        var contentChunks = new List<string>();
-
-        for (var i = 0; i < postDto.Content.Length; i += contentRequestLimit)
-        {
-            var chunkLength = Math.Min(postDto.Content.Length - i, contentRequestLimit);
-            var chunk = postDto.Content.Substring(i, chunkLength);
-            contentChunks.Add(chunk);
-        }
-
-        foreach (var contentChunk in contentChunks)
-        {
-            var contentCategories = await _contentService.CheckTextContentAsync(contentChunk);
-            if (contentCategories.Any())
-                throw new ContentNotAllowedException("Post Content", string.Join(", ", contentCategories));
-        }
     }
 }

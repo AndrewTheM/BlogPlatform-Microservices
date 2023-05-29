@@ -33,8 +33,6 @@ public class Startup
             options.UseSqlServer(connectionString);
         });
         
-        services.AddHttpClient();
-
         services.AddAutoMapper(typeof(BlogMappingProfile), typeof(GrpcMappingProfile));
         services.AddGrpc();
 

@@ -91,8 +91,8 @@ public class PostController : ControllerBase
             post = await _postService.FindPostAsync(id);
             await _cache.SetAsync(cacheKey, post, options: new()
             {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1),
-                SlidingExpiration = TimeSpan.FromSeconds(30),
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1),
+                SlidingExpiration = TimeSpan.FromMinutes(30),
             });
         }
 
@@ -128,17 +128,10 @@ public class PostController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<PostResponse>> CreatePost([FromBody] PostRequest postDto)
     {
-        try
-        {
-            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var username = HttpContext.User.FindFirstValue(ClaimTypes.Name);
-            var post = await _postService.PublishPostAsync(postDto, Guid.Parse(userId), username);
-            return Ok(post);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var username = HttpContext.User.FindFirstValue(ClaimTypes.Name);
+        var post = await _postService.PublishPostAsync(postDto, Guid.Parse(userId), username);
+        return Ok(post);
     }
 
     [HttpPut("{id}")]
@@ -155,15 +148,9 @@ public class PostController : ControllerBase
         if (!userIsPermitted)
             return Forbid();
 
-        try
-        {
-            await _postService.EditPostAsync(id, postDto);
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        await _postService.EditPostAsync(id, postDto);
+        await _cache.RemoveAsync($"post_{id}");
+        return NoContent();
     }
 
     [HttpDelete("{id}")]
@@ -198,15 +185,8 @@ public class PostController : ControllerBase
         if (!userIsPermitted)
             return Forbid();
 
-        try
-        {
-            await _postService.SetTagsOfPostAsync(id, tagsRequest.Tags);
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        await _postService.SetTagsOfPostAsync(id, tagsRequest.Tags);
+        return NoContent();
     }
 
     private async Task<bool> CheckIsAuthorOfPostOrAdminAsync(Guid id)
