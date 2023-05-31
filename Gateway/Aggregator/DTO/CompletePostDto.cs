@@ -20,6 +20,8 @@ public class CompletePostDto
 
     public string ThumbnailPath { get; set; }
 
+    public string AudioPath { get; set; }
+
     public string Content { get; set; }
 
     public double Rating { get; set; }

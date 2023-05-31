@@ -8,5 +8,6 @@ public interface IFileService
 
     Task<string> GetImageBase64StringAsync(IBrowserFile image);
 
-    Task<string> PublishFile(IBrowserFile file);
+    Task<string> PublishFileAsync(IBrowserFile file);
+    Task<string> PublishFileAsync(string fileName, byte[] fileBytes);
 }

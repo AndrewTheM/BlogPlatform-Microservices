@@ -17,4 +17,6 @@ public class PostResponse
     public bool IsEdited { get; set; }
 
     public string ThumbnailPath { get; set; }
+
+    public string AudioPath { get; set; }
 }

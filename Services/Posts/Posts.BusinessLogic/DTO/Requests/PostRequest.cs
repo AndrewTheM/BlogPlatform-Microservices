@@ -6,5 +6,7 @@ public class PostRequest
 
     public string ThumbnailPath { get; set; }
 
+    public string AudioPath { get; set; }
+
     public string Content { get; set; }
 }

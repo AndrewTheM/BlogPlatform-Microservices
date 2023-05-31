@@ -175,7 +175,7 @@
 
             if (currentThumbnail is not null)
             {
-                currentPost.ThumbnailPath = await _fileService.PublishFile(currentThumbnail);
+                currentPost.ThumbnailPath = await _fileService.PublishFileAsync(currentThumbnail);
             }
 
             await _postService.EditPostAsync(currentPost);

@@ -6,6 +6,8 @@ public class Post
 
     public string ThumbnailPath { get; set; }
 
+    public string AudioPath { get; set; }
+
     public string TitleIdentifier { get; set; }
 
     public string Title { get; set; }

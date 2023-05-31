@@ -11,6 +11,8 @@ public class Post : EntityBase
     public string TitleIdentifier { get; set; }
 
     public string ThumbnailPath { get; set; }
+    
+    public string AudioPath { get; set; }
 
     public PostContent ContentEntity { get; set; }
 

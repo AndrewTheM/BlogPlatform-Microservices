@@ -1,4 +1,7 @@
 ﻿@page "/author/new"
+@using Microsoft.CognitiveServices.Speech;
+@using Microsoft.CognitiveServices.Speech.Audio;
+@using System.Globalization;
 @attribute [Authorize(Roles = "Author, Admin")]
 
 @inject IPostService _postService
@@ -171,8 +174,10 @@
 
             if (currentThumbnail is not null)
             {
-                newPost.ThumbnailPath = await _fileService.PublishFile(currentThumbnail);
+                newPost.ThumbnailPath = await _fileService.PublishFileAsync(currentThumbnail);
             }
+
+            newPost.AudioPath = await SynthesizeAudio(newPost.Content);
 
             var publishedPost = await _postService.PublishPostAsync(newPost);
             await _postService.SetTagsOfPostAsync(publishedPost.Id, newPost.Tags);
@@ -186,5 +191,23 @@
         {
             isPublishing = false;
         }
+    }
+
+    async Task<string> SynthesizeAudio(string text)
+    {
+        var speechConfig = SpeechConfig.FromSubscription("905a50ca1a0240a6a37bf5bacd93d299", "northeurope");
+
+        if (CultureInfo.CurrentCulture.Name == "en-US")
+        {
+            speechConfig.SpeechSynthesisVoiceName = "en-US-JennyNeural";
+        }
+        else
+        {
+            speechConfig.SpeechSynthesisVoiceName = "uk-UA-PolinaNeural";
+        }
+
+        using var synthesizer = new SpeechSynthesizer(speechConfig, null);
+        var result = await synthesizer.SpeakTextAsync(text);
+        return await _fileService.PublishFileAsync("post.wav", result.AudioData);
     }
 } 

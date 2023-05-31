@@ -43,18 +43,22 @@ app.MapGet("/files/{fileName}",
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     async ([FromRoute] string fileName) =>
     {
-        string filePath = Path.Combine(
+        var mimeType = MimeTypes.GetMimeType(fileName);
+        var directory = mimeType.StartsWith("image")
+            ? "Images"
+            : "Misc";
+
+        var filePath = Path.Combine(
             Directory.GetCurrentDirectory(),
             "StaticFiles",
-            "Images",
+            directory,
             fileName
         );
 
         if (!File.Exists(filePath))
             return Results.BadRequest();
 
-        byte[] imageBytes = await File.ReadAllBytesAsync(filePath);
-        string mimeType = MimeTypes.GetMimeType(fileName);
+        var imageBytes = await File.ReadAllBytesAsync(filePath);
         return Results.File(imageBytes, mimeType);
     }
 );
@@ -69,12 +73,17 @@ app.MapPost("/files",
         var dispositionHeader = ContentDispositionHeaderValue.Parse(file.ContentDisposition);
         var fileName = dispositionHeader.FileName.Trim('\"');
         var constructedFileName = DateTime.UtcNow.ToString("yyyyMMddhhmmssfff") + Path.GetExtension(fileName);
+        
+        var mimeType = MimeTypes.GetMimeType(fileName);
+        var directory = mimeType.StartsWith("image")
+            ? "Images"
+            : "Misc";
 
-        var fileFolderPath = Path.Combine("StaticFiles", "Images");
+        var fileFolderPath = Path.Combine("StaticFiles", directory);
         Directory.CreateDirectory(fileFolderPath);
 
         var filePath = Path.Combine(Directory.GetCurrentDirectory(), fileFolderPath, constructedFileName);
-        using FileStream stream = new(filePath, FileMode.Create);
+        using var stream = new FileStream(filePath, FileMode.Create);
         await file.CopyToAsync(stream);
 
         return new { LocalPath = constructedFileName };

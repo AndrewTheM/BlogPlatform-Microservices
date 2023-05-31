@@ -25,4 +25,5 @@ message CompletePostResponse {
     string content = 9;
     double rating = 10;
     repeated string tags = 11;
+    string audioPath = 12;
 }

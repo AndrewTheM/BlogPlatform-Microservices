@@ -29,6 +29,9 @@ namespace Posts.DataAccess.Entities.Configuration
 
             builder.Property(p => p.ThumbnailPath)
                 .HasMaxLength(500);
+            
+            builder.Property(p => p.AudioPath)
+                .HasMaxLength(500);
 
             builder.HasOne(p => p.ContentEntity)
                 .WithOne(pc => pc.Post)

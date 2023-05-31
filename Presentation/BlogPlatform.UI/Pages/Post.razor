@@ -46,6 +46,15 @@
                     </MudText>
                 </MudChip>
 
+                @if (!string.IsNullOrEmpty(currentPost.AudioPath))
+                {
+                    <div class="mt-3">
+                        <audio controls>
+                            <source src="@audioLink" />
+                        </audio>
+                    </div>
+                }
+
                 <div class="mt-5">
                     @((MarkupString)Markdown.ToHtml(currentPost.Content, markdownPipeline))
                 </div>
@@ -185,6 +194,7 @@ else
 
     string currentUsername;
     string thumbnailLink;
+    string audioLink;
     bool isCommenting;
 
     MarkdownPipeline markdownPipeline = new MarkdownPipelineBuilder()
@@ -222,6 +232,7 @@ else
     {
         currentPost = await _postPageService.GetPostPageAsync(TitleIdentifier);
         thumbnailLink = _fileService.GetImageUrl(currentPost.ThumbnailPath);
+        audioLink = _fileService.GetImageUrl(currentPost.AudioPath);
         comments = currentPost.CommentPage.Data.ToList();
     }
 

@@ -40,12 +40,25 @@ public class FileService : IFileService
         return base64Image;
     }
 
-    public async Task<string> PublishFile(IBrowserFile file)
+    public Task<string> PublishFileAsync(IBrowserFile file)
     {
-        using var formContent = new MultipartFormDataContent();
-        using var streamContent = new StreamContent(file.OpenReadStream(MaxFileSize));
+        var formContent = new MultipartFormDataContent();
+        var streamContent = new StreamContent(file.OpenReadStream(MaxFileSize));
         formContent.Add(streamContent, "\"files\"", file.Name);
+        return SendFileContentAsync(formContent);
+    }
+    
+    public Task<string> PublishFileAsync(string fileName, byte[] fileBytes)
+    {
+        var formContent = new MultipartFormDataContent();
+        var memoryStream = new MemoryStream(fileBytes);
+        var streamContent = new StreamContent(memoryStream);
+        formContent.Add(streamContent, "\"files\"", fileName);
+        return SendFileContentAsync(formContent);
+    }
 
+    private async Task<string> SendFileContentAsync(MultipartFormDataContent formContent)
+    {
         await _apiClient.EnsureAuthorizationHeader();
         var response = await _apiClient.HttpClient.PostAsync("", formContent);
         using var contentStream = await response.Content.ReadAsStreamAsync();

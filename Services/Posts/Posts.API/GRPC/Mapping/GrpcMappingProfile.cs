@@ -16,6 +16,8 @@ public class GrpcMappingProfile : Profile
             .ConvertUsing(src => Timestamp.FromDateTime(DateTime.SpecifyKind(src, DateTimeKind.Utc)));
 
         CreateMap<CompletePostResponse, Protos.CompletePostResponse>()
-            .ForMember(dest => dest.Author, opts => opts.NullSubstitute(string.Empty));
+            .ForMember(dest => dest.Author, opts => opts.NullSubstitute(string.Empty))
+            .ForMember(dest => dest.ThumbnailPath, opts => opts.NullSubstitute(string.Empty))
+            .ForMember(dest => dest.AudioPath, opts => opts.NullSubstitute(string.Empty));
     }
 }
