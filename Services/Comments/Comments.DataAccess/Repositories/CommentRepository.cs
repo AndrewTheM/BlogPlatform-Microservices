@@ -38,9 +38,7 @@ public class CommentRepository : ICommentRepository
         );
 
         if (comment is null)
-        {
             throw new EntityNotFoundException();
-        }
 
         return comment;
     }
@@ -67,9 +65,7 @@ public class CommentRepository : ICommentRepository
         );
 
         if (rows == 0)
-        {
             throw new EntityNotFoundException();
-        }
     }
 
     public async Task DeleteAsync(Guid id)
@@ -83,9 +79,7 @@ public class CommentRepository : ICommentRepository
         );
 
         if (rows == 0)
-        {
             throw new EntityNotFoundException();
-        }
     }
 
     public async Task<IEnumerable<Comment>> GetFilteredCommentsOfPostAsync(Guid postId, CommentFilter filter)
@@ -97,11 +91,5 @@ public class CommentRepository : ICommentRepository
             param: new { postId, filter.Content },
             commandType: CommandType.StoredProcedure
         );
-    }
-
-    // TODO: work with other microservices
-    public async Task<Comment> GetCommentWithAuthorAsync(Guid id)
-    {
-        return await GetAsync(id);
     }
 }

@@ -115,7 +115,6 @@ internal class Startup
         app.UseRequestLocalization();
         app.UseRouting();
 
-        // TODO: configure CORS properly
         app.UseCors(builder =>
         {
             builder.AllowAnyOrigin()

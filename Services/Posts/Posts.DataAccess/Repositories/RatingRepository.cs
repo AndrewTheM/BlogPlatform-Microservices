@@ -12,13 +12,11 @@ public class RatingRepository : EntityRepository<Rating>, IRatingRepository
     {
     }
 
-    // TODO: work with other microservices
     public async Task<Rating> GetRatingOfPostByUserAsync(Guid postId, Guid userId)
     {
         return await EnsureEntityResultAsync(() =>
         {
-            return _set//.Include(r => r.User)
-                .SingleAsync(r => r.PostId == postId && r.UserId == userId);
+            return _set.SingleAsync(r => r.PostId == postId && r.UserId == userId);
         });
     }
 }

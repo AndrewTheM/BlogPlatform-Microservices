@@ -24,7 +24,13 @@ namespace Aggregator.Controllers
             [FromRoute] string titleIdentifier)
         {
             var post = await _postService.GetCompletePostAsync(titleIdentifier);
-            post.CommentPage = await _commentService.GetPageOfPostCommentsAsync(post.Id);
+
+            try
+            {
+                post.CommentPage = await _commentService.GetPageOfPostCommentsAsync(post.Id);
+            }
+            catch { }
+
             return post;
         }
     }

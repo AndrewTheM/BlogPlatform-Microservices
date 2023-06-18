@@ -51,7 +51,7 @@ public class CommentService : ICommentService
 
     public async Task<CommentResponse> GetCommentByIdAsync(Guid id)
     {
-        var comment = await _commentRepository.GetCommentWithAuthorAsync(id);
+        var comment = await _commentRepository.GetAsync(id);
         var response = _mapper.Map<CommentResponse>(comment);
         AddRelativeTimeToResponse(response);
 
@@ -65,7 +65,7 @@ public class CommentService : ICommentService
         comment.Author = username;
 
         var id = await _commentRepository.CreateAsync(comment);
-        var createdComment = await _commentRepository.GetCommentWithAuthorAsync(id);
+        var createdComment = await _commentRepository.GetAsync(id);
         var response = _mapper.Map<CommentResponse>(createdComment);
 
         AddRelativeTimeToResponse(response);

@@ -72,7 +72,6 @@ public class Startup
 
         app.UseRouting();
 
-        // TODO: configure CORS properly
         app.UseCors(builder =>
         {
             builder.AllowAnyOrigin()

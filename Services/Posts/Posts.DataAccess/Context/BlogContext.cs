@@ -19,8 +19,7 @@ public class BlogContext : DbContext
         Database.Migrate();
     }
 
-    public BlogContext(DbContextOptions contextOptions)
-        : base(contextOptions)
+    public BlogContext(DbContextOptions contextOptions) : base(contextOptions)
     {
         Database.Migrate();
     }
@@ -31,18 +30,20 @@ public class BlogContext : DbContext
         modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
     }
 
-    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         ChangeTracker.DetectChanges();
 
         var entities = ChangeTracker.Entries()
-                                    .Where(entry => entry.State == EntityState.Modified)
-                                    .Select(entry => entry.Entity)
-                                    .OfType<EntityBase>();
+            .Where(entry => entry.State == EntityState.Modified)
+            .Select(entry => entry.Entity)
+            .OfType<EntityBase>();
 
         foreach (var entity in entities)
+        {
             entity.UpdatedOn = DateTime.Now;
+        }
 
-        return await base.SaveChangesAsync(cancellationToken);
+        return base.SaveChangesAsync(cancellationToken);
     }
 }
